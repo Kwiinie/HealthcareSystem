@@ -1,0 +1,707 @@
+﻿@page "/patient/profile/{id}"
+@model FindingHealthcareSystem.Pages.Patient.Profile.ProfileModel
+@using BusinessObjects.Enums
+
+@{
+}
+
+<link rel="stylesheet" href="~/css/patientProfile.css" />
+<link rel="stylesheet" href="~/css/patientAppointmentList.css"></link>
+
+
+<div class="container mt-10">
+    <div class="row justify-content-center">
+        <div class="col">
+
+
+
+            <!-- Profile Section -->
+            <div class="profile-card">
+                            @if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+                <div class="profile-header">    
+                    <button class="btn btn-primary edit-button" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+                    </button>
+
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                              @* <img src="~/img/@Model.CurrentUser.User.ImgUrl" alt="Patient Photo" class="profile-img"> *@
+                            @if (Model.CurrentUser.User.ImgUrl != null)
+                            {
+                                <img src="@Model.CurrentUser.User.ImgUrl" alt="Patient Photo" class="profile-img">
+                                
+                            }
+                            else
+                            {
+                                <img src="/images/defaultAvatar.jpg" alt="Patient Photo" class="profile-img">
+                            }
+
+                        </div>
+                        <div class="col-md-9">
+                            <h2 id="fullName">@Model.CurrentUser.User.Fullname</h2>
+                            <div class="personal-info">
+                                <i class="fas fa-venus-mars info-icon"></i>
+                                <span id="gender">@Model.CurrentUser.User.Gender</span>
+                            </div>
+                            <div class="personal-info">
+                                <i class="fas fa-birthday-cake info-icon"></i>
+                                <span id="birthday">@Model.CurrentUser.User.Birthday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <div class="info-label">Thông tin liên hệ</div>
+                                <div class="contact-info">
+                                    <i class="fas fa-envelope contact-icon"></i>
+                                    <span id="email">@Model.CurrentUser.User.Email</span>
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone contact-icon"></i>
+                                    <span id="phoneNumber">@Model.CurrentUser.User.PhoneNumber</span>
+                                </div>
+                            </div>
+
+                          
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <div class="info-label">Ghi chú y tế</div>
+                            <p id="medicalNote">@Model.CurrentUser.Note</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="info-label">Lịch sử khám bệnh</div>
+                                <div class="d-grid gap-2 d-md-block">
+                                    <a href="/patient/appointment" class="btn btn-outline-primary btn-sm"><i class="fas fa-calendar-alt"></i> Xem lịch hẹn</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments Section -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h4 class="mb-0">Lịch hẹn sắp tới</h4>
+                </div>
+
+                @if (Model.Appointments == null || !Model.Appointments.Any())
+                {
+                    <!-- Empty state -->
+                    <div class="text-center py-5">
+                        <div class="empty-state-icon mb-3">
+                            <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                        </div>
+                        <h5>Không có lịch hẹn nào sắp tới</h5>
+                        <p class="text-muted">Bạn chưa có lịch hẹn nào trong thời gian tới.</p>
+                    </div>
+                }
+                else
+                {
+                    <!-- Table with appointments -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Ngày khám</th>
+                                    <th>Dịch vụ</th>
+                                    <th>Cơ sở/Bác sĩ</th>
+                                    <th>Trạng thái</th>
+                                    <th>Mã giao dịch</th>
+                                    <th>Trạng thái thanh toán</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appointment in Model.Appointments)
+                                {
+                                    <tr>
+                                        <td>@appointment.Id</td>
+                                        <td>
+                                            @appointment.Date.ToString("dd/MM/yyyy")<br />
+                                            <small class="text-muted">@appointment.Date.ToString("HH:mm") - @appointment.Date.AddHours(1).ToString("HH:mm")</small>
+                                        </td>
+                                        <td>@appointment.Service?.Name</td>
+                                        <td>
+                                            @if (appointment.ProviderType == ProviderType.Facility)
+                                            {
+                                                @appointment.Facility?.Name
+                                            }
+                                            else if (appointment.ProviderType == ProviderType.Professional)
+                                            {
+                                                @appointment.Professional?.FullName
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusText = appointment.Status switch
+                                                {
+                                                    AppointmentStatus.AwaitingPayment => "Chờ thanh toán",
+                                                    AppointmentStatus.Pending => "Chờ xác nhận",
+                                                    AppointmentStatus.Confirmed => "Đã xác nhận",
+                                                    AppointmentStatus.Completed => "Hoàn thành",
+                                                    AppointmentStatus.Rescheduled => "Dời lịch",
+                                                    AppointmentStatus.Cancelled => "Hủy",
+                                                    AppointmentStatus.Rejected => "Từ chối",
+                                                    AppointmentStatus.Expired => "Thanh toán thất bại",
+                                                    _ => appointment.Status.ToString()
+                                                };
+                                            }
+                                            <span class="status-badge status-@appointment.Status.ToString().ToLower()">@statusText</span>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(appointment.TransactionId))
+                                            {
+                                                @appointment.TransactionId
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (appointment.Payment != null)
+                                            {
+                                                string paymentStatusText = appointment.Payment.PaymentStatus switch
+                                                {
+                                                    PaymentStatus.Pending => "Chờ thanh toán",
+                                                    PaymentStatus.Completed => "Đã thanh toán",
+                                                    PaymentStatus.Failed => "Thanh toán thất bại",
+                                                    _ => appointment.Payment.PaymentStatus.ToString()
+                                                };
+                                                string paymentStatusClass = appointment.Payment.PaymentStatus switch
+                                                {
+                                                    PaymentStatus.Pending => "payment-pending",
+                                                    PaymentStatus.Completed => "payment-completed",
+                                                    PaymentStatus.Failed => "payment-failed",
+                                                    _ => "payment-pending"
+                                                };
+
+                                                <span class="status-badge @paymentStatusClass">@paymentStatusText</span>
+
+                                                @if (appointment.Payment.PaymentStatus == PaymentStatus.Pending && !string.IsNullOrEmpty(appointment.Payment.PaymentUrl))
+                                                {
+                                                    <div class="mt-1">
+                                                        <a href="@appointment.Payment.PaymentUrl" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-credit-card me-1"></i>Thanh toán ngay
+                                                        </a>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge payment-pending">Chưa thanh toán</span>
+                                            }
+                                        </td>
+                                        <td class="action-cell">
+                                            <button class="btn btn-sm btn-outline-primary action-btn"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#appointmentDetailModal"
+                                                    data-appointment='@Html.Raw(Json.Serialize(appointment))'>
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa hồ sơ -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Chỉnh sửa hồ sơ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="EditProfile" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <!-- Profile Image Upload -->
+                        <div class="col-md-12 mb-3 text-center">
+                            <div class="profile-image-container">
+                                @if (!string.IsNullOrEmpty(Model.UpdatedUser.User.ImgUrl))
+                                {
+                                    <img src="@Model.UpdatedUser.User.ImgUrl" alt="Profile Picture" class="profile-image-preview rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <img src="/images/defaultAvatar.jpg" alt="Patient Photo" class="profile-img">
+                                }
+                            </div>
+                            <div class="mt-2">
+                                <label for="profileImageUpload" class="btn btn-outline-primary">
+                                    <i class="fas fa-upload me-2"></i>Tải ảnh lên
+                                </label>
+                                <input id="profileImageUpload" name="ProfileImage" type="file" accept="image/*" class="d-none" onchange="previewProfileImage(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="UpdatedUser.User.Fullname" class="form-label">Họ và tên</label>
+                            <input asp-for="UpdatedUser.User.Fullname" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="UpdatedUser.User.Email" class="form-label">Email</label>
+                            <input asp-for="UpdatedUser.User.Email" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="UpdatedUser.User.PhoneNumber" class="form-label">Số điện thoại</label>
+                            <input asp-for="UpdatedUser.User.PhoneNumber" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="UpdatedUser.User.Birthday" class="form-label">Ngày sinh</label>
+                            <input asp-for="UpdatedUser.User.Birthday" class="form-control" type="date" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="UpdatedUser.User.Gender" class="form-label">Giới tính</label>
+                            <select asp-for="UpdatedUser.User.Gender" class="form-select">
+                                <option value="Nam" selected="@(Model.UpdatedUser.User.Gender == "Nam" ? "selected" : null)">Nam</option>
+                                <option value="Nữ" selected="@(Model.UpdatedUser.User.Gender == "Nữ" ? "selected" : null)">Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UpdatedUser.Note" for="editMedicalNote" class="form-label">Ghi chú y tế</label>
+                        <textarea asp-for="UpdatedUser.Note" class="form-control" id="editMedicalNote" rows="3">@Model.UpdatedUser.Note</textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade detail-modal" id="appointmentDetailModal" tabindex="-1" aria-labelledby="appointmentDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="appointmentDetailModalLabel">Chi tiết lịch khám</h5>
+                    <span class="status-badge" id="modal-appointment-status"></span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Appointment Info Section -->
+                <div class="detail-section">
+                    <h5 class="mb-3"><i class="fas fa-calendar-check me-2"></i>Thông tin lịch khám</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Mã lịch hẹn:</span> <span class="detail-value" id="modal-appointment-id"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Ngày giờ khám:</span> <span class="detail-value" id="modal-appointment-date"></span></p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Provider Info Section -->
+                <div class="detail-section mt-4">
+                    <h5 class="mb-3"><i class="fas fa-hospital me-2" id="modal-provider-icon"></i><span id="modal-provider-section-title">Thông tin cơ sở y tế</span></h5>
+                    <div class="row g-3">
+                        <div class="col-md-12 text-center mb-3">
+                            <img id="modal-provider-img" src="" alt="Ảnh" class="img-thumbnail rounded" style="max-height:180px; max-width:180px;">
+                        </div>
+                        <div class="col-md-12">
+                            <p><span class="detail-label">Tên:</span> <span class="detail-value" id="modal-provider-name"></span></p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><span class="detail-label">Địa chỉ:</span> <span class="detail-value" id="modal-provider-address"></span></p>
+                        </div>
+                        <div class="col-md-6" id="modal-provider-expertise-group">
+                            <p><span class="detail-label">Chuyên khoa:</span> <span class="detail-value" id="modal-provider-expertise"></span></p>
+                        </div>
+                        <div class="col-md-6" id="modal-provider-experience-group">
+                            <p><span class="detail-label">Kinh nghiệm:</span> <span class="detail-value" id="modal-provider-experience"></span></p>
+                        </div>
+                        <div class="col-md-6" id="modal-provider-phone-group">
+                            <p><span class="detail-label">Số điện thoại:</span> <span class="detail-value" id="modal-provider-phone"></span></p>
+                        </div>
+                        <div class="col-md-6" id="modal-provider-email-group">
+                            <p><span class="detail-label">Email:</span> <span class="detail-value" id="modal-provider-email"></span></p>
+                        </div>
+                        <!-- Facility-specific fields -->
+                        <div class="col-md-12" id="modal-facility-departments-group">
+                            <p><span class="detail-label">Các khoa:</span> <span class="detail-value" id="modal-facility-departments"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Info Section -->
+                <div class="detail-section mt-4">
+                    <h5 class="mb-3"><i class="fas fa-stethoscope me-2"></i>Thông tin dịch vụ</h5>
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <p><span class="detail-label">Dịch vụ:</span> <span class="detail-value" id="modal-service-name"></span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><span class="detail-label">Giá:</span> <span class="detail-value" id="modal-service-price"></span></p>
+                        </div>
+                        <div class="col-md-12">
+                            <p><span class="detail-label">Chi tiết:</span> <span class="detail-value" id="modal-service-description"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Info Section -->
+                <div class="detail-section mt-4">
+                    <h5 class="mb-3"><i class="fas fa-credit-card me-2"></i>Thông tin thanh toán</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Phương thức thanh toán:</span> <span class="detail-value" id="modal-payment-method"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Mã giao dịch:</span> <span class="detail-value" id="modal-transaction-id"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Trạng thái thanh toán:</span> <span class="status-badge" id="modal-payment-status"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Giao dịch:</span> <span class="detail-value" id="modal-payment-price"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><span class="detail-label">Ngày thanh toán:</span> <span class="detail-value" id="modal-payment-date"></span></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Appointment detail modal handler
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('appointmentDetailModal');
+
+        if (!modal) return;
+
+        // Updated map for appointment status text and classes based on the enum order
+        const statusMap = {
+            // Numeric enum values (0-based index)
+            0: { text: "Chờ thanh toán", class: "status-awaitingpayment" },
+            1: { text: "Chờ xác nhận", class: "status-pending" },
+            2: { text: "Thanh toán thất bại", class: "status-expired" },           // Expired
+            3: { text: "Đã xác nhận", class: "status-confirmed" },      // Confirmed
+            4: { text: "Dời lịch", class: "status-rescheduled" },      // Rescheduled
+            5: { text: "Đã hủy", class: "status-cancelled" },          // Cancelled
+            6: { text: "Từ chối", class: "status-rejected" },          // Rejected
+            7: { text: "Hoàn thành", class: "status-completed" },      // Completed
+
+            // String enum values
+            "AwaitingPayment": { text: "Chờ thanh toán", class: "status-awaitingpayment" },
+            "Pending": { text: "Chờ xác nhận", class: "status-pending" },
+            "Expired": { text: "Thanh toán thất bại", class: "status-expired" },
+            "Confirmed": { text: "Đã xác nhận", class: "status-confirmed" },
+            "Rescheduled": { text: "Dời lịch", class: "status-rescheduled" },
+            "Cancelled": { text: "Đã hủy", class: "status-cancelled" },
+            "Rejected": { text: "Từ chối", class: "status-rejected" },
+            "Completed": { text: "Hoàn thành", class: "status-completed" }
+        };
+
+        // Payment Status Map
+        const paymentStatusMap = {
+            0: { text: "Chờ xử lý", class: "payment-pending" },
+            1: { text: "Thành công", class: "payment-completed" },
+            2: { text: "Thất bại", class: "payment-failed" },
+            "Pending": { text: "Chờ thanh toán", class: "payment-pending" },
+            "Completed": { text: "Đã thanh toán", class: "payment-completed" },
+            "Failed": { text: "Thanh toán thất bại", class: "payment-failed" }
+        };
+
+        // Format address helper function
+        function formatAddress(provider) {
+            if (!provider) return "Không có thông tin";
+
+            const parts = [
+                provider.address,
+                provider.ward,
+                provider.district,
+                provider.province
+            ].filter(Boolean);
+
+            return parts.length > 0 ? parts.join(", ") : "Không có địa chỉ";
+        }
+
+        // Format currency helper function
+        function formatCurrency(amount) {
+            return amount != null
+                ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)
+                : "Chưa có thông tin";
+        }
+
+        // Handle modal open event
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const rawJson = button.getAttribute('data-appointment');
+
+            if (!rawJson) {
+                console.error("No appointment data found on the button");
+                return;
+            }
+
+            try {
+                // Parse appointment data
+                const data = JSON.parse(rawJson);
+                console.log("📅 Appointment data:", data);
+
+                // ===== Basic Appointment Info =====
+                document.getElementById('modal-appointment-id').innerText =
+                    `${(data.id ?? 0)}`;
+
+                // Format date nicely
+                const appointmentDate = new Date(data.date);
+                const formattedDate = `${appointmentDate.toLocaleDateString('vi-VN')} ${appointmentDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`;
+                document.getElementById('modal-appointment-date').innerText = formattedDate;
+
+
+                // ===== Status =====
+                const statusEl = document.getElementById('modal-appointment-status');
+                const statusKey = data.status?.toString();
+                const statusInfo = statusMap[statusKey] || { text: statusKey, class: "status-pending" };
+
+                statusEl.className = `status-badge ${statusInfo.class}`;
+                statusEl.innerText = statusInfo.text;
+
+                // ===== Provider Information =====
+                // Determine provider type (handle both numeric and string enum)
+                let providerType;
+                if (typeof data.providerType === 'number') {
+                    providerType = data.providerType === 0 ? "professional" : "facility";
+                } else {
+                    providerType = (data.providerType || "").toString().toLowerCase();
+                }
+
+                console.log("👨‍⚕️ Provider type:", providerType, "Original:", data.providerType);
+
+                // Set default display states
+                document.getElementById('modal-provider-phone-group').style.display = "none";
+                document.getElementById('modal-provider-email-group').style.display = "none";
+                document.getElementById('modal-provider-expertise-group').style.display = "none";
+                document.getElementById('modal-provider-experience-group').style.display = "none";
+                document.getElementById('modal-facility-departments-group').style.display = "none";
+
+                // Handle Professional
+                if (providerType === "professional" && data.professional) {
+                    const professional = data.professional;
+                    console.log("👨‍⚕️ Professional data:", professional);
+
+                    // Update section title and icon
+                    document.getElementById('modal-provider-section-title').innerText = "Thông tin bác sĩ";
+                    document.getElementById('modal-provider-icon').className = "fas fa-user-md me-2";
+
+                    // Set professional details
+                    document.getElementById('modal-provider-name').innerText =
+                        professional.fullName || "Không có thông tin";
+                    document.getElementById('modal-provider-address').innerText =
+                        formatAddress(professional);
+
+                    // Show professional-specific fields
+                    if (professional.phoneNumber) {
+                        document.getElementById('modal-provider-phone-group').style.display = "";
+                        document.getElementById('modal-provider-phone').innerText = professional.phoneNumber;
+                    }
+
+                    if (professional.email) {
+                        document.getElementById('modal-provider-email-group').style.display = "";
+                        document.getElementById('modal-provider-email').innerText = professional.email;
+                    }
+
+                    if (professional.expertiseName) {
+                        document.getElementById('modal-provider-expertise-group').style.display = "";
+                        document.getElementById('modal-provider-expertise').innerText = professional.expertiseName;
+                    }
+
+                    if (professional.experience) {
+                        document.getElementById('modal-provider-experience-group').style.display = "";
+                        document.getElementById('modal-provider-experience').innerText = professional.experience;
+                    }
+
+                    // Set image
+                    const img = document.getElementById('modal-provider-img');
+                    if (professional.imgUrl) {
+                        img.src = professional.imgUrl;
+                        img.style.display = "block";
+                    } else {
+                        img.src = "/images/doctor-placeholder.png"; // Fallback image
+                        img.style.display = "block";
+                    }
+                }
+                // Handle Facility
+                else if (providerType === "facility" && data.facility) {
+                    const facility = data.facility;
+                    console.log("🏥 Facility data:", facility);
+
+                    // Update section title and icon
+                    document.getElementById('modal-provider-section-title').innerText = "Thông tin cơ sở y tế";
+                    document.getElementById('modal-provider-icon').className = "fas fa-hospital me-2";
+
+                    // Set facility details
+                    document.getElementById('modal-provider-name').innerText =
+                        facility.name || "Không có thông tin";
+                    document.getElementById('modal-provider-address').innerText =
+                        formatAddress(facility);
+
+                    // Show facility departments if available
+                    if (facility.departmentNames && facility.departmentNames.length > 0) {
+                        document.getElementById('modal-facility-departments-group').style.display = "";
+                        document.getElementById('modal-facility-departments').innerText =
+                            facility.departmentNames.join(", ");
+                    }
+
+                    // Set image
+                    const img = document.getElementById('modal-provider-img');
+                    if (facility.imgUrl) {
+                        img.src = facility.imgUrl;
+                        img.style.display = "block";
+                    } else {
+                        img.src = "/images/hospital-placeholder.png"; // Fallback image
+                        img.style.display = "block";
+                    }
+                }
+                else {
+                    console.warn("⚠️ Provider data is missing or incomplete", {
+                        providerType: data.providerType,
+                        professional: data.professional,
+                        facility: data.facility
+                    });
+
+                    document.getElementById('modal-provider-name').innerText = "Không có thông tin";
+                    document.getElementById('modal-provider-address').innerText = "Không có địa chỉ";
+
+                    // Hide the provider image
+                    const img = document.getElementById('modal-provider-img');
+                    img.src = "/images/placeholder.png";
+                    img.style.display = "block";
+                }
+
+                // ===== Service Information =====
+                if (data.service) {
+                    document.getElementById('modal-service-name').innerText =
+                        data.service.name || "Không có thông tin";
+                    document.getElementById('modal-service-description').innerText =
+                        data.service.description || "Không có mô tả";
+                    document.getElementById('modal-service-price').innerText =
+                        formatCurrency(data.service.price);
+                } else {
+                    document.getElementById('modal-service-name').innerText = "Không có thông tin";
+                    document.getElementById('modal-service-description').innerText = "Không có mô tả";
+                    document.getElementById('modal-service-price').innerText = "Không có thông tin";
+                }
+
+                // ===== Payment Information =====
+                const paymentSection = document.querySelector('.detail-section:has(.fa-credit-card)');
+
+                // Check if payment data exists
+                if (data.payment) {
+                    const payment = data.payment;
+                    console.log("💰 Payment data:", payment);
+
+                    if (paymentSection) paymentSection.style.display = "";
+
+                    // Payment Method
+                    document.getElementById('modal-payment-method').innerText =
+                        payment.paymentMethod || "Không có thông tin";
+
+                    // Transaction ID
+                    document.getElementById('modal-transaction-id').innerText =
+                        payment.transactionId || "Chưa có";
+
+                    // Payment Status
+                    const paymentStatusEl = document.getElementById('modal-payment-status');
+                    const paymentStatusKey = payment.paymentStatus?.toString();
+                    const paymentStatusInfo = paymentStatusMap[paymentStatusKey] || { text: "Không xác định", class: "payment-pending" };
+
+                    paymentStatusEl.className = `status-badge ${paymentStatusInfo.class}`;
+                    paymentStatusEl.innerText = paymentStatusInfo.text;
+
+                    // Add Pay Now button if payment is pending
+                    const paymentActionsDiv = document.getElementById('modal-payment-actions');
+                    if (paymentActionsDiv && payment.paymentStatus === 0 && payment.paymentUrl) {
+                        paymentActionsDiv.innerHTML = `
+                                <a href="${payment.paymentUrl}" class="btn btn-sm btn-success mt-2">
+                                    <i class="fas fa-credit-card me-1"></i>Thanh toán ngay
+                                </a>
+                            `;
+                        paymentActionsDiv.style.display = "";
+                    } else if (paymentActionsDiv) {
+                        paymentActionsDiv.style.display = "none";
+                    }
+
+                    // Price
+                    document.getElementById('modal-payment-price').innerText =
+                        formatCurrency(payment.price);
+
+                    // Payment Date
+                    if (payment.paymentDate) {
+                        const paymentDate = new Date(payment.paymentDate);
+                        document.getElementById('modal-payment-date').innerText =
+                            paymentDate.toLocaleString('vi-VN');
+                    } else {
+                        document.getElementById('modal-payment-date').innerText = "Chưa thanh toán";
+                    }
+                } else {
+                    // If there's no payment data, hide the entire payment section
+                    if (paymentSection) paymentSection.style.display = "none";
+                }
+            } catch (error) {
+                console.error("Error parsing or displaying appointment data:", error);
+            }
+        });
+
+        // Add padLeft polyfill if needed
+        if (!String.prototype.padLeft) {
+            String.prototype.padLeft = function (length, char) {
+                return Array(Math.max(0, length - this.length) + 1).join(char || '0') + this;
+            };
+        }
+    });
+
+    function previewProfileImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.querySelector('.profile-image-preview').src = e.target.result;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

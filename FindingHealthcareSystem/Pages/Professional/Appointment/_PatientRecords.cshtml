@@ -1,0 +1,126 @@
+﻿@model Pages.Professional.Appointment.IndexModel
+<div class="card border-0 rounded-3 shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="card-title m-0">Bệnh nhân gần đây</h5>
+        <a href="#" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+    </div>
+    <div class="card-body" style="height: auto;">
+        <div class="table">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã BN</th>
+                        <th>Bệnh nhân</th>
+                        <th>Lần khám gần nhất</th>
+                        <th>Chẩn đoán</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PatientRecently != null)
+                    {
+                        foreach (var item in Model.PatientRecently)
+                        {
+                            <tr>
+                                <td><span class="badge bg-light text-dark" style="width: 50px;">@item.Patient.Id</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="bi bi-person text-secondary"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <div class="fw-medium">@item.Patient.User.Fullname</div>
+                                            <small class="text-muted">@item.Age | @item.Patient.User.Gender</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@item.Date</td>
+                                <td>
+                                    <div style="text-overflow: ellipsis; width: 200px;white-space: nowrap;">
+                                        @item.Description
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="custom-dropdown">
+                                        <button class="custom-dropdown-toggle" type="button">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="custom-dropdown-menu">
+                                            <li>
+                                                <a class="custom-dropdown-item" id="patient-record"
+                                                   data-id="@item.Id"
+                                                   data-servicetype="@item.ServiceType">
+                                                    <i class="bi bi-file-earmark-medical me-2"></i>Hồ sơ bệnh án
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="custom-dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="custom-dropdown-item custom-dropdown-warning" href="#">
+                                                    <i class="bi bi-exclamation-triangle me-2"></i>Báo cáo
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <button class="paging-btn" disabled="@(Model.CurrentPage == 1)" id="previousPage" data-page="@(Model.CurrentPage - 1)">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <input class="input-page" value="@Model.CurrentPage" />
+            <button class="paging-btn" id="nextPage" data-page="@(Model.CurrentPage + 1)" disabled="@(Model.CurrentPage >= Model.MaxPage)">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="patientRecordModal" tabindex="-1" aria-labelledby="patientRecordModal" style="overflow: hidden;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin chi tiết</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="edit-body" style="height: auto;">
+                <div class="patient-info">
+                    <div class="patient-avatar">
+                    </div>
+                    <div class="patient-details">
+                        <div>
+                            <div class="patient-name"></div>
+                            <div class="patient-genderAge"></div>
+                        </div>
+                        <div>
+                            <div class="d-flex gap-1">
+                                <i class="bi bi-envelope-at"></i>
+                                <div class="patient-email"></div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <i class="bi bi-telephone"></i>
+                                <div class="patient-phone"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">Thông tin khác</div>
+                    <div class="mt-3">
+                        <div class="edit-line">
+                            <label>Tiền sử bệnh lý</label>
+                            <label class="patient-note"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/patientrecords.js"></script>

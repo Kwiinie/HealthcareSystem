@@ -1,0 +1,158 @@
+﻿@page "/professional/{id}"
+@model FindingHealthcareSystem.Pages.Professional.DetailModel
+@{
+}
+@using Newtonsoft.Json
+@using BusinessObjects.Dtos.User
+@{
+    var currentUserJson = HttpContext.Session.GetString("User");
+    GeneralUserDto currentUser = null;
+
+    if (!string.IsNullOrEmpty(currentUserJson))
+    {
+        currentUser = JsonConvert.DeserializeObject<GeneralUserDto>(currentUserJson);
+    }
+}
+<!------------------------------------------------------------------------------------------!>
+<!--                           VIEW DETAIL OF A PROFESSIONAL                              --!>
+<!------------------------------------------------------------------------------------------!>
+<div class="container mt-10">
+    <div class="row justify-content-center">
+        <div class="col">
+            <!-- Profile Section -->
+<div class="profile-card">
+    <div class="profile-header">
+        <div class="row">
+                        @if (Model.Professional != null)
+                        {
+                <div class="col-md-3 text-center">
+                                @if (Model.Professional.ImgUrl != null && !string.IsNullOrEmpty(Model.Professional.ImgUrl))
+                                {
+                        <img src="@Model.Professional.ImgUrl" alt="Professional Photo" class="profile-img">
+                                }
+                                else
+                                {
+                        <img src="https://static.vecteezy.com/system/resources/previews/041/408/858/non_2x/ai-generated-a-smiling-doctor-with-glasses-and-a-white-lab-coat-isolated-on-transparent-background-free-png.png" alt="Professional Photo" class="profile-img">
+                                }
+                </div>
+                <div class="col-md-9">
+                    <h2 id="fullName">@Model.Professional.FullName</h2>
+                    <h5 class="text-primary" id="expertiseName">@Model.Professional.ExpertiseName</h5>
+                    <div class="mt-3">
+                        <div id="specialties">
+                                        @foreach (var specialty in Model.Professional.Specialties)
+                                        {
+                                <span class="expertise-badge">@specialty</span>
+                                        }
+                        </div>
+                    </div>
+                </div>
+                        }
+        </div>
+    </div>
+
+    <div class="profile-info">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-4">
+                    <div class="info-label">Thông tin liên hệ</div>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <span id="email">@Model.Professional.Email</span>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <span id="phoneNumber">@Model.Professional.PhoneNumber</span>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-venus-mars contact-icon"></i>
+                        <span id="gender">@Model.Professional.Gender</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="info-label">Địa chỉ</div>
+                    <p>
+                        <i class="fas fa-map-marker-alt location-icon"></i>
+                        <span id="address">@Model.Professional.Address, @Model.Professional.Ward, @Model.Professional.District, @Model.Professional.Province</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-4">
+                    <div class="info-label">Học vị</div>
+                    <p id="degree">@Model.Professional.Degree</p>
+                </div>
+
+                <div class="mb-4">
+                    <div class="info-label">Kinh nghiệm</div>
+                    <p id="experience">@Model.Professional.Experience</p>
+                </div>
+
+                <div class="mb-4">
+                    <div class="info-label">Giờ làm việc</div>
+                    <p id="workingHours">@Model.Professional.WorkingHours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Section -->
+<div class="profile-card">
+    <div class="profile-info">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="section-title">Dịch vụ</h3>
+        </div>
+
+        <div id="servicesContainer">
+                        @if (Model.Professional.PrivateServices != null && Model.Professional.PrivateServices.Any())
+                        {
+                            @foreach (var service in Model.Professional.PrivateServices)
+                            {
+                    <div class="service-card">
+                        <div class="service-header">
+                            <h5>@service.Name</h5>
+                            <span class="service-price">@service.Price</span>
+                        </div>
+                        <p>@service.Description</p>
+                    </div>
+                            }
+                        }
+                        else
+                        {
+                <div class="alert alert-info">
+                    Chuyên gia chưa cung cấp dịch vụ nào.
+                </div>
+                        }
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="javascript:history.back()" class="btn btn-secondary me-2"><i class="fas fa-arrow-left"></i> Quay lại</a>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButtons = document.querySelectorAll(".edit-service-btn");
+
+        editButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                // Lấy dữ liệu từ button
+                const serviceId = this.getAttribute("data-id");
+                const serviceName = this.getAttribute("data-name");
+                const servicePrice = this.getAttribute("data-price");
+                const serviceDescription = this.getAttribute("data-description");
+
+                // Gán dữ liệu vào input của modal
+                document.getElementById("editServiceId").value = serviceId;
+                document.getElementById("editServiceName").value = serviceName;
+                document.getElementById("editServicePrice").value = servicePrice;
+                document.getElementById("editServiceDescription").value = serviceDescription;
+            });
+        });
+    });
+</script>

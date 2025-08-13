@@ -1,0 +1,89 @@
+﻿@page "admin/facility/service/edit/{serviceid}"
+@model FindingHealthcareSystem.Pages.Admin.Facility.Service.EditModel
+@{
+}
+<div class="container mt-4">
+    <h1>Quản lý dịch vụ</h1>
+
+    <!-- Edit Service Modal -->
+    <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editServiceModalLabel">Chỉnh sửa dịch vụ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editServiceForm" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="FacilityId" id="editFacilityId" />
+                        <input type="hidden" asp-for="ServiceId" id="editServiceId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Service.Name" class="form-label">Tên dịch vụ</label>
+                            <input type="text" class="form-control" asp-for="Service.Name" id="editServiceName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Service.Price" class="form-label">Giá (VNĐ)</label>
+                            <input type="number" class="form-control" asp-for="Service.Price" id="editServicePrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Service.Description" class="form-label">Mô tả</label>
+                            <textarea class="form-control" asp-for="Service.Description" id="editServiceDescription" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger me-auto" id="deleteServiceBtn">Xóa dịch vụ</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let editServiceForm = document.getElementById("editServiceForm");
+        let deleteServiceBtn = document.getElementById("deleteServiceBtn");
+
+        editServiceForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            let formData = new FormData(editServiceForm);
+
+            fetch("/your-endpoint-to-edit-service", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Cập nhật thành công!");
+                    location.reload();
+                } else {
+                    alert("Lỗi: " + data.message);
+                }
+            })
+            .catch(error => console.error("Lỗi khi gửi dữ liệu:", error));
+        });
+
+        deleteServiceBtn.addEventListener("click", function () {
+            if (confirm("Bạn có chắc muốn xóa dịch vụ này không?")) {
+                let serviceId = document.getElementById("editServiceId").value;
+                fetch(`/your-endpoint-to-delete-service/${serviceId}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Dịch vụ đã bị xóa!");
+                        location.reload();
+                    } else {
+                        alert("Lỗi: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Lỗi khi gửi dữ liệu:", error));
+            }
+        });
+    });
+</script>

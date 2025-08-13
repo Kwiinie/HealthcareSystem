@@ -1,0 +1,33 @@
+﻿@page "/admin/facility/create"
+@model FindingHealthcareSystem.Pages.Admin.Facility.CreateModel
+@{
+    ViewData["Title"] = "Create Facility";
+}
+
+<div class="container mt-4">
+    <h1>Create Facility</h1>
+    <form method="post">
+        <div class="mb-3">
+            <label asp-for="Facility.Name" class="form-label">Name</label>
+            <input asp-for="Facility.Name" class="form-control" />
+            <span asp-validation-for="Facility.Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Facility.TypeId" class="form-label">Type</label>
+            <select asp-for="Facility.TypeId" class="form-select">
+                @foreach (var type in Model.FacilityTypes)
+                {
+                    <option value="@type.Id">@type.Name</option>
+                }
+            </select>
+            <span asp-validation-for="Facility.TypeId" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Facility.Address" class="form-label">Address</label>
+            <input asp-for="Facility.Address" class="form-control" />
+            <span asp-validation-for="Facility.Address" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

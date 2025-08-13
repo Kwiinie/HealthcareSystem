@@ -1,0 +1,293 @@
+﻿@page "/admin/article/edit/{id:int}"
+@model FindingHealthcareSystem.Pages.Admin.Article.EditModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<!--------------------------------------------------------------------------------------------------------!>
+<!--                                        EDIT ARTICLE (ADMIN)                                        --!>
+<!--------------------------------------------------------------------------------------------------------!>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" /> <!--this for editing content of news-->
+<link rel="stylesheet" href="~/css/detailArticle.css" />
+<div class="container mt-10">
+    <div class="col-12">
+        @if (!string.IsNullOrEmpty(Model.StatusMessage))
+        {
+            var statusMessageClass = Model.StatusMessage.StartsWith("Error") ? "alert-danger" : "alert-success";
+            <div class="alert @statusMessageClass alert-dismissible fade show" role="alert">
+                @Model.StatusMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="article-form-container">
+            <h2>Chỉnh sửa bài báo</h2>
+
+            <!-- Article Form -->
+            <form id="articleForm" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Article.Id" />
+
+                <!-- Hidden fields for image operations -->
+                <input type="hidden" asp-for="ImageAction" id="imageAction" />
+                <input type="hidden" asp-for="ImageUrl" id="imageUrl" />
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label asp-for="Article.Title" class="form-label">Tiêu đề</label>
+                            <input type="text" class="form-control" asp-for="Article.Title" placeholder="Enter article title">
+                            <span asp-validation-for="Article.Title" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Article.CategoryId" class="form-label">Thể loại</label>
+                            <select class="form-select" asp-for="Article.CategoryId">
+                                <option value="">Chọn thể loại</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id" selected="@(Model.Article.CategoryId == category.Id)">@category.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Article.CategoryId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label class="form-label">Nội dung</label>
+                    <div class="editor-container">
+                        <div id="editor">
+                            @Html.Raw(Model.Article.Content)
+                        </div>
+                        <input type="hidden" asp-for="Article.Content" id="articleContent" />
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Ảnh chính</label>
+                            <div class="image-upload-area" id="mainImageUpload">
+                                <div class="image-upload-icon">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                <h5>Tải ảnh chính</h5>
+                                <p class="text-muted">Định dạng: JPG, JPEG, PNG (Max: 5MB)</p>
+                                <input type="file" asp-for="MainImageFile" accept="image/*" class="d-none">
+                            </div>
+                            <div id="mainImagePreview" class="mt-2"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ảnh khác</label>
+                            <div class="image-upload-area" id="galleryImageUpload">
+                                <div class="image-upload-icon">
+                                    <i class="fas fa-images"></i>
+                                </div>
+                                <h5>Tải ảnh thư viện</h5>
+                                <p class="text-muted">Định dạng: JPG, JPEG, PNG (Max: 5MB)</p>
+                                <input type="file" asp-for="GalleryImageFiles" multiple accept="image/*" class="d-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Images -->
+                    <h5 class="mt-4">Ảnh hiện tại</h5>
+                    <div class="image-preview-container">
+                        @if (!string.IsNullOrEmpty(Model.Article.ImgUrl))
+                        {
+                            <div class="image-preview-item">
+                                <img src="@Model.Article.ImgUrl" alt="Main article image">
+                                <span class="badge bg-primary">Main Image</span>
+                            </div>
+                        }
+
+                        @if (Model.Article.ImgUrls != null)
+                        {
+                            @foreach (var imgUrl in Model.Article.ImgUrls)
+                            {
+                                <div class="image-preview-item">
+                                    <img src="@imgUrl" alt="Gallery image">
+                                    <div class="image-actions">
+                                        <button type="button" class="btn btn-sm btn-primary"
+                                                onclick="setMainImage('@Model.Article.Id', '@imgUrl')">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                                onclick="deleteImage('@Model.Article.Id', '@imgUrl')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <!-- New Image Previews (Populated via JavaScript) -->
+                    <div class="mt-4">
+                        <h5>Ảnh mới</h5>
+                        <div class="image-preview-container" id="newImagePreviewContainer">
+                            <!-- New image previews will be added here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons mt-4">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                    <a asp-page="/Admin/Article/Index" class="btn btn-outline-danger">Huỷ bỏ</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script>
+        document.getElementById('articleForm').addEventListener('submit', function (e) {
+            // Only run normal form validation if this is not an image operation
+            const imageAction = document.getElementById('imageAction').value;
+            if (!imageAction) {
+                console.log('Form is submitting with content update!');
+                // Update the content from Quill editor
+                var contentInput = document.getElementById('articleContent');
+                var quill = Quill.find(document.getElementById('editor'));
+                contentInput.value = quill.root.innerHTML;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Debug function to check elements
+            function checkElement(id) {
+                const element = document.getElementById(id);
+                console.log(`Element "${id}" exists: ${element !== null}`);
+                return element;
+            }
+
+            // Check critical elements
+            checkElement('mainImageUpload');
+            checkElement('mainImagePreview');
+            checkElement('galleryImageUpload');
+            checkElement('newImagePreviewContainer');
+            console.log('MainImageFile input:', document.querySelector('input[name="MainImageFile"]'));
+            console.log('GalleryImageFiles input:', document.querySelector('input[name="GalleryImageFiles"]'));
+            // Initialize Quill editor
+            var quill = new Quill('#editor', {
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['blockquote', 'code-block'],
+                        ['link', 'image'],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Write your article content here...',
+                theme: 'snow'
+            });
+
+            // Main Image Upload Functionality
+            const mainImageUpload = document.getElementById('mainImageUpload');
+            const mainImageInput = document.querySelector('input[name="MainImageFile"]');
+            const mainImagePreview = document.getElementById('mainImagePreview');
+
+            if (mainImageUpload && mainImageInput && mainImagePreview) {
+                mainImageUpload.addEventListener('click', function () {
+                    mainImageInput.click();
+                });
+
+                // Show main image preview when file is selected
+                mainImageInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+
+                    // Clear previous preview
+                    mainImagePreview.innerHTML = '';
+
+                    if (file) {
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'main-image-preview';
+                            previewItem.style.marginTop = '10px';
+
+                            previewItem.innerHTML = `
+                                        <img src="${e.target.result}" alt="Main image preview"
+                                             style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <div class="badge bg-primary mt-2">Main Image</div>
+                                    `;
+
+                            mainImagePreview.appendChild(previewItem);
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                });
+            } else {
+                console.warn('One or more main image elements not found');
+            }
+
+            // Gallery Images Upload Functionality
+            const galleryImageUpload = document.getElementById('galleryImageUpload');
+            const galleryImageInput = document.querySelector('input[name="GalleryImageFiles"]');
+            const newImagePreviewContainer = document.getElementById('newImagePreviewContainer');
+
+            if (galleryImageUpload && galleryImageInput && newImagePreviewContainer) {
+                galleryImageUpload.addEventListener('click', function () {
+                    galleryImageInput.click();
+                });
+
+                // Show gallery image previews when files are selected
+                galleryImageInput.addEventListener('change', function (e) {
+                    const files = e.target.files;
+
+                    // Clear previous previews
+                    newImagePreviewContainer.innerHTML = '';
+
+                    if (files && files.length > 0) {
+                        for (let i = 0; i < files.length; i++) {
+                            const file = files[i];
+                            const reader = new FileReader();
+
+                            reader.onload = function (e) {
+                                const previewItem = document.createElement('div');
+                                previewItem.className = 'image-preview-item new-image';
+
+                                previewItem.innerHTML = `
+                                            <img src="${e.target.result}" alt="Gallery image preview">
+                                            <div class="image-number">#${i + 1}</div>
+                                        `;
+
+                                newImagePreviewContainer.appendChild(previewItem);
+                            };
+
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+            } else {
+                console.warn('One or more gallery image elements not found');
+            }
+        });
+
+        // Functions for image operations
+        function deleteImage(articleId, imageUrl) {
+            document.getElementById('imageAction').value = 'delete';
+            document.getElementById('imageUrl').value = imageUrl;
+            document.getElementById('articleForm').submit();
+        }
+
+        function setMainImage(articleId, imageUrl) {
+            document.getElementById('imageAction').value = 'setMain';
+            document.getElementById('imageUrl').value = imageUrl;
+            document.getElementById('articleForm').submit();
+        }
+    </script>
+}

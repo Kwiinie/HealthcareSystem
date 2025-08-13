@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AppName</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="~/css/doctorlayout.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <div class="top-bar shadow-sm">
+            <div class="d-flex align-items-center">
+                <button class="menu-toggle me-3" id="menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <a href="/" class="text-decoration-none text-dark fw-bold d-flex align-items-center">
+                    <i class="bi bi-house-door me-2"></i> Back to home
+                </a>
+            </div>
+
+            <div class="search-bar d-none d-md-block">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" placeholder="Tìm kiếm...">
+            </div>
+
+            <div class="user-dropdown dropdown">
+                <a href="#" class="dropdown-toggle text-decoration-none d-flex align-items-center text-dark" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <span class="ms-2 d-none d-md-inline">Bác sĩ Nguyễn</span>
+                    <i class="bi bi-chevron-down ms-2 small"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle"></i> Hồ sơ</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Cài đặt</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-container">
+                <a href="#" class="logo text-decoration-none">
+                    <i class="bi bi-hospital"></i>
+                    <span>MedSystem</span>
+                </a>
+            </div>
+
+            <div class="menu-container">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Lịch hẹn</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="patientPart">
+                            <i class="bi bi-people"></i>
+                            <span>Bệnh nhân</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-file-earmark-medical"></i>
+                            <span>Hồ sơ bệnh án</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-graph-up"></i>
+                            <span>Thống kê</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-person-badge"></i>
+                            <span>Thông tin cá nhân</span>
+                        </a>
+                    </li>
+
+                    <div class="category-title">Dịch vụ</div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-clipboard2-pulse"></i>
+                            <span>Dịch vụ tư</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-building"></i>
+                            <span>Cơ sở y tế</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        @RenderBody()
+    </div>
+    @RenderSection("Scripts", required: false)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
+    <script src="~/js/doctorlayout.js"></script>
+</body>
+</html>

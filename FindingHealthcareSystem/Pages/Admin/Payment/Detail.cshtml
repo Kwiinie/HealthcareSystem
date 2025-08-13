@@ -1,0 +1,163 @@
+﻿@page "/admin/payment/detail/{id:int}"
+@model FindingHealthcareSystem.Pages.Admin.Payment.DetailModel
+@{
+    ViewData["Title"] = "Payment Details";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-10">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Payment Details</h2>
+        <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th>ID:</th>
+                                <td>@Model.Payment.Id</td>
+                            </tr>
+                            <tr>
+                                <th>Payment Date:</th>
+                                <td>@(Model.Payment.PaymentDate?.ToString("dd/MM/yyyy HH:mm") ?? "Not Paid")</td>
+                            </tr>
+                            <tr>
+                                <th>Payment Method:</th>
+                                <td>@(Model.Payment.PaymentMethod ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Transaction ID:</th>
+                                <td>@(Model.Payment.TransactionId ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Amount:</th>
+                                <td>@(Model.Payment.Price?.ToString("N0")) VND</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    @switch (Model.Payment.PaymentStatus)
+                                    {
+                                        case BusinessObjects.Enums.PaymentStatus.Pending:
+                                            <span class="badge bg-warning">Pending</span>
+                                            break;
+                                        case BusinessObjects.Enums.PaymentStatus.Completed:
+                                            <span class="badge bg-success">Completed</span>
+                                            break;
+                                        case BusinessObjects.Enums.PaymentStatus.Failed:
+                                            <span class="badge bg-danger">Failed</span>
+                                            break;
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Created At:</th>
+                                <td>@Model.Payment.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(Model.Payment.PaymentUrl))
+                            {
+                                <tr>
+                                    <th>Payment URL:</th>
+                                    <td>
+                                        <a href="@Model.Payment.PaymentUrl" target="_blank" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-external-link-alt me-1"></i> Open Payment URL
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Appointment != null)
+        {
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Appointment Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>ID:</th>
+                                    <td>@Model.Appointment.Id</td>
+                                </tr>
+                                <tr>
+                                    <th>Appointment Date:</th>
+                                    <td>@(Model.Appointment.Date.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <th>Service Type:</th>
+                                    <td>
+                                        @(Model.Appointment.ServiceType == BusinessObjects.Enums.ServiceType.Public
+                                            ? "Public Service" : "Private Service")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        @switch (Model.Appointment.Status)
+                                        {
+                                            case BusinessObjects.Enums.AppointmentStatus.Pending:
+                                                <span class="badge bg-warning">Pending</span>
+                                                break;
+                                            case BusinessObjects.Enums.AppointmentStatus.Confirmed:
+                                                <span class="badge bg-info">Confirmed</span>
+                                                break;
+                                            case BusinessObjects.Enums.AppointmentStatus.Completed:
+                                                <span class="badge bg-success">Completed</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">Unknown</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Patient:</th>
+                                    <td>@(Model.Appointment.Patient.User.Fullname ?? "-")</td>
+                                </tr>
+                                @if (Model.Appointment.ProviderType != null)
+                                {
+                                    <tr>
+                                        <th>Facility/Professional Name:</th>
+										<td>@Model.Appointment.ProviderType</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Facility/Professional Id:</th>
+                                        <td>@Model.Appointment.ProviderId</td>
+                                    </tr>
+                                }
+                                @if (Model.Appointment.ServiceType != null)
+                                {
+                                    <tr>
+                                        <th>Service Type:</th>
+                                        <td>@Model.Appointment.ServiceType</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Service Id:</th>
+										<td>@Model.Appointment.ServiceId</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <th>Description:</th>
+                                    <td>@(Model.Appointment.Description ?? "-")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

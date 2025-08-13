@@ -1,0 +1,164 @@
+﻿@page "/admin/article"
+@model FindingHealthcareSystem.Pages.Admin.Article.IndexModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<link rel="stylesheet" href="/css/article.css" />
+
+<div class="container mt-10">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center">Bài viết</h1>
+            
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                var statusMessageClass = Model.StatusMessage.StartsWith("Error") || Model.StatusMessage.StartsWith("Lỗi") ? "alert-danger" : "alert-success";
+                <div class="alert @statusMessageClass alert-dismissible fade show" role="alert">
+                    @Model.StatusMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            
+            <div>
+                <div class="d-flex justify-content-center">
+                    <a href="/admin/article/create" class="btn btn-outline-primary col-2" id="btnNew">
+                        <i class="fas fa-plus me-2"></i> Tạo bài viết mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <form method="post" asp-page-handler="Search" class="card p-3">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="searchTerm" class="form-label">Tiêu đề</label>
+                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" value="@Model.SearchTerm" placeholder="Tìm kiếm theo tiêu đề...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="categoryId" class="form-label">Danh mục</label>
+                        <select class="form-select" id="categoryId" name="categoryId">
+                            <option value="">Tất cả danh mục</option>
+                            @foreach (var category in Model.Categories)
+                            {
+                                @* <option value="@category.Id" @(Model.CategoryId == category.Id ? "selected" : "")>@category.Name</option> *@
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="createdDate" class="form-label">Ngày tạo</label>
+                        <input type="date" class="form-control" id="createdDate" name="createdDate" value="@(Model.CreatedDate?.ToString("yyyy-MM-dd"))">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="article-grid">
+        @if (Model.Articles != null && Model.Articles.Any())
+        {
+            @foreach (var article in Model.Articles)
+            {
+                <!-- Article Card -->
+                <div class="article-card">
+                    <img src="@(string.IsNullOrEmpty(article.ImgUrl) ? "/img/DefaultNews.jpg" : article.ImgUrl)" alt="Article image" class="article-image">
+                    <div class="article-content">
+                        <h2 class="article-title">@article.Title</h2>
+                        <p class="article-text">@(article.Content?.Length > 100 ? article.Content.Substring(0, 100) + "..." : article.Content)</p>
+                        <div class="article-meta">
+                            <span class="article-category">@article.CategoryName</span>
+                            <span class="article-date">@article.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                            <span class="article-status @(article.IsDeleted ? "text-danger" : "text-success")">
+                                @(article.IsDeleted ? "Chưa xuất bản" : "Đã xuất bản")
+                            </span>
+                        </div>
+                        <div class="article-actions mt-3">
+                            <a asp-page="/admin/article/detail" asp-route-id="@article.Id" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                            <a asp-page="/admin/article/edit" asp-route-id="@article.Id" class="btn btn-outline-primary btn-sm">Chỉnh sửa</a>
+                            <form method="post" class="d-inline">
+                                <input type="hidden" name="articleId" value="@article.Id" />
+                                <input type="hidden" name="currentStatus" value="@article.IsDeleted" />
+                                <button type="submit" class="btn @(article.IsDeleted ? "btn-success" : "btn-warning") btn-sm ms-2">
+                                    @(article.IsDeleted ? "Xuất bản" : "Hủy xuất bản")
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center">Không có bài viết nào.</p>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Button -->
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <button type="submit" form="paginationForm" name="page" value="@(Model.CurrentPage - 1)" class="page-link">
+                                <span aria-hidden="true">&laquo;</span>
+                            </button>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <button type="submit" form="paginationForm" name="page" value="@i" class="page-link">@i</button>
+                            </li>
+                        }
+
+                        <!-- Next Button -->
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <button type="submit" form="paginationForm" name="page" value="@(Model.CurrentPage + 1)" class="page-link">
+                                <span aria-hidden="true">&raquo;</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+
+    <!-- Hidden form for pagination -->
+    <form id="paginationForm" method="post" asp-page-handler="Search">
+        <input type="hidden" id="pageSearchTerm" name="searchTerm" value="@Model.SearchTerm">
+        <input type="hidden" id="pageCategoryId" name="categoryId" value="@Model.CategoryId">
+        <input type="hidden" id="pageCreatedDate" name="createdDate" value="@(Model.CreatedDate?.ToString("yyyy-MM-dd"))">
+    </form>
+</div>
+
+<script>
+    // Script to update hidden form values when submitting pagination
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get values from the search form
+        const searchForm = document.querySelector('form[asp-page-handler="Search"]');
+        const paginationForm = document.getElementById('paginationForm');
+
+        // When clicking on pagination buttons, update hidden form values
+        const updateHiddenForm = function() {
+            document.getElementById('pageSearchTerm').value = document.getElementById('searchTerm').value;
+            document.getElementById('pageCategoryId').value = document.getElementById('categoryId').value;
+            document.getElementById('pageCreatedDate').value = document.getElementById('createdDate').value;
+        };
+
+        // Attach to pagination buttons
+        document.querySelectorAll('#paginationForm button').forEach(button => {
+            button.addEventListener('click', updateHiddenForm);
+        });
+    });
+</script>

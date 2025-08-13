@@ -1,0 +1,492 @@
+﻿@page "/admin/facility/{FacilityId}"
+@model FindingHealthcareSystem.Pages.Admin.Facility.DetailModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Chi tiết cơ sở y tế";
+
+}
+
+@using Newtonsoft.Json
+@using BusinessObjects.Dtos.User
+@{
+    var currentUserJson = HttpContext.Session.GetString("User");
+    GeneralUserDto currentUser = null;
+
+    if (!string.IsNullOrEmpty(currentUserJson))
+    {
+        currentUser = JsonConvert.DeserializeObject<GeneralUserDto>(currentUserJson);
+    }
+}
+<div class="container mt-10">
+    <div class="row justify-content-center">
+        <div class="col">
+            <!-- Facility Profile Section -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <!-- AUTHORIZATION REQUIRED !! -->
+                    @if (currentUser != null && currentUser.Role == "Admin")
+                    {
+                        <button class="btn btn-primary edit-button" data-bs-toggle="modal" data-bs-target="#editFacilityModal">
+                            <i class="fas fa-edit"></i> Chỉnh sửa thông tin
+                        </button>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <img src="@(string.IsNullOrEmpty(@Model.Facility.ImgUrl) ? "~/img/defaultFacility.jpg" : @Model.Facility.ImgUrl)"
+                                 alt="Facility Photo" class="profile-img">
+                        </div>
+                        <div class="col-md-9">
+                            <h2 id="facilityName">@Model.Facility.Name</h2>
+                            <h5 class="text-primary" id="facilityTypeName">@* @Model.Facility?.Type?.Name *@</h5>
+                            <div class="mt-3">
+                                <div id="departments">
+                                    @if (Model.Facility.FacilityDepartments != null)
+                                    {
+                                        foreach (var department in Model.Facility.FacilityDepartments)
+                                        {
+                                            <span class="expertise-badge">@department.Department.Name</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p>No departments available.</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <div class="info-label">Trạng thái</div>
+                                <div class="status-info">
+                                    @{
+                                        string statusClass = @Model.Facility.Status == BusinessObjects.Enums.FacilityStatus.Active ? "bg-success" : @Model.Facility.Status == BusinessObjects.Enums.FacilityStatus.Inactive ? "bg-warning" : "bg-danger";
+                                        string statusText = @Model.Facility.Status == BusinessObjects.Enums.FacilityStatus.Active ? "Đang hoạt động" : @Model.Facility.Status == BusinessObjects.Enums.FacilityStatus.Inactive ? "Tạm ngưng" : "Đóng cửa";
+                                    }
+                                    <span id="facilityStatus" class="badge @statusClass">@statusText</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="info-label">Địa chỉ</div>
+                                <p>
+                                    <i class="fas fa-map-marker-alt location-icon"></i>
+                                    <span id="address">@Model.Facility.Address, @Model.Facility.Ward, @Model.Facility.District, @Model.Facility.Province</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <div class="info-label">Ngày thành lập</div>
+                                <p id="operationDay">@Model.Facility.OperationDay</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="info-label">Mô tả</div>
+                                <p id="description">@Model.Facility.Description</p>
+                            </div>
+
+                            @* <div class="mb-4">
+                            <div class="info-label">Giờ làm việc</div>
+                            <p id="workingHours">@facility.</p>
+                            </div> *@
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section 2-->
+            <div class="profile-card">
+                <div class="profile-info">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="section-title">Dịch vụ</h3>
+
+                        <!-- AUTHORIZATION REQUIRED !! -->
+                        @if (currentUser != null && currentUser.Role == "Admin")
+                        {
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                                <i class="fas fa-plus"></i> Thêm dịch vụ
+                            </button>
+                        }
+                    </div>
+
+                    <div id="servicesContainer">
+                        @if (Model.Services != null && Model.Services.Any())
+                        {
+                            @foreach (var service in Model.Services)
+                            {
+                                @if (service.IsDeleted != true)
+                                {
+                                    <div class="service-card">
+                                        <div class="service-header">
+                                            <h5>@service.Name</h5>
+                                            <span class="service-price">@service.Price VND</span>
+                                        </div>
+                                        <p>@service.Description</p>
+
+                                        <!-- AUTHORIZATION REQUIRED !! -->
+                                        <div class="d-flex justify-content-between">
+                                            @if (currentUser != null && currentUser.Role == "Admin")
+                                            {
+                                                <button class="btn btn-sm btn-outline-primary edit-service-btn"
+                                                        data-id="@service.Id"
+                                                        data-name="@service.Name"
+                                                        data-price="@service.Price"
+                                                        data-description="@service.Description"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editServiceModal">
+                                                    <i class="fas fa-edit"></i> Chỉnh sửa
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12 text-center mt-3">
+                                <p>Chưa có dịch vụ nào được thêm.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Edit Facility Modal -->
+<div class="modal fade" id="editFacilityModal" tabindex="-1" aria-labelledby="editFacilityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFacilityModalLabel">Chỉnh sửa thông tin cơ sở y tế</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editFacilityForm" method="post" asp-page-handler="EditFacility" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" asp-for="FacilityId" value="@Model.FacilityId" />
+                    <div class="row mb-3">
+                        <!-- Profile Image Upload -->
+                        <div class="col-md-12 mb-3 text-center">
+                            <div class="profile-image-container">
+                                @if (!string.IsNullOrEmpty(Model.Facility.ImgUrl))
+                                {
+                                    <img src="@Model.Facility.ImgUrl" alt="Profile Picture" class="profile-image-preview rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <img src="/images/DefaultFacility.jpg" alt="Patient Photo" class="profile-img">
+                                }
+                            </div>
+                            <div class="mt-2">
+                                <label for="profileImageUpload" class="btn btn-outline-primary">
+                                    <i class="fas fa-upload me-2"></i>Tải ảnh lên
+                                </label>
+                                <input id="profileImageUpload" name="ProfileImage" type="file" accept="image/*" class="d-none" onchange="previewProfileImage(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="@Model.Facility.Name" class="form-label">Tên cơ sở y tế</label>
+                            <input type="text" class="form-control" asp-for="@Model.Facility.Name" id="editFacilityName">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="@Model.Facility.TypeId" class="form-label">Loại cơ sở y tế</label>
+                            <select class="form-select" asp-for="@Model.Facility.TypeId" id="editFacilityType">
+                                <option value="1">Bệnh viện</option>
+                                <option value="2">Phòng khám</option>
+                                <option value="3">Trung tâm y tế</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <select id="departmentSelect" asp-for="Facility.DepartmentIds" multiple class="form-control">
+                        @foreach (var dept in Model.Departments)
+                        {
+                            <option value="@dept.Id" selected="@(Model.Facility.FacilityDepartments.Any(fd => fd.DepartmentId == dept.Id) ? "selected" : null)">
+                                @dept.Name
+                            </option>
+                        }
+                    </select>
+
+
+
+                    <!-- Address Section -->
+                    <div class="border rounded p-3 mt-4">
+                        <h4>Address</h4>
+                        <div class="row g-3">
+                            <!-- Province -->
+                            <div class="col-md-4">
+                                <label>Province</label>
+                                <select class="form-select" id="provinceDropdown" asp-for="@Model.Facility.Province">
+                                    <option value="">Chọn Tỉnh</option>
+                                    <option value="@Model.Facility.Province" selected>@Model.Facility.Province</option>
+                                </select>
+                            </div>
+
+                            <!-- District -->
+                            <div class="col-md-4">
+                                <label>Chọn Quận/Huyện</label>
+                                <select class="form-select" id="districtDropdown" asp-for="@Model.Facility.District" disabled>
+                                    <option value="">Chọn Thành Phố</option>
+                                    <option value="@Model.Facility.District" selected>@Model.Facility.District</option>
+                                </select>
+                            </div>
+
+                            <!-- Ward -->
+                            <div class="col-md-4">
+                                <label>Chọn Xã</label>
+                                <select class="form-select" id="wardDropdown" asp-for="@Model.Facility.Ward" disabled>
+                                    <option value="">Chọn Quận/Huyện</option>
+                                    <option value="@Model.Facility.Ward" selected>@Model.Facility.Ward</option>
+                                </select>
+                            </div>
+
+                            <!-- Detail Address -->
+                            <div class="col-md-12">
+                                <label>Địa chỉ chi tiết</label>
+                                <input type="text" class="form-control" id="detailAddress" asp-for="@Model.Facility.Address" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="@Model.Facility.OperationDay" class="form-label">Ngày thành lập</label>
+                            <input type="date" class="form-control" asp-for="@Model.Facility.OperationDay" id="editOperationDay">
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="@Model.Facility.Status" class="form-label">Trạng thái</label>
+                            <select class="form-select" asp-for="@Model.Facility.Status" id="editStatus">
+                                <option value="Active">Đang hoạt động</option>
+                                <option value="Inactive">Tạm ngưng</option>
+                                <option value="Closed">Đóng cửa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="@Model.Facility.Description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" asp-for="@Model.Facility.Description" id="editDescription" rows="3"></textarea>
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label for="facilityImage" class="form-label">Ảnh cơ sở y tế</label>
+                        <input type="file" class="form-control" id="facilityImage" name="facilityImage">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Add Service Modal -->
+<div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addServiceModalLabel">Thêm dịch vụ mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addServiceForm" method="post" asp-page-handler="AddService">
+                <div class="modal-body">
+                    <input type="hidden" asp-for="FacilityId" value="@Model.FacilityId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Service.Name" c
+                               lass="form-label">Tên dịch vụ</label>
+                        <input type="text" class="form-control" asp-for="Service.Name" id="serviceName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Service.Price" class="form-label">Giá (VNĐ)</label>
+                        <input type="number" class="form-control" asp-for="Service.Price" id="servicePrice" min="1000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Service.Description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" asp-for="Service.Description" id="serviceDescription" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thêm dịch vụ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Service Modal -->
+<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editServiceModalLabel">Chỉnh sửa dịch vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editServiceForm" method="post">
+                <div class="modal-body">
+                    <input type="hidden" asp-for="FacilityId" value="@Model.FacilityId" />
+                    <input type="hidden" asp-for="ServiceId" id="editServiceId">
+
+                    <div class="mb-3">
+                        <label asp-for="Service.Name" class="form-label">Tên dịch vụ</label>
+                        <input type="text" class="form-control" asp-for="Service.Name" id="editServiceName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Service.Price" class="form-label">Giá (VNĐ)</label>
+                        <input type="number" class="form-control" asp-for="Service.Price" id="editServicePrice" min="1000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Service.Description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" asp-for="Service.Description" id="editServiceDescription" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger me-auto" formmethod="post" asp-page-handler="DeleteService">Xóa dịch vụ</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary" formmethod="post" asp-page-handler="EditService">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButtons = document.querySelectorAll(".edit-service-btn");
+
+        editButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                // Lấy dữ liệu từ button
+                const serviceId = this.getAttribute("data-id");
+                const serviceName = this.getAttribute("data-name");
+                const servicePrice = this.getAttribute("data-price");
+                const serviceDescription = this.getAttribute("data-description");
+
+                // Gán dữ liệu vào input của modal
+                document.getElementById("editServiceId").value = serviceId;
+                document.getElementById("editServiceName").value = serviceName;
+                document.getElementById("editServicePrice").value = servicePrice;
+                document.getElementById("editServiceDescription").value = serviceDescription;
+            });
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const provinceDropdown = document.getElementById("provinceDropdown");
+        const districtDropdown = document.getElementById("districtDropdown");
+        const wardDropdown = document.getElementById("wardDropdown");
+        const detailAddress = document.getElementById("detailAddress");
+
+        // Load Provinces
+        fetch("https://provinces.open-api.vn/api/?depth=1")
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(province => {
+                    const option = document.createElement("option");
+                    option.value = province.name; // Use name instead of code
+                    option.textContent = province.name;
+                    provinceDropdown.appendChild(option);
+                });
+            });
+
+        // Fetch Districts when Province changes
+        provinceDropdown.addEventListener("change", function () {
+            const provinceName = this.value;
+            districtDropdown.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+            wardDropdown.innerHTML = '<option value="">Chọn Xã</option>';
+            districtDropdown.disabled = !provinceName;
+            wardDropdown.disabled = true;
+
+            if (provinceName) {
+                fetch(`https://provinces.open-api.vn/api/?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectedProvince = data.find(p => p.name === provinceName);
+                        if (selectedProvince) {
+                            selectedProvince.districts.forEach(district => {
+                                const option = document.createElement("option");
+                                option.value = district.name; // Use name instead of code
+                                option.textContent = district.name;
+                                districtDropdown.appendChild(option);
+                            });
+                        }
+                    });
+            }
+            updateAddress();
+        });
+
+        // Fetch Wards when District changes
+        districtDropdown.addEventListener("change", function () {
+            const districtName = this.value;
+            wardDropdown.innerHTML = '<option value="">Chọn Xã</option>';
+            wardDropdown.disabled = !districtName;
+
+            if (districtName) {
+                fetch(`https://provinces.open-api.vn/api/?depth=3`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(province => {
+                            const selectedDistrict = province.districts.find(d => d.name === districtName);
+                            if (selectedDistrict) {
+                                selectedDistrict.wards.forEach(ward => {
+                                    const option = document.createElement("option");
+                                    option.value = ward.name; // Use name instead of code
+                                    option.textContent = ward.name;
+                                    wardDropdown.appendChild(option);
+                                });
+                            }
+                        });
+                    });
+            }
+            updateAddress();
+        });
+
+        // Update Address when Ward changes
+        //  wardDropdown.addEventListener("change", updateAddress);
+
+        // function updateAddress() {
+        //     const provinceText = provinceDropdown.value;
+        //     const districtText = districtDropdown.value;
+        //     const wardText = wardDropdown.value;
+
+        //     let address = `${wardText ? wardText + ", " : ""}${districtText ? districtText + ", " : ""}${provinceText}`;
+        //     if (address.trim()) {
+        //         detailAddress.value = address + ", ";
+        //         detailAddress.focus();
+        //     }
+        // }
+    });
+
+    function previewProfileImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.querySelector('.profile-image-preview').src = e.target.result;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+</script>

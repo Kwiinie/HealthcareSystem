@@ -1,0 +1,57 @@
+﻿@page "/admin/article/detail/{id}"
+@model FindingHealthcareSystem.Pages.Admin.Article.DetailModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<link rel="stylesheet" href="~/css/detailArticle.css" />
+<div class="container mt-10">
+    <!-- Article Content Section -->
+    <div class="row">
+        <div class="col mx-auto">
+            <div class="article-content-container">
+
+                <h1 class="article-title">@Model.Article.Title</h1>
+                <span class="article-category">@Model.Article.CategoryName</span>
+
+                <!-- Featured Image -->
+                @if (!string.IsNullOrEmpty(Model.Article.ImgUrl))
+                {
+                    <img src="@Model.Article.ImgUrl" alt="Article featured image" class="article-featured-image">
+                }
+                else
+                {
+                    <img src="~/images/DefaultNews.jpg" alt="Article featured image" class="article-featured-image">
+                }
+
+                <!-- Article Content -->
+                <div class="article-content">
+                    @Html.Raw(Model.Article.Content)
+                </div>
+
+                <!-- Image Gallery -->
+                @if (Model.Article.ImgUrls != null && Model.Article.ImgUrls.Count > 0)
+                {
+                    <div class="article-gallery">
+                        <h3 class="gallery-title">Ảnh</h3>
+                        <div class="gallery-grid">
+                            @foreach (var imgUrl in Model.Article.ImgUrls)
+                            {
+                                <div class="gallery-item">
+                                    <img src="@imgUrl" alt="Gallery image" class="gallery-image">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+
+</div>
+
+

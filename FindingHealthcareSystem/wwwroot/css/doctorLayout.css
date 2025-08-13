@@ -1,0 +1,241 @@
+﻿:root {
+    --primary-color: #28a745;
+    --sidebar-bg: #f8fff8;
+    --active-menu: #e8f5e9;
+    --hover-menu: #f1f8f2;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg);
+    min-height: 100vh;
+    border-right: 1px solid #e0e0e0;
+    position: fixed;
+    width: 280px;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.logo-container {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-item {
+    margin: 0.5rem 0;
+}
+
+.nav-link {
+    color: #333;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .nav-link:hover {
+        background-color: var(--hover-menu);
+        color: var(--primary-color);
+    }
+
+    .nav-link.active {
+        background-color: var(--active-menu);
+        color: var(--primary-color);
+        font-weight: 500;
+    }
+
+    .nav-link i {
+        font-size: 1.2rem;
+    }
+
+.main-content {
+    margin-left: 280px;
+    padding: 2rem;
+    transition: all 0.3s;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    margin-left: 280px;
+    transition: all 0.3s;
+}
+
+.user-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .dropdown-item:active {
+        background-color: var(--primary-color);
+    }
+
+.search-bar {
+    max-width: 400px;
+    position: relative;
+}
+
+    .search-bar input {
+        padding-left: 2.5rem;
+        border-radius: 50px;
+        border: 1px solid #ced4da;
+    }
+
+    .search-bar .bi-search {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+.category-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    font-weight: 600;
+    margin: 1.5rem 1rem 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 70px;
+        overflow: hidden;
+    }
+
+        .sidebar .nav-link span,
+        .sidebar .logo span {
+            display: none;
+        }
+
+    .main-content, .top-bar {
+        margin-left: 70px;
+    }
+
+    .logo {
+        justify-content: center;
+    }
+
+    .nav-link {
+        justify-content: center;
+        padding: 0.75rem;
+    }
+
+    .category-title {
+        text-align: center;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 0;
+    }
+
+    .main-content, .top-bar {
+        margin-left: 0;
+    }
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+@media (max-width: 576px) {
+    .menu-toggle {
+        display: block;
+    }
+}
+
+.sidebar.expanded {
+    width: 280px;
+}
+
+    .sidebar.expanded .nav-link span,
+    .sidebar.expanded .logo span {
+        display: inline;
+    }
+
+    .sidebar.expanded .nav-link {
+        justify-content: flex-start;
+    }
+
+.card-text {
+    vertical-align: top;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table td {
+    width: 14.28%;
+    height: 150px;
+    overflow: hidden;
+}
+
+.cell {
+    border-left-width: 8px;
+    border-left-color:green;
+    border-left-style: solid;
+    background-color: #00800070;
+}
+
+    .cell span {
+        color: black
+    }

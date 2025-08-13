@@ -1,0 +1,66 @@
+﻿@page "/admin/professional-requests"
+@model FindingHealthcareSystem.Pages.Admin.ProfessionalRequestsModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Quản Lý Chuyên Gia Y Tế</h2>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Avatar</th>
+                            <th>Họ tên</th>
+                            <th>Tỉnh/TP</th>
+                            <th>Bằng cấp</th>
+                            <th>Kinh Nghiệm</th>
+                            <th>Chuyên môn</th>
+                            <th>Trạng thái yêu cầu</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var expert in Model.PendingProfessionals)
+                        {
+                            <tr>
+                                <td>@expert.Id</td>
+                                <td><img src="@expert.ImgUrl" alt="Avatar" class="avatar" style="width:50px;height:50px;"></td>
+                                <td>@expert.FullName</td>
+                                <td>@expert.Province</td>
+                                <td>@expert.Degree</td>
+                                <td>@expert.Experience</td>
+                                <td>@expert.ExpertiseName</td>
+                                <td>
+                                    <span class="badge @(expert.RequestStatus == "Pending" ? "bg-warning" : expert.RequestStatus == "Approved" ? "bg-success" : "bg-danger")">
+                                        @(expert.RequestStatus == "Pending" ? "Đang chờ duyệt"
+                                            : expert.RequestStatus == "Approved" ? "Đã phê duyệt"
+                                            : "Bị từ chối")
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post">
+                                        <input type="hidden" name="professionalId" value="@expert.Id" />
+                                        <button type="submit" formaction="?handler=Approve" class="btn btn-success btn-sm">
+                                            Duyệt
+                                        </button>
+                                     
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

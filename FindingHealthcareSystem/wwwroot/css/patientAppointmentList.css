@@ -1,0 +1,220 @@
+﻿.content-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.tab-content {
+    background-color: #ffffff;
+    border-radius: 0 12px 12px 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+}
+
+.nav-tabs {
+    border-bottom: none;
+}
+
+    .nav-tabs .nav-link {
+        color: var(--text-on-primary);
+        font-weight: 500;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px 12px 0 0;
+        margin-right: 0.5rem;
+        background-color: rgba(153, 210, 85, 0.1);
+    }
+
+        .nav-tabs .nav-link:hover {
+            background-color: rgba(153, 210, 85, 0.2);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #ffffff;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-top: 3px solid var(--primary-color);
+        }
+
+.filter-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #f9faf7;
+    border-radius: 8px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+    .table th {
+        font-weight: 600;
+        color: #555;
+        border-bottom: 2px solid #eee;
+        white-space: nowrap;
+    }
+
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.status-awaitingpayment {
+    background-color: #ffeecc;
+    color: #ff9900;
+}
+
+.status-pending {
+    background-color: #e6f7ff;
+    color: #0099ff;
+}
+
+.status-confirmed {
+    background-color: #e6fff2;
+    color: #00cc88;
+}
+
+.status-completed {
+    background-color: #e6ffe6;
+    color: #00bb00;
+}
+
+.status-rescheduled {
+    background-color: #f2e6ff;
+    color: #9966ff;
+}
+
+.status-cancelled {
+    background-color: #ffe6e6;
+    color: #ff6666;
+}
+
+.status-rejected {
+    background-color: #ffe6e6;
+    color: #ff4444;
+}
+
+.status-expired {
+    background-color: #f2f2f2;
+    color: #999999;
+}
+
+/* Payment status */
+.payment-pending {
+    background-color: #fff8e6;
+    color: #ffaa00;
+}
+
+.payment-completed {
+    background-color: #e6fff2;
+    color: #00cc88;
+}
+
+.payment-failed {
+    background-color: #ffe6e6;
+    color: #ff4444;
+}
+
+.action-cell {
+    white-space: nowrap;
+}
+
+.action-btn {
+    padding: 0.4rem 0.6rem;
+    margin-right: 0.3rem;
+    font-size: 0.85rem;
+}
+
+.pagination-container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.page-link {
+    color: var(--text-on-primary);
+    border: none;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.25rem;
+    border-radius: 4px;
+}
+
+    .page-link:hover {
+        background-color: rgba(153, 210, 85, 0.1);
+        color: var(--text-on-primary);
+    }
+
+    .page-link.active {
+        background-color: var(--primary-color);
+        color: var(--text-on-primary);
+    }
+
+.detail-modal .modal-header {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+.detail-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.detail-value {
+    font-weight: 600;
+}
+
+.detail-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    background-color: #f9faf7;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #888;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+.empty-state-message {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .action-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .content-container {
+        padding: 0.5rem;
+    }
+
+    .tab-content {
+        padding: 1rem;
+    }
+}

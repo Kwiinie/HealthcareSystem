@@ -1,0 +1,236 @@
+﻿@using BusinessObjects.DTOs
+@using BusinessObjects.Enums
+@model Pages.Professional.Appointment.IndexModel
+@{
+    string[] dayOfWeeks = new string[6] { "T2", "T3", "T4", "T5", "T6", "T7" };
+    List<DateTime> days = new List<DateTime>();
+    DateTime today = Model.Monday;
+    DateTime monday = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+
+
+    List<string> GenerateSlot(int hourStart, int hourEnd, int interval)
+    {
+        var slots = new List<string>();
+        var start = new TimeSpan(hourStart, 0, 0);
+        var end = new TimeSpan(hourEnd, 0, 0);
+
+        for (var time = start; time < end; time = time.Add(new TimeSpan(0, interval, 0)))
+        {
+            slots.Add(time.ToString("hh\\:mm"));
+        }
+        return slots;
+    }
+    var slots = GenerateSlot(7, 17, 60);
+
+    string GetStatusBgColor(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Pending => @"background-color: rgb(0, 128, 0);",    // Xanh lá đậm
+            AppointmentStatus.Rejected => @"background-color: rgb(204, 0, 0);",   // Đỏ đậm
+            AppointmentStatus.Completed => @"background-color: rgb(0, 128, 0);",  // Xanh lá đậm
+            AppointmentStatus.Confirmed => @"background-color: rgb(0, 100, 0);",  // Xanh lá đậm (màu tối hơn)
+            AppointmentStatus.Cancelled => @"background-color: rgb(255, 87, 34);",  // Cam đậm
+            AppointmentStatus.Rescheduled => @"background-color: rgb(255, 87, 34);",  // Cam đậm
+            _ => ""
+        };
+    }
+
+}
+<div id="patientAppointment" class="card patientAppointment-container">
+    <div class="patientAppointment-header">
+        <h5 class="card-title m-0">Lịch hẹn hôm nay</h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary nextWeekBtn" data-next=-7> <i class="bi bi-chevron-left"></i> </button>
+            <input id="inputDate" type="date" class="form-control" value="@monday.ToString("yyyy-MM-dd")" />
+            <button class="btn btn-primary nextWeekBtn" data-next=7> <i class="bi bi-chevron-right"></i> </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="cardTable">
+            <table class="patientAppointmentTable">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        @{
+                            @for (int i = 0; i < 6; i++)
+                            {
+                                DateTime day = monday.AddDays(i);
+                                days.Add(day);
+                                <th>
+                                    <div>@dayOfWeeks[i]</div>
+                                    <div>@day.ToString("dd/MM")</div>
+                                </th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var slot in slots)
+                    {
+                        <tr>
+                            <td class="p-2">
+                                <span>@slot</span>
+                            </td>
+                            @foreach (var day in days)
+                            {
+
+                                var appointment = Model.Appointments?.FirstOrDefault(a =>
+                                a.Date.Date == day.Date &&
+                                a.Date.TimeOfDay == TimeSpan.Parse(slot));
+                                @if (appointment != null)
+                                {
+                                    <td>
+                                        <div class="appointment-card" data-id="@appointment.Id" data-servicetype="@appointment.ServiceType">
+                                            <div class="appointment-cardbody">
+                                                <span class="appointment-status" style="@GetStatusBgColor(appointment.Status)">@appointment.Status.ToString()</span>
+                                                <div class="d-flex flex-column gap-2">
+                                                    <div class="d-flex justify-content-start align-items-center">
+                                                        <i class="bi bi-person me-2"></i>
+                                                        <label style="font-weight: bold; font-size: small;">@(appointment.Patient?.User != null ? appointment.Patient?.User.Fullname : "Nguyễn văn A")</label>
+                                                    </div>
+                                                    <div class="d-flex justify-content-start align-items-center">
+                                                        <i class="bi bi-calendar-month me-2"></i>
+                                                        <label style="font-size:small;">@(appointment.Patient != null ? $"{appointment.Age} Tuổi" : "Nan")</label>
+                                                    </div>
+                                                    <div div class="d-flex justify-content-start align-items-center">
+                                                        @if (appointment.Patient.User.Equals("Nam"))
+                                                        {
+                                                            <i class="bi bi-gender-male me-2"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="bi bi-gender-female me-2"></i>
+                                                        }
+                                                        <label class="card-text" style="font-size: small;">@appointment.Patient.User.Gender</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="empty-card"></div>
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-labelledby="appointmentModalLabel" style="overflow: hidden;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Thông tin cuộc hẹn</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="edit-body">
+                <div class="patient-info">
+                    <div class="patient-avatar">
+                    </div>
+                    <div class="patient-details">
+                        <div>
+                            <div class="patient-name"></div>
+                            <div class="patient-genderAge"></div>
+                        </div>
+                        <div>
+                            <div class="d-flex gap-1">
+                                <i class="bi bi-envelope-at"></i>
+                                <div class="patient-email"></div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <i class="bi bi-telephone"></i>
+                                <div class="patient-phone"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">Thông tin khám</div>
+                    <div class="mt-3">
+                        <div class="edit-line">
+                            <label>Trạng thái</label>
+                            <label class="modal-edit-status"></label>
+                        </div>
+                        <div class="edit-line">
+                            <label>Ngày khám</label>
+                            <strong class="modal-edit-date"></strong>
+                        </div>
+                        <div class="edit-line">
+                            <label>Giờ khám</label>
+                            <strong class="modal-edit-hour"></strong>
+                        </div>
+                        <div class="edit-service-container">
+                            <label>Dịch vụ</label>
+                            <div class="service-section">
+                                <div class="edit-line">
+                                    <label>Loại</label>
+                                    <strong class="service-name"></strong>
+                                </div>
+                                <div class="edit-line">
+                                    <label>Giá</label>
+                                    <strong style="color: green;" class="modal-edit-servicePrice">NAN VNĐ</strong>
+                                </div>
+                                <div class="edit-line">
+                                    <label>Chi tiết</label>
+                                    <label class="service-description"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="edit-line">
+                            <label>Phí giữ chỗ</label>
+                            <strong style="color: green;" class="modal-edit-totalPrice">NAN VNĐ</strong>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="edit-line">
+                            <label>Trạng thái cập nhật: </label>
+                            <select id="appointmentSelectStatus"></select>
+                        </div>
+                    </div>
+                    <div id="reschedule-section" class="reschedule-section">
+                        <div class="reschedule-row">
+                            <div class="reschedule-label">Ngày hẹn mới</div>
+                            <div class="reschedule-input">
+                                <input type="date" id="new-date" min="@(DateTime.Now.Date.ToString("yyyy-MM-dd"))">
+                            </div>
+                        </div>
+                        <div class="reschedule-row" id="reschedule-row">
+                            <div class="reschedule-label">Thời gian</div>
+                            <div class="reschedule-input">
+                                <div class="time-slots" id="time-slots"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="diagnose-section" id="diagnose-section">
+                        <p>Nhập chẩn đoán</p>
+                        <textarea class="form-control" id="diagnoseText" required></textarea>
+                    </div>
+                    <div class="note-section">
+                        <div class="section-title">Ghi chú</div>
+                        <div class="notes-content"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="btnModalWrapper" class="d-flex justify-content-end gap-2" style="padding: 0 10px 10px 10px;">
+                <button type="button"
+                        class="btn btn-danger"
+                        id="updateAppointmentBtn"
+                        style="flex-grow: 1;">
+                    Cập nhật
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="~/js/patientappointments.js"></script>

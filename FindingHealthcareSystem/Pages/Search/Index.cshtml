@@ -1,0 +1,253 @@
+﻿@page
+@model FindingHealthcareSystem.Pages.Search.IndexModel
+@{
+}
+
+<link rel="stylesheet" href="/css/search.css" asp-append-version="true" />
+@using Newtonsoft.Json
+@using BusinessObjects.Dtos.User
+@{
+    var currentUserJson = HttpContext.Session.GetString("User");
+    GeneralUserDto currentUser = null;
+
+    if (!string.IsNullOrEmpty(currentUserJson))
+    {
+        currentUser = JsonConvert.DeserializeObject<GeneralUserDto>(currentUserJson);
+    }
+}
+<div class="container mt-10">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="bg-white p-4 rounded-3 shadow-sm">
+                <p class="text-center text-muted mb-4">Tìm kiếm cơ sở y tế, bác sĩ theo nhu cầu của bạn</p>
+
+                <!-- Search Form -->
+                <form method="get">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <!-- Provider Type Selection -->
+                        <div class="col-md-6 col-lg-3">
+                            <label for="providerType" class="form-label">Bác sĩ/Cơ sở y tế</label>
+                            <select id="providerType" name="providerType" class="form-select" onchange="toggleProviderSpecifics()">
+                                <!option value="facility" @(Model.ProviderType == "facility" ? "selected" : "")>Cơ sở y tế</!option>
+                                <!option value="professional" @(Model.ProviderType == "professional" ? "selected" : "")>Bác sĩ</!option>
+                            </select>
+                        </div>
+                        <!-- Province Selection -->
+                        <div class="col-md-6 col-lg-3">
+                            <label for="province" class="form-label">Tỉnh/Thành</label>
+                            <select id="province" name="province" class="form-select" onchange="loadDistricts()">
+                                <option value="">Chọn tỉnh/thành</option>
+                                @foreach (var province in Model.Provinces)
+                                {
+                                    <!option value="@province.Code" @(Model.Province == province.Code ? "selected" : "")>@province.Name</!option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- District Selection -->
+                        <div class="col-md-6 col-lg-3">
+                            <label for="district" class="form-label">Quận/Huyện</label>
+                            <select id="district" name="district" class="form-select" onchange="loadWards()" disabled>
+                                <!option value="">Chọn quận/huyện</!option>
+                            </select>
+                        </div>
+
+                        <!-- Ward Selection -->
+                        <div class="col-md-6 col-lg-3">
+                            <label for="ward" class="form-label">Phường/Xã</label>
+                            <select id="ward" name="ward" class="form-select" disabled>
+                                <!option value="">Chọn phường/xã</!option>
+                            </select>
+                        </div>
+
+
+                        <!-- Specialty Selection (Doctor-specific) -->
+                        <div class="col-md-6 provider-specific professional-specific d-none">
+                            <label for="specialty" class="form-label">Chuyên khoa</label>
+                            <select id="specialty" name="specialty" class="form-select">
+                                <option value="">Chọn chuyên khoa</option>
+                                @foreach (var specialty in Model.Specialties)
+                                {
+                                    <!option value="@specialty.Name" @(specialty.Name == Model.Specialty ? "selected" : "")>@specialty.Name</!option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Department Selection (Facility-specific) -->
+                        <div class="col-md-6 provider-specific facility-specific d-none">
+                            <label for="department" class="form-label">Chuyên khoa</label>
+                            <select id="department" name="department" class="form-select">
+                                <option value="">Chọn chuyên khoa</option>
+                                @foreach (var department in Model.Departments)
+                                {
+                                    <!option value="@department.Name" @(department.Name == Model.Department ? "selected" : "")>@department.Name</!option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Search Input -->
+                        <div class="col-md-6">
+                            <label for="searchKeyword" class="form-label">Tìm kiếm</label>
+                            <input type="text" id="searchKeyword" name="searchKeyword" class="form-control" placeholder="Tìm kiếm theo tên" value="@Model.SearchKeyword">
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-12 d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        </div>
+                    </div>
+                </form>
+
+
+                <hr class="my-4" />
+
+                <!-- Search Results -->
+                <div class="search-results mt-4">
+                    @if (Model.ProviderType == "facility" || string.IsNullOrEmpty(Model.ProviderType))
+                    {
+                        <h3 class="mb-3">Cơ sở y tế (@Model.Facilities.Count())</h3>
+                        @if (!Model.Facilities.Any())
+                        {
+                            <div class="alert alert-info">Không tìm thấy cơ sở y tế phù hợp.</div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                @foreach (var facility in Model.Facilities)
+                                {
+                                    <div class="col-12">
+                                        <div class="search-card">
+                                            <div class="position-relative">
+                                                <img src="@(string.IsNullOrEmpty(facility.ImgUrl) ? "/img/DefaultFacility.jpg" : facility.ImgUrl)"
+                                                     class="card-img" alt="@facility.Name">
+                                            </div>
+                                            <div class="p-3 flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h5 class="mb-1 text-primary">@facility.Name</h5>
+                                                    <span class="badge bg-light text-dark">@facility.FacilityTypeName</span>
+                                                </div>
+                                                <p class="text-muted mb-2">
+                                                    <i class="bi bi-geo-alt-fill"></i>
+                                                    @facility.Address, @facility.Ward, @facility.District, @facility.Province
+                                                </p>
+                                                @if (facility.DepartmentNames.Any())
+                                                {
+                                                    <div class="mb-2">
+                                                        <strong>Chuyên khoa:</strong>
+                                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                                            @foreach (var dept in facility.DepartmentNames.Take(5))
+                                                            {
+                                                                <span class="badge-specialty">@dept</span>
+                                                            }
+                                                            @if (facility.DepartmentNames.Count > 5)
+                                                            {
+                                                                <span class="badge bg-secondary">+@(facility.DepartmentNames.Count - 5)</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (!string.IsNullOrEmpty(facility.Description))
+                                                {
+                                                    <p class="mb-3">@(facility.Description.Length > 150 ? facility.Description.Substring(0, 150) + "..." : facility.Description)</p>
+                                                }
+                                                <div class="d-flex justify-content-end mt-auto">
+                                                    <a href="/facility/@facility.Id" class="btn btn-outline-primary w-25">Xem chi tiết</a>
+                                                </div>
+                                                @if (currentUser != null && currentUser.Role == "Patient") {
+
+                                                    <div class="d-flex justify-content-end mt-1">
+                                                        <a href="/patient/appointment/create?providerId=@facility.Id&providerType=Facility"
+                                                           class="btn btn-primary w-25">
+                                                            Đặt lịch
+                                                        </a>
+                                                    </div>
+
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else if (Model.ProviderType == "professional")
+                    {
+                        <h3 class="mb-3">Bác sĩ (@Model.Professionals.Count())</h3>
+                        @if (!Model.Professionals.Any())
+                        {
+                            <div class="alert alert-info">Không tìm thấy bác sĩ phù hợp.</div>
+                        }
+                        else
+                        {
+                            <div class="row">
+                                @foreach (var professional in Model.Professionals)
+                                {
+                                    <div class="col-12">
+                                        <div class="search-card d-flex flex-column flex-md-row">
+                                            <div class="d-flex justify-content-center align-items-center p-3">
+                                                <img src="@(string.IsNullOrEmpty(professional.ImgUrl) ? "/img/DefaultProfessional.jpg" : professional.ImgUrl)"
+                                                     class="professional-img" alt="@professional.FullName">
+                                            </div>
+                                            <div class="p-3 flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <h5 class="mb-1 text-primary">@professional.FullName</h5>
+                                                    <span class="badge bg-light text-dark">@professional.ExpertiseName</span>
+                                                </div>
+
+                                                @if (!string.IsNullOrEmpty(professional.ExpertiseName))
+                                                {
+                                                    <p class="mb-1"><strong>Chuyên ngành:</strong> @professional.ExpertiseName</p>
+                                                }
+
+                                                <p class="text-muted mb-2">
+                                                    <i class="bi bi-geo-alt-fill"></i>
+                                                    @professional.Address, @professional.Ward, @professional.District, @professional.Province
+                                                </p>
+
+                                                @if (professional.Specialties.Any())
+                                                {
+                                                    <div class="mb-2">
+                                                        <strong>Chuyên khoa:</strong>
+                                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                                            @foreach (var spec in professional.Specialties.Take(5))
+                                                            {
+                                                                <span class="badge-specialty">@spec</span>
+                                                            }
+                                                            @if (professional.Specialties.Count > 5)
+                                                            {
+                                                                <span class="badge bg-secondary">+@(professional.Specialties.Count - 5)</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (!string.IsNullOrEmpty(professional.Experience))
+                                                {
+                                                    <p class="mb-3">@(professional.Experience.Length > 150 ? professional.Experience.Substring(0, 150) + "..." : professional.Experience)</p>
+                                                }
+
+                                                <div class="d-flex justify-content-end mt-auto">
+                                                    <a href="/Professional/@professional.Id" class="btn btn-outline-primary w-25">Xem chi tiết</a>
+                                                </div>
+                                                @if (currentUser != null && currentUser.Role == "Patient")
+                                                {
+                                                    <div class="d-flex justify-content-end mt-1">
+                                                        <a href="/patient/appointment/create?providerId=@professional.Id&providerType=Professional"
+                                                           class="btn btn-primary w-25">
+                                                            Đặt lịch
+                                                        </a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

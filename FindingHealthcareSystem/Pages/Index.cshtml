@@ -1,0 +1,98 @@
+﻿@page
+@model IndexModel
+@using BusinessObjects.DTOs.Department
+@{
+    var departmentsInChunks = (Model.Departments != null && Model.Departments.Any())
+        ? Model.Departments.Select((department, index) => new { department, index })
+                            .GroupBy(x => x.index / 5)
+                            .Select(group => group.Select(x => x.department).ToList())
+                            .ToList()
+        : new List<List<DepartmentDto>>();
+}
+
+<!-- Intro -->
+<div class="intro">
+    <div class="container">
+        <div class="intro-text">
+            <h1>Cần tìm cơ sở y tế gần nhất? <br><span class="green pt-2">Chúng tôi luôn ở đây để hỗ trợ bạn.</span></h1>
+            <div class="check-out">
+                <div class="form">
+                    <div class="medic-search">
+                        <i class="fas fa-search green" style="font-size: 25px; margin-right: 10px;"></i>
+                        <input type="text" placeholder="Nhập khoa bạn cần tìm" class="search-input">
+                    </div>
+                    @* <form method="post" >
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="w-50" for="provinceCode">Địa điểm:</label>
+                            <select asp-for="SelectedProvinceCode" class="form-control" asp-items="@(new SelectList(Model.Provinces, "Code", "Name"))">
+                                <option value="">Chọn tỉnh/thành</option>
+                            </select>
+                            <input class="search-btn" type="submit" value="Search">
+                        </div>
+                    </form> *@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Search by category-->
+<div class="container mb-5 mt-5">
+    <div class="search-by">
+        <h1>Tìm kiếm theo <span class="green">khoa khám bệnh</span></h1>
+
+        <!--Start carousel-->
+        <div id="departmentCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @foreach (var chunk in departmentsInChunks)
+                {
+                    <div class="carousel-item @(chunk == departmentsInChunks.First() ? "active" : "")">
+                        <div class="row d-flex justify-content-center">
+                            @foreach (var department in chunk)
+                            {
+                                <div class="col-2">
+                                    <div class="card department-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@department.Name</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#departmentCarousel" data-bs-slide="prev">
+                <i class="fas fa-chevron-left"></i> 
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#departmentCarousel" data-bs-slide="next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="container mt-5">
+    <div class="search-by">
+        <h1>Tìm kiếm theo <span class="green">loại cơ sở y tế </span></h1>
+
+        <!--Start carousel-->
+        <div class="row d-flex justify-content-center">
+            @foreach (var facilityType in Model.FacilityTypes)
+            {
+                <div class="col-2">
+                    <div class="card department-card">
+                        <div class="card-body">
+                            <h5 class="card-title">@facilityType.Name</h5>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+
+</div>

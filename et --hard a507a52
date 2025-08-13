@@ -1,0 +1,89 @@
+[33me75c533[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfinal[m[33m, [m[1;31morigin/khanhan[m[33m)[m admin view for facility
+[33m8abb2f3[m admin view for cate
+[33m14ee74a[m admin view for pending professional
+[33m61e3e46[m admin view for patient
+[33madd510d[m add approved professional
+[33mfcecc17[m after merged from doctor
+[33m200b6a2[m after merged from khoado
+[33m946870c[m after merged from feat ui
+[33m3313195[m feat: admin news article ui
+[33me8fc7b0[m feat: admin professional ui
+[33m54a6186[m feat: admin patient list ui
+[33mda930c8[m feat: admin dashboard ui
+[33m7572d8b[m feat: admin ui
+[33medd56ae[m after merge from branch 'final', update authorization for buttons
+[33m2cfa4b7[m Check this one please
+[33m4c7bcd3[m ded lan 2
+[33md62e2fc[m new commit
+[33mf660f2a[m update
+[33m7e0e71b[m articles
+[33m3497be6[m[33m ([m[1;31morigin/new_final[m[33m, [m[1;31morigin/final[m[33m, [m[1;32mnew_final[m[33m)[m fix register page
+[33mf1b089e[m ded lan 1
+[33mb90aafa[m update patientAppointmentSchedule
+[33m4949eaf[m after merge
+[33md2c3ec3[m before merge
+[33ma3b06a1[m update doctor part
+[33mfbd1fd5[m[33m ([m[1;31morigin/new-register[m[33m, [m[1;32mnew-register[m[33m, [m[1;32mmain[m[33m)[m solved merge, done fix register, update profile
+[33mb3e0a8f[m fix: UI getFacById
+[33mec5df26[m Nah
+[33m7347a43[m register all done
+[33m1a7d860[m bat luc qua di mat
+[33m1bad354[m demo facilities, fac types, departments
+[33md96086d[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #10 from Kwiinie/appointment
+[33m6c129d7[m feat: create appointment
+[33mc490a70[m feat: select service UI
+[33m8449698[m feat: select time slot and date
+[33m2b82d6b[m Merge branch 'main' of https://github.com/Kwiinie/FindingHealthcareSystem into khoado
+[33md3f47bb[m setup
+[33ma3a4bce[m something
+[33md7ab6c5[m feat: add services card
+[33mb31cb5e[m feat: appointment ui + service
+[33m67ae483[m setup the article
+[33m2bc7c3f[m Merge pull request #9 from Kwiinie/ui
+[33mbb474e7[m seed data
+[33m3ab16ad[m feat: facility page ui
+[33m071c8a4[m feat: patient profile ui
+[33m7fbd7d5[m feat: news page ui
+[33m511d97c[m update: review section for professional
+[33m7c66f12[m professional ui page
+[33m707dd3a[m Merge branch 'fix-register' of https://github.com/annqkhe180905/PRN222-NET1728-Group-2 into ui
+[33mc8aa069[m Merge branch 'main' of https://github.com/annqkhe180905/PRN222-NET1728-Group-2 into ui
+[33m2640dbc[m update: search with location
+[33m024d320[m[33m ([m[1;31morigin/fix-register[m[33m, [m[1;32mfix-register[m[33m)[m fix register
+[33m1074773[m Merge pull request #8 from Kwiinie/ui
+[33m4d4d818[m merge register
+[33m373bcec[m feat: search page
+[33mab309be[m fix conflicts after merge and add DependencyInjection
+[33mf818925[m fix: facility logic
+[33md6d59f9[m[33m ([m[1;31morigin/new-admin[m[33m, [m[1;32mnew-admin[m[33m)[m erge successfully
+[33m1a196df[m fffff
+[33m2068397[m ffff
+[33mb22d0a0[m upload doctor part
+[33m498656c[m upload page for doctor
+[33mdd79e7f[m Merge branch 'main' of https://github.com/annqkhe180905/PRN222-NET1728-Group-2
+[33m1395557[m fix logout
+[33mafa8dbd[m feat: login, save user session, seed data user
+[33m75b5b75[m feat: facility
+[33mcd86c96[m upload page doctor
+[33m52efc34[m change
+[33me145ab5[m Merge branch 'main' into khanhan
+[33m31222ce[m before merge
+[33m4e1bc21[m Merge pull request #6 from annqkhe180905/setup
+[33m7f5f9e3[m feat: razor folder structure, remove underlying entity
+[33mad8debb[m Merge pull request #5 from annqkhe180905/entity
+[33md3be9a7[m update baseentity
+[33meee428d[m Merge pull request #4 from annqkhe180905/entity
+[33mf8adc5d[m add relationship entity
+[33me9b61a6[m Merge pull request #3 from annqkhe180905/entity
+[33m096c763[m[33m ([m[1;31morigin/entity[m[33m)[m update article image entity
+[33m8bdb532[m[33m ([m[1;31morigin/ui[m[33m)[m login ui
+[33maba30d9[m Merge pull request #2 from annqkhe180905/ui
+[33mf99a716[m home ui
+[33m23c719b[m Merge pull request #1 from annqkhe180905/setup
+[33mb0d9fc9[m[33m ([m[1;31morigin/setup[m[33m)[m setup
+[33m4774a2f[m feat: setup
+[33me758d97[m feat: add sql script
+[33mb6334f0[m feat: setup proj
+[33m8c06611[m feat: add sql script
+[33m70ba85d[m feat: setup proj
+[33mff9e959[m Initial commit

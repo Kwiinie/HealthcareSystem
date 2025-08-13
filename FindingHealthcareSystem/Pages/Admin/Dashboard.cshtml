@@ -1,0 +1,143 @@
+﻿@page "/admin/dashboard"
+@model FindingHealthcareSystem.Pages.Admin.DashboardModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+
+}
+
+<link rel="stylesheet" href="~/css/adminDashboard.css"></link>
+
+<div class="container mt-10">
+    <div class="container-fluid p-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-4">Bảng Thống Kê</h2>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-number">@Model.TotalFacilities</div>
+                            <div class="stats-title">Tổng Cơ Sở Y Tế</div>
+                        </div>
+                        <div class="card-icon text-primary">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-number">@Model.TotalProfessionals</div>
+                            <div class="stats-title">Chuyên Gia Y Tế</div>
+                        </div>
+                        <div class="card-icon text-primary">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-number">@Model.TotalPatients</div>
+                            <div class="stats-title">Bệnh Nhân</div>
+                        </div>
+                        <div class="card-icon text-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="stats-number">@Model.TotalPayments</div>
+                            <div class="stats-title">Giao Dịch</div>
+                        </div>
+                        <div class="card-icon text-primary">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <!-- Pie Chart -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h5 class="card-title mb-3">Phân Bố Trạng Thái Lịch Khám</h5>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Monthly Payment Chart -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h5 class="card-title mb-3">Thanh Toán Hàng Tháng</h5>
+                    <div class="chart-container">
+                        <canvas id="monthlyPaymentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- More Charts Row -->
+        <div class="row g-4 mb-4">
+            <!-- Monthly Appointment Chart -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h5 class="card-title mb-3">Lịch Hẹn Hàng Tháng</h5>
+                    <div class="chart-container">
+                        <canvas id="monthlyAppointmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Payment by Service Type -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h5 class="card-title mb-3">Tổng Doanh Thu Theo Cơ Sở/Chuyên Gia Y Tế</h5>
+                    <div class="chart-container">
+                        <canvas id="paymentByServiceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vietnam Map -->
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <h5 class="card-title mb-3">Tổng Cơ Sở Y Tế/Chuyên Gia Y Tế Theo Tỉnh</h5>
+                    <div id="vietnam-map"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/AdminDashboard.js"></script>
+<script>
+
+    const appointmentStatusData = @Html.Raw(Model.AppointmentStatusChartJson);
+    const monthlyPaymentData = @Html.Raw(Model.MonthlyPaymentChartJson);
+    const monthlyAppointmentData = @Html.Raw(Model.MonthlyAppointmentChartJson);
+    const revenueByProviderData = @Html.Raw(Model.RevenueByProviderChartJson);
+
+    const provinceData = @Html.Raw(Model.ProvinceDistributionJson);
+
+
+</script>

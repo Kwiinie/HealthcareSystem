@@ -1,0 +1,190 @@
+﻿.success-container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    margin-top: 5rem;
+}
+
+.success-icon {
+    width: 90px;
+    height: 90px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+}
+
+    .success-icon svg {
+        width: 50px;
+        height: 50px;
+    }
+
+.success-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-on-primary);
+}
+
+.success-message {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.order-details {
+    background-color: #f7f9f7;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+}
+
+.detail-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.detail-value {
+    font-weight: 600;
+}
+
+.btn-group {
+    margin-top: 2rem;
+}
+
+.badge-appointment {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+.contact-support {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 1.5rem;
+}
+
+    .contact-support a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .contact-support a:hover {
+            text-decoration: underline;
+        }
+.failure-container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    margin-top: 5rem;
+}
+
+.failure-icon {
+    width: 90px;
+    height: 90px;
+    background-color: var(--danger-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+}
+
+    .failure-icon svg {
+        width: 50px;
+        height: 50px;
+    }
+
+.failure-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-on-primary);
+}
+
+.failure-message {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.error-details {
+    background-color: #fff4f4;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    border-left: 4px solid var(--danger-color);
+}
+
+.error-code {
+    font-weight: 600;
+    color: var(--danger-color);
+    margin-bottom: 0.5rem;
+}
+
+.error-message {
+    color: #666;
+}
+
+.possible-solutions {
+    text-align: left;
+    background-color: #f7f9f7;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.solutions-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.solutions-list {
+    padding-left: 1.5rem;
+    margin-bottom: 0;
+}
+
+    .solutions-list li {
+        margin-bottom: 0.5rem;
+    }
+
+.btn-group {
+    margin-top: 2rem;
+}
+
+.badge-payment {
+    background-color: var(--danger-color);
+    color: var(--text-on-danger);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}

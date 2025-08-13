@@ -1,0 +1,75 @@
+﻿@page "/patient/payments/{UserId?}"
+@model FindingHealthcareSystem.Pages.Patient.PaymentModel
+@using BusinessObjects.Enums
+@{
+    ViewData["Title"] = "Patient Payments";
+}
+@* khong hien thi userid tren url cho current user *@
+<div class="container mt-10">
+    <h2>Patient Payment History</h2>
+    
+    @if (Model.PatientPayments != null && Model.PatientPayments.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Transaction ID</th>
+                        <th>Appointment ID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var payment in Model.PatientPayments)
+                    {
+                        <tr>
+                            <td>@payment.Id</td>
+                            <td>@(payment.PaymentDate?.ToString("MMM dd, yyyy") ?? "N/A")</td>
+                            <td>@(payment.Price?.ToString("C") ?? "N/A")</td>
+                            <td>@(payment.PaymentMethod ?? "N/A")</td>
+                            <td>
+                                <span class="badge @GetStatusBadgeClass(payment.PaymentStatus)">
+                                    @payment.PaymentStatus
+                                </span>
+                            </td>
+                            <td>@(payment.TransactionId ?? "N/A")</td>
+                            <td>@(payment.AppointmentId?.ToString() ?? "N/A")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(payment.PaymentUrl))
+                                {
+                                    <a href="@payment.PaymentUrl" class="btn btn-sm btn-outline-primary" target="_blank">Receipt</a>
+                                }
+                                @if (payment.PaymentStatus == PaymentStatus.Pending)
+                                {
+                                    <a href="/Payment/Process/@payment.Id" class="btn btn-sm btn-success">Process</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">No payment records found.</div>
+    }
+</div>
+
+@functions {
+    public string GetStatusBadgeClass(PaymentStatus status) 
+    {
+        return status switch
+        {
+            PaymentStatus.Completed => "bg-success",
+            PaymentStatus.Pending => "bg-warning",
+            PaymentStatus.Failed => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

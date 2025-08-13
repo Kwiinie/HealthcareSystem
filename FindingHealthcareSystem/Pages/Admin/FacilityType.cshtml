@@ -1,0 +1,102 @@
+﻿@page "/admin/facilitytype"
+@model FindingHealthcareSystem.Pages.Admin.FacilityTypeModel
+@{
+    ViewData["Title"] = "Facility Types";
+}
+
+<div class="container mt-4">
+    <h1>Facility Types</h1>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createFacilityTypeModal">Create New Facility Type</button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var facilityType in Model.Facilities)
+            {
+                <tr>
+                    <td>@facilityType.Name</td>
+                    <td>@facilityType.Description</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editFacilityTypeModal" data-id="@facilityType.Id" data-name="@facilityType.Name" data-description="@facilityType.Description">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Create Facility Type Modal -->
+<div class="modal fade" id="createFacilityTypeModal" tabindex="-1" aria-labelledby="createFacilityTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createFacilityTypeModalLabel">Create Facility Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createFacilityTypeForm" method="post" asp-page-handler="Create">
+                    <div class="mb-3">
+                        <label for="createName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="createName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="createDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Facility Type Modal -->
+<div class="modal fade" id="editFacilityTypeModal" tabindex="-1" aria-labelledby="editFacilityTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFacilityTypeModalLabel">Edit Facility Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFacilityTypeForm" method="post" asp-page-handler="Edit">
+                    <input type="hidden" id="editId" name="Id">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="Description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var editFacilityTypeModal = document.getElementById('editFacilityTypeModal');
+        editFacilityTypeModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name');
+            var description = button.getAttribute('data-description');
+
+            var modalIdInput = editFacilityTypeModal.querySelector('#editId');
+            var modalNameInput = editFacilityTypeModal.querySelector('#editName');
+            var modalDescriptionInput = editFacilityTypeModal.querySelector('#editDescription');
+
+            modalIdInput.value = id;
+            modalNameInput.value = name;
+            modalDescriptionInput.value = description;
+        });
+    </script>
+}

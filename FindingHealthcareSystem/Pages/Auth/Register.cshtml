@@ -1,0 +1,530 @@
+﻿@page
+@model FindingHealthcareSystem.Pages.Auth.RegisterModel
+@using BusinessObjects.Entities
+@using BusinessObjects.Enums
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-10">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <h2 class="mb-0">Đăng Ký Tài Khoản</h2>
+
+            <div class="bg-white p-4 rounded-3 shadow-sm">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row mb-4 justify-content-center">
+                        <!-- Profile Image Upload -->
+                        <div class="col-md-4 text-center">
+                            <div class="profile-upload-container mb-3">
+                                <div class="profile-image-container">
+                                    <img src="@(string.IsNullOrEmpty(Model.Input.ImgUrl) ? "/images/default-avatar.jpg" : Model.Input.ImgUrl)"
+                                         alt="Profile Picture" id="profileImage" class="profile-image-preview rounded-circle">
+                                    <div class="overlay">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <label for="profileImageUpload" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-upload me-2"></i>Tải ảnh lên
+                            </label>
+                            <input id="profileImageUpload" name="ProfileImage" type="file" accept="image/jpeg,image/png,image/gif" class="d-none" onchange="previewProfileImage(this)">
+                            <div>
+                                <small class="text-muted">Chọn ảnh đại diện của bạn</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fullname" class="form-label">Họ và Tên</label>
+                                <input type="text" class="form-control" id="fullname" asp-for="Input.Fullname" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" asp-for="Input.Email" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phoneNumber" asp-for="Input.PhoneNumber" required>
+                                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="password" asp-for="Input.Password" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="birthdayInput" class="form-label">Ngày sinh (Từ 18 tuổi trở lên)</label>
+                                <input type="date" class="form-control" id="birthdayInput" required>
+                                <input type="hidden" asp-for="Input.Birthday" id="formattedBirthday">
+                                <small id="displayBirthday" class="text-muted"></small>
+                                <small id="errorBirthday" class="text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Giới tính của bạn</label>
+                                <select class="form-select" id="gender" asp-for="Input.Gender" required>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Section -->
+                    <div class="card mb-4 mt-4" style="border-color: #99d255;">
+                        <div class="card-header" style="background-color: #f1f7eb;">
+                            <h4 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="provinceDropdown" class="form-label">Tỉnh/Thành phố</label>
+                                        <select class="form-select" id="provinceDropdown" asp-for="Input.Province" required>
+                                            <option value="">Chọn Tỉnh</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="districtDropdown" class="form-label">Quận/Huyện</label>
+                                        <select class="form-select" id="districtDropdown" asp-for="Input.District" required disabled>
+                                            <option value="">Chọn Quận/Huyện</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="wardDropdown" class="form-label">Phường/Xã</label>
+                                        <select class="form-select" id="wardDropdown" asp-for="Input.Ward" required disabled>
+                                            <option value="">Chọn Phường/Xã</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="detailAddress" class="form-label">Địa chỉ chi tiết</label>
+                                        <input type="text" class="form-control" id="detailAddress" asp-for="Input.Address" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="roleDropdown" class="form-label">Bạn là</label>
+                                <select class="form-select" id="roleDropdown" asp-for="Input.Role">
+                                    <option value="@((int)Role.Patient)">Bệnh nhân</option>
+                                    <option value="@((int)Role.Professional)">Bác sĩ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="noteFieldContainer">
+                            <div class="mb-3">
+                                <label for="note" class="form-label">Ghi chú sức khỏe</label>
+                                <input type="text" class="form-control" id="note" asp-for="Input.Note" placeholder="Bệnh nền, bệnh lý cần lưu ý (nếu có)">
+                                <small id="displayNote" class="text-muted"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="doctorFields" class="card mb-4 mt-4" style="display: none; border-color: #99d255;">
+                        <div class="card-header" style="background-color: #f1f7eb;">
+                            <h4 class="mb-0"><i class="fas fa-user-md me-2"></i>Thông tin chuyên môn</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="degree" class="form-label">Bằng Cấp</label>
+                                        <input type="text" class="form-control" id="degree" asp-for="Input.Degree" placeholder="Tiến sĩ, Bác sĩ...">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="experience" class="form-label">Kinh nghiệm (năm)</label>
+                                        <input type="text" class="form-control" id="experience" asp-for="Input.Experience">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="specialtyIds" class="form-label">Chuyên khoa</label>
+                                        <select class="form-select select2-multiple" id="specialtyIds" asp-for="Input.SpecialtyIds" multiple>
+                                            @if (ViewData["Specialties"] is List<Specialty> specialties)
+                                            {
+                                                @foreach (var specialty in specialties)
+                                                {
+                                                    <option value="@specialty.Id">@specialty.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <small class="text-muted">Bạn có thể chọn nhiều chuyên khoa</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="expertiseId" class="form-label">Chuyên môn</label>
+                                        <select class="form-select select2-multiple" id="expertiseId" asp-for="Input.ExpertiseId" multiple>
+                                            @if (ViewData["Expertises"] is List<Expertise> Expertises)
+                                            {
+                                                @foreach (var ex in Expertises)
+                                                {
+                                                    <option value="@ex.Id">@ex.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <small class="text-muted">Bạn có thể chọn nhiều chuyên môn</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Khung giờ làm việc mong muốn</label>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="mb-3">
+                                                <label for="startTime" class="form-label">Giờ bắt đầu</label>
+                                                <input type="time" class="form-control" id="startTime">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-center justify-content-center">
+                                            <span class="text-center">đến</span>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="mb-3">
+                                                <label for="endTime" class="form-label">Giờ kết thúc</label>
+                                                <input type="time" class="form-control" id="endTime">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" asp-for="Input.WorkingHours" id="workingHours">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Đăng ký
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    <script>
+        // Image preview functionality
+        function previewProfileImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const startTimeInput = document.getElementById("startTime");
+            const endTimeInput = document.getElementById("endTime");
+            const workingHoursInput = document.getElementById("workingHours");
+
+            function updateWorkingHours() {
+                const startTime = startTimeInput.value;
+                const endTime = endTimeInput.value;
+
+                if (startTime && endTime) {
+                    workingHoursInput.value = `${startTime} - ${endTime}`;
+                }
+            }
+
+            startTimeInput.addEventListener("change", updateWorkingHours);
+            endTimeInput.addEventListener("change", updateWorkingHours);
+
+            // Role dropdown functionality
+            const roleDropdown = document.getElementById("roleDropdown");
+            const doctorFields = document.getElementById("doctorFields");
+            const noteFieldContainer = document.getElementById("noteFieldContainer");
+
+            function toggleFields() {
+                if (roleDropdown.value === "@((int)Role.Professional)") {
+                    doctorFields.style.display = "block";
+                    noteFieldContainer.style.display = "none";
+                } else {
+                    doctorFields.style.display = "none";
+                    noteFieldContainer.style.display = "block";
+                }
+            }
+
+            toggleFields(); // Run on page load
+            roleDropdown.addEventListener("change", toggleFields);
+
+            // Address API integration
+            const provinceDropdown = document.getElementById("provinceDropdown");
+            const districtDropdown = document.getElementById("districtDropdown");
+            const wardDropdown = document.getElementById("wardDropdown");
+            const detailAddress = document.getElementById("detailAddress");
+
+            // Load Provinces
+            fetch("https://provinces.open-api.vn/api/?depth=1")
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(province => {
+                        const option = document.createElement("option");
+                        option.value = province.name;
+                        option.textContent = province.name;
+                        provinceDropdown.appendChild(option);
+                    });
+                });
+
+            // Fetch Districts when Province changes
+            provinceDropdown.addEventListener("change", function () {
+                const provinceName = this.value;
+                districtDropdown.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+                wardDropdown.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                districtDropdown.disabled = !provinceName;
+                wardDropdown.disabled = true;
+
+                if (provinceName) {
+                    fetch(`https://provinces.open-api.vn/api/?depth=2`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const selectedProvince = data.find(p => p.name === provinceName);
+                            if (selectedProvince) {
+                                selectedProvince.districts.forEach(district => {
+                                    const option = document.createElement("option");
+                                    option.value = district.name;
+                                    option.textContent = district.name;
+                                    districtDropdown.appendChild(option);
+                                });
+                            }
+                            districtDropdown.disabled = false;
+                        });
+                }
+            });
+
+            // Fetch Wards when District changes
+            districtDropdown.addEventListener("change", function () {
+                const districtName = this.value;
+                wardDropdown.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+                wardDropdown.disabled = !districtName;
+
+                if (districtName) {
+                    fetch(`https://provinces.open-api.vn/api/?depth=3`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(province => {
+                                const selectedDistrict = province.districts.find(d => d.name === districtName);
+                                if (selectedDistrict) {
+                                    selectedDistrict.wards.forEach(ward => {
+                                        const option = document.createElement("option");
+                                        option.value = ward.name;
+                                        option.textContent = ward.name;
+                                        wardDropdown.appendChild(option);
+                                    });
+                                }
+                            });
+                            wardDropdown.disabled = false;
+                        });
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const birthdayInput = document.getElementById("birthdayInput");
+            const formattedBirthdayInput = document.getElementById("formattedBirthday");
+            const displayBirthday = document.getElementById("displayBirthday");
+            const errorBirthday = document.getElementById("errorBirthday");
+
+            const today = new Date();
+            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()).toISOString().split("T")[0];
+            birthdayInput.setAttribute("max", maxDate);
+
+            function validateBirthday() {
+                const dateValue = birthdayInput.value; // yyyy-mm-dd
+                if (dateValue) {
+                    const [year, month, day] = dateValue.split("-");
+                    const formattedDate = `${day}/${month}/${year}`;
+                    displayBirthday.innerText = `Ngày đã chọn: ${formattedDate}`;
+                    formattedBirthdayInput.value = formattedDate;
+
+                    // Kiểm tra tuổi
+                    const birthDate = new Date(dateValue);
+                    const age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    const dayDiff = today.getDate() - birthDate.getDate();
+
+                    if (age < 18 || (age === 18 && monthDiff < 0) || (age === 18 && monthDiff === 0 && dayDiff < 0)) {
+                        errorBirthday.innerText = "Bạn phải từ 18 tuổi trở lên.";
+                        birthdayInput.value = ""; // Clear invalid input
+                        formattedBirthdayInput.value = "";
+                        return false;
+                    } else {
+                        errorBirthday.innerText = "";
+                        return true;
+                    }
+                } else {
+                    displayBirthday.innerText = "";
+                    formattedBirthdayInput.value = "";
+                    errorBirthday.innerText = "Vui lòng chọn ngày sinh.";
+                    return false;
+                }
+            }
+
+            // Kiểm tra nếu đã có giá trị từ trước (tránh mất dữ liệu sau khi tải lại trang)
+            if (birthdayInput.value) {
+                validateBirthday();
+            }
+
+            birthdayInput.addEventListener("change", validateBirthday);
+        });
+    </script>
+
+    <style>
+        /* Profile Image Upload Styles */
+        .profile-upload-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid #99d255;
+            transition: all 0.3s ease;
+        }
+
+        .profile-image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-image-container .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-image-container:hover .overlay {
+            opacity: 1;
+        }
+
+        .profile-image-container .overlay i {
+            color: white;
+            font-size: 2rem;
+        }
+
+        /* Card Styles */
+        .card {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Form Control Styles */
+        .form-control, .form-select {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ced4da;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #99d255;
+                box-shadow: 0 0 0 0.25rem rgba(153, 210, 85, 0.25);
+            }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Select2 Custom Styling */
+        .select2-container .select2-selection--multiple {
+            min-height: 38px;
+            border-radius: 0.5rem;
+            border: 1px solid #ced4da;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #99d255;
+            border: none;
+            color: #4b4b4b;
+            border-radius: 0.25rem;
+            padding: 2px 8px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #4b4b4b;
+            margin-right: 5px;
+        }
+    </style>
+}

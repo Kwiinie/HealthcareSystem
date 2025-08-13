@@ -1,0 +1,168 @@
+﻿@page "/admin/expertise"
+@model FindingHealthcareSystem.Pages.Admin.ExpertiseModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<div class="container mt-10">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Quản lý chuyên môn</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createExpertiseModal">
+            <i class="bi bi-plus-circle"></i> Thêm chuyên môn
+        </button>
+    </div>
+
+    @if (Model.Expertises == null || !Model.Expertises.Any())
+    {
+        <div class="alert alert-info">
+            Không có dữ liệu chuyên môn.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table id="expertisesTable" class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên chuyên môn</th>
+                        <th>Mô tả</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th>Ngày cập nhật</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Expertises)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Name</td>
+                            <td>@item.Description</td>
+                            <td>
+                                @if (item.IsDeleted == true)
+                                {
+                                    <span class="badge bg-danger">Đã xóa</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Hoạt động</span>
+                                }
+                            </td>
+                            <td>@(item.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            <td>@(item.UpdatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-warning" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editExpertiseModal" 
+                                            data-id="@item.Id"
+                                            data-name="@item.Name"
+                                            data-description="@item.Description"
+                                            data-isdeleted="@(item.IsDeleted == true ? "true" : "false")">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteExpertiseModal" 
+                                            data-id="@item.Id"
+                                            data-name="@item.Name">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Modal Thêm chuyên môn -->
+<div class="modal fade" id="createExpertiseModal" tabindex="-1" aria-labelledby="createExpertiseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createExpertiseModalLabel">Thêm chuyên môn mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="create-name" class="form-label">Tên chuyên môn</label>
+                        <input type="text" class="form-control" id="create-name" name="expertise.Name" required>
+                        <span class="text-danger" asp-validation-for="Expertise.Name"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="create-description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="create-description" name="expertise.Description" rows="3"></textarea>
+                        <span class="text-danger" asp-validation-for="Expertise.Description"></span>
+                    </div>
+                    <input type="hidden" name="expertise.IsDeleted" value="false">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa chuyên môn -->
+<div class="modal fade" id="editExpertiseModal" tabindex="-1" aria-labelledby="editExpertiseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Edit">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editExpertiseModalLabel">Chỉnh sửa chuyên môn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-id" name="expertise.Id">
+                    <div class="mb-3">
+                        <label for="edit-name" class="form-label">Tên chuyên môn</label>
+                        <input type="text" class="form-control" id="edit-name" name="expertise.Name" required>
+                        <span class="text-danger" asp-validation-for="Expertise.Name"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="edit-description" name="expertise.Description" rows="3"></textarea>
+                        <span class="text-danger" asp-validation-for="Expertise.Description"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="edit-isdeleted" name="expertise.IsDeleted">
+                        <label class="form-check-label" for="edit-isdeleted">Đã xóa</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xóa chuyên môn -->
+<div class="modal fade" id="deleteExpertiseModal" tabindex="-1" aria-labelledby="deleteExpertiseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Delete">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteExpertiseModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="delete-id" name="id">
+                    <p>Bạn có chắc chắn muốn xóa chuyên môn <strong id="delete-name"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

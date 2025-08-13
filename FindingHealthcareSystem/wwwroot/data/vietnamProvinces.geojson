@@ -1,0 +1,935 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hà Nội",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8542,
+          21.0285
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hồ Chí Minh",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.6602,
+          10.7626
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Đà Nẵng",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.2062,
+          16.0471
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hải Phòng",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.6881,
+          20.8449
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cần Thơ",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.722,
+          10.0341
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "An Giang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.1259,
+          10.5216
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bà Rịa - Vũng Tàu",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.2428,
+          10.5417
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bắc Giang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.1975,
+          21.281
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bắc Kạn",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8348,
+          22.146
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bạc Liêu",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7278,
+          9.2941
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bắc Ninh",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.0763,
+          21.1861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bến Tre",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.3759,
+          10.2415
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bình Định",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.2193,
+          13.782
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bình Dương",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.6578,
+          11.3254
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bình Phước",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.9046,
+          11.754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bình Thuận",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0721,
+          11.0904
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cà Mau",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.15,
+          9.1765
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cao Bằng",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.257,
+          22.6657
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Đắk Lắk",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.2378,
+          12.71
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Đắk Nông",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.6098,
+          12.2646
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Điện Biên",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.023,
+          21.3974
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Đồng Nai",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8245,
+          10.9453
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Đồng Tháp",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6219,
+          10.457
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gia Lai",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.1098,
+          13.8079
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hà Giang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.9836,
+          22.8233
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hà Nam",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9229,
+          20.5411
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hà Tĩnh",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8875,
+          18.3559
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hậu Giang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6419,
+          9.7579
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hoà Bình",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.3376,
+          20.8526
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hưng Yên",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.0511,
+          20.646
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Khánh Hòa",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.0526,
+          12.2585
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kiên Giang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.08,
+          10.0125
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kon Tum",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.9883,
+          14.3498
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lai Châu",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.4702,
+          22.3862
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lâm Đồng",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.4583,
+          11.9404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lạng Sơn",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7615,
+          21.8537
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lào Cai",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.9706,
+          22.4851
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Long An",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.4137,
+          10.5354
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nam Định",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.1621,
+          20.4388
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nghệ An",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.92,
+          19.2342
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ninh Bình",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9745,
+          20.2505
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ninh Thuận",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.9916,
+          11.6739
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Phú Thọ",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.4012,
+          21.3227
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Phú Yên",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.0929,
+          13.0882
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quảng Bình",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.6223,
+          17.4689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quảng Nam",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.0191,
+          15.5394
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quảng Ngãi",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108.8044,
+          15.1214
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quảng Ninh",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.2925,
+          21.0064
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quảng Trị",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.189,
+          16.7503
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sóc Trăng",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.9739,
+          9.602
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sơn La",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.9188,
+          21.325
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tây Ninh",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.098,
+          11.3114
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Thái Bình",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.3366,
+          20.4463
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Thái Nguyên",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.8482,
+          21.5942
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Thanh Hóa",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.7852,
+          19.8067
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Thừa Thiên Huế",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.5907,
+          16.4637
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tiền Giang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.3421,
+          10.4494
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Trà Vinh",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.2993,
+          9.8127
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tuyên Quang",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.214,
+          21.8231
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vĩnh Long",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.956,
+          10.25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vĩnh Phúc",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6049,
+          21.3089
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Yên Bái",
+        "facilities": 0,
+        "doctors": 0
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.8702,
+          21.7051
+        ]
+      }
+    }
+  ]
+}

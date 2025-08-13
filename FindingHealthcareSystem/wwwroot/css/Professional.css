@@ -1,0 +1,430 @@
+﻿body {
+    color: #37474F;
+    background-color: #F1F8E9;
+}
+
+.cardTable {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0;
+}
+
+.patientAppointment-container {
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.patientAppointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 20px;
+}
+
+.patientAppointmentTable {
+    border: 1px;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    table-layout: fixed;
+}
+
+    .patientAppointmentTable thead {
+        text-align: center;
+        background-color: #F3F7EF;
+        border-bottom: 1px solid;
+        border-color: lightgray;
+        font-weight: bold;
+    }
+
+    .patientAppointmentTable tr {
+        border-bottom: 1px;
+        border-color: lightgray;
+        border-style: solid;
+    }
+
+        .patientAppointmentTable tr:last-child {
+            border-bottom: 0px;
+        }
+
+    .patientAppointmentTable th {
+        text-align: center;
+        border-right: 1px solid;
+        border-color: lightgray;
+        padding: 10px;
+    }
+
+        .patientAppointmentTable th:last-child {
+            border-right: 0px;
+        }
+
+    .patientAppointmentTable td {
+        text-align: center;
+        border-right: 1px;
+        border-color: lightgray;
+        border-style: solid;
+        color: #333333;
+    }
+
+        .patientAppointmentTable td:last-child {
+            border-right: 0px;
+        }
+
+        .patientAppointmentTable td:first-child {
+            font-weight: bold;
+        }
+
+
+
+.appointment-card {
+    display: flex;
+    width: 90%;
+    height: 90%;
+    max-height: 130px;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid;
+    border-color: lightgray;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.05);
+    margin: 5%;
+    border-radius: 15px;
+    cursor: pointer;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+
+.appointment-cardbody {
+    display: flex;
+    flex-direction: column;
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    justify-content: center;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+
+.appointment-status {
+    font-size: x-small;
+    padding: 1px;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+}
+
+.patient-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.patient-name {
+    font-weight: bold;
+}
+
+.patient-avatar {
+    background-color: lightgray;
+    border-radius: 50px;
+    padding: 30px;
+}
+
+.patient-details {
+    display: flex;
+    gap: 20px;
+}
+
+.modal-edit-status {
+    border-radius: 50px;
+    padding: 1px 10px;
+}
+
+.edit-body {
+    padding: 20px;
+    overflow-y: auto;
+    height: 70vh;
+}
+
+.edit-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid;
+    border-color: rgb(0, 0, 0, 0.1);
+    margin-top: 10px;
+    white-space: nowrap;
+}
+
+.section-title {
+    font-weight: 600;
+    font-size: 20px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid;
+    border-color: rgb(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.note-section {
+    margin-top: 10px;
+}
+
+.notes-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    color: #495057;
+    max-height: 150px;
+    overflow-y: auto;
+    line-height: 1.5;
+    border-left: 3px solid #6c757d;
+    word-wrap: break-word;
+}
+
+.modal-container {
+    background-color: white;
+    width: 450px;
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.pagination {
+    justify-content: center;
+    gap: 10px;
+}
+
+.paging-btn {
+    border-radius: 5px;
+    border: none;
+    background-color: blue;
+    opacity: 0.6;
+    color: white;
+}
+
+    .paging-btn:hover {
+        opacity: 0.8;
+    }
+
+    .paging-btn:disabled {
+        background-color: lightgray;
+    }
+
+.input-page {
+    width: 30px;
+    text-align: center;
+}
+
+.reschedule-section {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 15px;
+    border: 1px solid #eee;
+    display: none;
+}
+
+    .reschedule-section.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+
+
+.reschedule-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.reschedule-label {
+    flex: 0 0 120px;
+    color: #666;
+    padding-top: 8px;
+}
+
+.reschedule-input {
+    flex: 1;
+}
+
+input[type="date"],
+input[type="time"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.time-slot {
+    padding: 7px 8px;
+    background-color: #f1f1f1;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+    .time-slot.disable {
+        color: lightgray;
+    }
+
+    .time-slot:hover {
+        background-color: #e3e3e3;
+    }
+
+    .time-slot.selected {
+        background-color: #E3F2FD;
+        color: #1565C0;
+    }
+
+#appointmentSelectStatus {
+    width: 50%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.service-section {
+    padding: 15px;
+    background-color: rgb(0, 0, 0,5%);
+    border-radius: 10px;
+}
+
+    .service-section label {
+        width: 100%;
+    }
+
+.edit-service-container {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-bottom: 1px solid;
+    border-color: lightgray;
+    padding-bottom: 10px;
+}
+
+.modal-edit-servicePrice {
+    width: max-content;
+    text-align: end;
+}
+
+.service-description {
+    white-space: break-spaces;
+}
+
+.diagnose-section {
+    margin-top: 15px;
+    display: none;
+}
+
+    .diagnose-section.active {
+        display: block;
+    }
+
+.empty-card {
+    min-height: 150px;
+}
+
+
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-dropdown-toggle {
+    background-color: #f8f9fa; /* Màu nền giống btn-light */
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+    .custom-dropdown-toggle:hover {
+        background-color: #e9ecef;
+        transform: scale(1.05); /* Hiệu ứng phóng to nhẹ khi hover */
+    }
+
+.custom-dropdown-menu {
+    display: none; /* Ẩn menu mặc định */
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+}
+
+    .custom-dropdown-menu.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+.custom-dropdown-item {
+    display: block;
+    padding: 8px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+    .custom-dropdown-item:hover {
+        background-color: #f1f3f5;
+    }
+
+.custom-dropdown-warning {
+    color: #f39c12; /* Màu vàng cho mục "Báo cáo" */
+}
+
+    .custom-dropdown-warning:hover {
+        background-color: #fff3cd;
+        color: #e67e22;
+    }
+
+.custom-dropdown-divider {
+    border: 0;
+    border-top: 1px solid #dee2e6;
+    margin: 5px 0;
+}
+
+.patient-note{
+    width: 50%;
+    white-space: break-spaces;
+}

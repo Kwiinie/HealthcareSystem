@@ -1,0 +1,412 @@
+﻿.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+    .card:hover {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #333;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+    }
+
+/* Calendar Styles */
+.wrapper {
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+    .wrapper header {
+        display: flex;
+        align-items: center;
+        padding: 25px 30px 10px;
+        justify-content: space-between;
+        background-color: var(--light-gray);
+    }
+
+header .current-date {
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #333;
+}
+
+header .icons span {
+    height: 40px;
+    width: 40px;
+    color: #555;
+    font-size: 1.9rem;
+    margin: 0 1px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+    header .icons span:hover {
+        background: rgba(153, 210, 85, 0.2);
+        color: var(--primary-color);
+    }
+
+.calendar {
+    padding: 20px;
+}
+
+    .calendar ul {
+        display: flex;
+        list-style: none;
+        flex-wrap: wrap;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+    }
+
+    .calendar .weeks li {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #555;
+        padding: 10px 0;
+    }
+
+    .calendar .days {
+        margin-bottom: 20px;
+    }
+
+    .calendar ul li {
+        position: relative;
+        width: calc(100% / 7);
+        margin-top: 10px;
+    }
+
+    .calendar .days li {
+        z-index: 1;
+        cursor: pointer;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        padding: 10px 0;
+        transition: all 0.2s ease;
+    }
+
+.days li.inactive {
+    color: #bbb;
+}
+
+.days li.active {
+    color: #fff;
+}
+
+.calendar .days li::before {
+    position: absolute;
+    content: "";
+    height: 36px;
+    width: 36px;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s ease;
+}
+
+.days li:hover::before {
+    background: rgba(153, 210, 85, 0.2);
+}
+
+.days li.active::before {
+    background: var(--primary-color);
+    box-shadow: 0 4px 8px rgba(153, 210, 85, 0.4);
+}
+
+/* Time Slots Styles */
+.time-slot {
+    padding: 14px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    position: relative; /* Added for badge positioning */
+}
+
+    .time-slot:not(.disabled):hover {
+        border-color: var(--primary-color);
+        background-color: rgba(153, 210, 85, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .time-slot.selected {
+        border-color: var(--primary-color);
+        background-color: rgba(153, 210, 85, 0.2);
+        box-shadow: 0 4px 8px rgba(153, 210, 85, 0.3);
+    }
+
+    .time-slot.disabled {
+        background-color: rgba(0, 0, 0, 0.1);
+        cursor: not-allowed;
+    }
+
+        .time-slot.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+.time-slot-text {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* Additional styles for badge */
+.badge-available {
+    display: block;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    color: #666;
+}
+
+.time-slot.disabled .badge-available {
+    color: #dc3545;
+}
+
+.time-slot.selected .badge-available {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Appointment Summary Styles */
+.appointment-summary {
+    background-color: white;
+    border-radius: 16px;
+    padding: 24px;
+    height: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.summary-item {
+    margin-bottom: 18px;
+}
+
+.summary-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.summary-value {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #333;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.doctor-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.doctor-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #fff;
+}
+
+.doctor-details {
+    flex: 1;
+}
+
+.doctor-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 1.1rem;
+}
+
+.doctor-specialty {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.booking-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.booking-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.booking-subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.time-slots-container {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.appointment-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.badge-available {
+    background-color: rgba(153, 210, 85, 0.2);
+    color: var(--primary-active);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.service-card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.service-options {
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.service-item {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+    .service-item:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(153, 210, 85, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .service-item .custom-control {
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .service-item .custom-control-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding-left: 30px;
+        cursor: pointer;
+    }
+
+        .service-item .custom-control-label::before,
+        .service-item .custom-control-label::after {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+.service-info {
+    flex: 1;
+}
+
+.service-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.service-description {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.service-price {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    white-space: nowrap;
+    margin-left: 15px;
+}
+
+.custom-radio .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* When service is selected */
+.service-item .custom-control-input:checked ~ .custom-control-label {
+    color: var(--primary-color);
+}
+
+.service-item .custom-control-input:checked + .custom-control-label .service-name {
+    color: var(--primary-active);
+}
+
+.service-item .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(153, 210, 85, 0.25);
+}
+
+/* Selected service item styling */
+.service-item.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(153, 210, 85, 0.1);
+    box-shadow: 0 4px 8px rgba(153, 210, 85, 0.15);
+}

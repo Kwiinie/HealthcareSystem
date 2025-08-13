@@ -1,0 +1,71 @@
+﻿@page "admin/facility/service/create"
+@model FindingHealthcareSystem.Pages.Admin.Facility.Service.CreateModel
+@{
+}
+<div class="container mt-4">
+    <h1>Thêm dịch vụ mới</h1>
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+        + Thêm dịch vụ
+    </button>
+
+    <div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addServiceModalLabel">Thêm dịch vụ mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addServiceForm" method="post" asp-page-handler="AddService">
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="FacilityId" value="@Model.FacilityId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Service.Name" class="form-label">Tên dịch vụ</label>
+                            <input type="text" class="form-control" asp-for="Service.Name" id="serviceName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Service.Price" class="form-label">Giá (VNĐ)</label>
+                            <input type="number" class="form-control" asp-for="Service.Price" id="servicePrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Service.Description" class="form-label">Mô tả</label>
+                            <textarea class="form-control" asp-for="Service.Description" id="serviceDescription" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Thêm dịch vụ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let addServiceForm = document.getElementById("addServiceForm");
+
+        addServiceForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            let formData = new FormData(addServiceForm);
+
+            fetch(addServiceForm.action, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Dịch vụ đã được thêm thành công!");
+                    location.reload(); // Hoặc cập nhật danh sách dịch vụ mà không cần reload
+                } else {
+                    alert("Có lỗi xảy ra: " + data.message);
+                }
+            })
+            .catch(error => console.error("Lỗi khi gửi dữ liệu:", error));
+        });
+    });
+</script>
