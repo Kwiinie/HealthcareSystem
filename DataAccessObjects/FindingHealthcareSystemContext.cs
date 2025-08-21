@@ -49,6 +49,8 @@ public partial class FindingHealthcareSystemContext : DbContext
 
     public virtual DbSet<Professional> Professionals { get; set; }
 
+    public virtual DbSet<ProfessionalDocument> ProfessionalDocuments { get; set; }
+
     public virtual DbSet<ProfessionalSpecialty> ProfessionalSpecialties { get; set; }
 
     public virtual DbSet<PublicService> PublicServices { get; set; }
@@ -136,6 +138,15 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.Entity<Review>()
         .Property(a => a.ProviderType)
         .HasConversion<string>();
+        
+        // ProfessionalDocument enum conversions
+        modelBuilder.Entity<ProfessionalDocument>()
+            .Property(p => p.DocumentType)
+            .HasConversion<string>();
+            
+        modelBuilder.Entity<ProfessionalDocument>()
+            .Property(p => p.VerificationStatus)
+            .HasConversion<string>();
         //config polymorphic relationship
         modelBuilder.Entity<Appointment>()
             .HasOne(a => a.PrivateService)
@@ -195,6 +206,7 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new PrivateServiceConfiguration());
         modelBuilder.ApplyConfiguration(new ProfessionalConfiguration());
+        modelBuilder.ApplyConfiguration(new ProfessionalDocumentConfiguration());
         modelBuilder.ApplyConfiguration(new ProfessionalSpecialtyConfiguration());
         modelBuilder.ApplyConfiguration(new PublicServiceConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());

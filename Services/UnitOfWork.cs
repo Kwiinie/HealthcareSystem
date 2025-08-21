@@ -18,6 +18,7 @@ namespace Services
         private readonly Dictionary<Type, object> _repositories;
         private readonly IFacilityRepository _facilityRepository;
         private readonly IProfessionalRepository _professionalRepository;
+        private readonly IProfessionalDocumentRepository _professionalDocumentRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IUserRepository _userRepository;
 
@@ -27,7 +28,8 @@ namespace Services
 
 
         public UnitOfWork(FindingHealthcareSystemContext context, IFacilityRepository facilityRepository, 
-                            IProfessionalRepository professionalRepository, IAppointmentRepository appointmentRepository, IUserRepository userRepository)
+                            IProfessionalRepository professionalRepository, IProfessionalDocumentRepository professionalDocumentRepository,
+                            IAppointmentRepository appointmentRepository, IUserRepository userRepository)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _repositories = new Dictionary<Type, object>();
@@ -36,6 +38,7 @@ namespace Services
             ArticleImageRepository = GetRepository<ArticleImage>();
             _facilityRepository = facilityRepository;
             _professionalRepository = professionalRepository;
+            _professionalDocumentRepository = professionalDocumentRepository;
             _appointmentRepository = appointmentRepository;
             _userRepository = userRepository;
         }
@@ -55,6 +58,7 @@ namespace Services
 
         public IFacilityRepository FacilityRepository => _facilityRepository;
         public IProfessionalRepository ProfessionalRepository => _professionalRepository;
+        public IProfessionalDocumentRepository ProfessionalDocumentRepository => _professionalDocumentRepository;
         public IAppointmentRepository AppointmentRepository => _appointmentRepository;
         public IUserRepository UserRepository => _userRepository;
 

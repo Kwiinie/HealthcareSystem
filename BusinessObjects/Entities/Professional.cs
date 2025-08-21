@@ -33,6 +33,8 @@ public partial class Professional : BaseEntity
 
     public virtual ICollection<ProfessionalSpecialty> ProfessionalSpecialties { get; set; } = new List<ProfessionalSpecialty>();
 
+    public virtual ICollection<ProfessionalDocument> Documents { get; set; } = new List<ProfessionalDocument>();
+
     public virtual User? User { get; set; }
 
     // Thêm các thuộc tính từ User

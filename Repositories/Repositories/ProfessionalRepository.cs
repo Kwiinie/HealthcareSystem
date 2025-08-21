@@ -106,5 +106,17 @@ namespace Repositories.Repositories
             return await _professionalDao.GetAllProfessionalsPagedAsync(filter, pageIndex, pageSize, orderBy);
         }
 
+        public async Task UpdateAsync(Professional professional)
+        {
+            professional.UpdatedAt = DateTime.UtcNow;
+            await _professionalDao.UpdateAsync(professional);
+        }
+
+        public async Task<Professional> GetProfessionalByUserIdAsync(int userId)
+        {
+            var professionals = await _professionalDao.GetAllAsync();
+            return professionals.FirstOrDefault(p => p.UserId == userId);
+        }
+
     }
 }

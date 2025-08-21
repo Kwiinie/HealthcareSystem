@@ -27,6 +27,7 @@ namespace Repositories.Interfaces
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         void Update(T entity);
+        Task UpdateAsync(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
         Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null);

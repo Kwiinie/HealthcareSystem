@@ -133,7 +133,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
 
             
 
-            if (result.Success)
+            if (result.IsSuccess)
             {
 
                 var paymentRequest = new PaymentRequestDto
