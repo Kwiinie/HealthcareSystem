@@ -39,9 +39,9 @@ namespace DataAccessObjects.Configurations
 
             // Foreign Key relationships
             builder.HasOne(d => d.Professional)
-                .WithMany()
+                .WithMany(p => p.Documents)
                 .HasForeignKey(d => d.ProfessionalId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(d => d.ReviewedByUser)
                 .WithMany()

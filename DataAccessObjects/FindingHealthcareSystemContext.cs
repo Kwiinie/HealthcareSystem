@@ -138,12 +138,12 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.Entity<Review>()
         .Property(a => a.ProviderType)
         .HasConversion<string>();
-        
+
         // ProfessionalDocument enum conversions
         modelBuilder.Entity<ProfessionalDocument>()
             .Property(p => p.DocumentType)
             .HasConversion<string>();
-            
+
         modelBuilder.Entity<ProfessionalDocument>()
             .Property(p => p.VerificationStatus)
             .HasConversion<string>();
@@ -190,6 +190,18 @@ public partial class FindingHealthcareSystemContext : DbContext
             .HasForeignKey(a => a.ProviderId)
             .HasConstraintName("FK_Review_Facility")
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProfessionalDocument>()
+            .HasOne(pd => pd.Professional)
+            .WithMany(p => p.Documents)
+            .HasForeignKey(pd => pd.ProfessionalId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProfessionalDocument>()
+            .HasOne(pd => pd.ReviewedByUser)
+            .WithMany()
+            .HasForeignKey(pd => pd.ReviewedByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
         modelBuilder.ApplyConfiguration(new ArticleConfiguration());
