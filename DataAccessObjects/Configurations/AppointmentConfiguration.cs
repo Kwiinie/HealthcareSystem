@@ -32,187 +32,134 @@ namespace DataAccessObjects.Configurations
                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasData(
-                new Appointment
-                {
-                    Id = 1,
-                    PatientId = 1, // Trần Thị Bích
-                    ProviderId = 1, // Phạm Minh Đức (Bác sĩ chuyên khoa I)
-                    ProviderType = ProviderType.Professional,
-                    ServiceId = 1, // Khám và tư vấn bệnh lý nội khoa
-                    ServiceType = ServiceType.Private,
-                    Status = AppointmentStatus.Completed,
-                    PaymentId = 1, // VnPay Completed
-                    Date = new DateTime(2025, 3, 15, 9, 0, 0)
-                },
+    // 1. Completed
+    new Appointment
+    {
+        Id = 1,
+        PatientId = 1, // Trần Thị Bích
+        ProviderId = 1, // Phạm Minh Đức
+        ProviderType = ProviderType.Professional,
+        ServiceId = 1,
+        ServiceType = ServiceType.Private,
+        Status = AppointmentStatus.Completed,
+        PaymentId = 1,
+        ExpectedStart = new DateTime(2025, 3, 15, 9, 0, 0),
+        CheckedInAt = new DateTime(2025, 3, 15, 8, 50, 0),
+        StartAt = new DateTime(2025, 3, 15, 9, 5, 0),
+        EndAt = new DateTime(2025, 3, 15, 9, 30, 0),
+        TicketNo = 1
+    },
+
+    // 2. Completed
     new Appointment
     {
         Id = 2,
         PatientId = 2, // Lê Văn Cường
-        ProviderId = 3, // Ngô Thanh Tùng (Bác sĩ Răng - Hàm - Mặt)
+        ProviderId = 3, // Ngô Thanh Tùng
         ProviderType = ProviderType.Professional,
-        ServiceId = 11, // Điều trị tủy răng
+        ServiceId = 11,
         ServiceType = ServiceType.Private,
         Status = AppointmentStatus.Completed,
-        PaymentId = 2, // VnPay Completed
-        Date = new DateTime(2025, 3, 18, 14, 0, 0)
+        PaymentId = 2,
+        ExpectedStart = new DateTime(2025, 3, 18, 14, 0, 0),
+        CheckedInAt = new DateTime(2025, 3, 18, 13, 50, 0),
+        StartAt = new DateTime(2025, 3, 18, 14, 5, 0),
+        EndAt = new DateTime(2025, 3, 18, 14, 45, 0),
+        TicketNo = 2
     },
 
-    // Confirmed appointments
+    // 3. Scheduled (chưa đến ngày)
     new Appointment
     {
         Id = 3,
         PatientId = 3, // Hoàng Thị Mai
-        ProviderId = 4, // Lý Thị Hoa (Bác sĩ chuyên khoa II)
+        ProviderId = 4, // Lý Thị Hoa
         ProviderType = ProviderType.Professional,
-        ServiceId = 14, // Khám và tư vấn bệnh lý tim mạch
+        ServiceId = 14,
         ServiceType = ServiceType.Private,
-        Status = AppointmentStatus.Confirmed,
-        PaymentId = 3, // VnPay Completed
-        Date = new DateTime(2025, 4, 5, 10, 0, 0)
+        Status = AppointmentStatus.Scheduled,
+        PaymentId = 3,
+        ExpectedStart = new DateTime(2025, 4, 5, 10, 0, 0),
+        TicketNo = 3
     },
 
-    // Pending appointments
+    // 4. CheckedIn
     new Appointment
     {
         Id = 4,
         PatientId = 4, // Đỗ Quang Nam
-        ProviderId = 2, // Vũ Thị Hương (Bác sĩ y học cổ truyền)
+        ProviderId = 2, // Vũ Thị Hương
         ProviderType = ProviderType.Professional,
-        ServiceId = 7, // Châm cứu điều trị đau nhức
+        ServiceId = 7,
         ServiceType = ServiceType.Private,
-        Status = AppointmentStatus.Pending,
-        PaymentId = 4, // VnPay Completed
-        Date = new DateTime(2025, 4, 10, 15, 0, 0)
+        Status = AppointmentStatus.CheckedIn,
+        PaymentId = 4,
+        ExpectedStart = new DateTime(2025, 4, 10, 15, 0, 0),
+        CheckedInAt = new DateTime(2025, 4, 10, 14, 50, 0),
+        TicketNo = 4
     },
 
-    // Awaiting Payment appointments
+    // 5. InExam
     new Appointment
     {
         Id = 5,
         PatientId = 5, // Dương Văn Khải
-        ProviderId = 17, // Nguyễn Thị Bích Ngọc (Y học cổ truyền)
+        ProviderId = 17,
         ProviderType = ProviderType.Professional,
-        ServiceId = 9, // Cấy chỉ điều trị đau thần kinh tọa
+        ServiceId = 9,
         ServiceType = ServiceType.Private,
-        Status = AppointmentStatus.AwaitingPayment,
+        Status = AppointmentStatus.InExam,
         PaymentId = null,
-        Date = new DateTime(2025, 4, 12, 9, 30, 0)
+        ExpectedStart = new DateTime(2025, 4, 12, 9, 30, 0),
+        CheckedInAt = new DateTime(2025, 4, 12, 9, 20, 0),
+        StartAt = new DateTime(2025, 4, 12, 9, 35, 0),
+        TicketNo = 5
     },
 
-    // Cancelled appointments
+    // 6. CancelledByPatient
     new Appointment
     {
         Id = 6,
         PatientId = 6, // Trịnh Thu Phương
-        ProviderId = 15, // Phạm Thị Thùy Trang (Da liễu)
+        ProviderId = 15, // Phạm Thị Thùy Trang
         ProviderType = ProviderType.Professional,
-        ServiceId = 36, // Điều trị mụn và sẹo
+        ServiceId = 36,
         ServiceType = ServiceType.Private,
-        Status = AppointmentStatus.Cancelled,
-        PaymentId = 5, // VnPay Completed (refund would be processed)
-        Date = new DateTime(2025, 4, 2, 13, 0, 0)
+        Status = AppointmentStatus.CancelledByPatient,
+        PaymentId = 5,
+        ExpectedStart = new DateTime(2025, 4, 2, 13, 0, 0)
     },
 
-    // Appointments with Public Services (Facility as Provider)
-
-    // Expired appointments
+    // 7. CancelledByDoctor
     new Appointment
     {
         Id = 7,
         PatientId = 1, // Trần Thị Bích
         ProviderId = 1, // Bệnh viện Bạch Mai
         ProviderType = ProviderType.Facility,
-        ServiceId = 1, // Khám nội khoa tổng quát
+        ServiceId = 1,
         ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.Expired,
+        Status = AppointmentStatus.CancelledByDoctor,
         PaymentId = null,
-        Date = new DateTime(2025, 3, 25, 8, 0, 0)
+        ExpectedStart = new DateTime(2025, 3, 25, 8, 0, 0)
     },
 
-    // Pending with pending payment
+    // 8. NoShow
     new Appointment
     {
         Id = 8,
         PatientId = 2, // Lê Văn Cường
-        ProviderId = 7, // Bệnh viện Mắt Trung ương
+        ProviderId = 7, // Bệnh viện Mắt TW
         ProviderType = ProviderType.Facility,
-        ServiceId = 19, // Khám mắt tổng quát
+        ServiceId = 19,
         ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.AwaitingPayment,
-        PaymentId = 6, // VnPay Pending
-        Date = new DateTime(2025, 4, 15, 10, 30, 0)
-    },
-
-    // Rejected appointments
-    new Appointment
-    {
-        Id = 9,
-        PatientId = 3, // Hoàng Thị Mai
-        ProviderId = 17, // Bệnh viện Đa khoa Phương Châu
-        ProviderType = ProviderType.Facility,
-        ServiceId = 9, // Sinh mổ theo yêu cầu
-        ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.Rejected,
-        PaymentId = null,
-        Date = new DateTime(2025, 4, 20, 9, 0, 0)
-    },
-
-    // Rescheduled appointments
-    new Appointment
-    {
-        Id = 10,
-        PatientId = 4, // Đỗ Quang Nam
-        ProviderId = 3, // Bệnh viện Đa khoa Quốc tế Vinmec Times City
-        ProviderType = ProviderType.Facility,
-        ServiceId = 39, // Gói khám sức khỏe tổng quát cơ bản
-        ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.Rescheduled,
-        PaymentId = null,
-        Date = new DateTime(2025, 4, 18, 14, 0, 0)
-    },
-
-    // Failed payment
-    new Appointment
-    {
-        Id = 11,
-        PatientId = 5, // Dương Văn Khải
-        ProviderId = 6, // Bệnh viện K Tân Triều
-        ProviderType = ProviderType.Facility,
-        ServiceId = 36, // Khám ung bướu
-        ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.AwaitingPayment,
-        PaymentId = 8, // VnPay Failed
-        Date = new DateTime(2025, 4, 22, 9, 0, 0)
-    },
-
-    // Pending payment
-    new Appointment
-    {
-        Id = 12,
-        PatientId = 6, // Trịnh Thu Phương
-        ProviderId = 5, // Bệnh viện Đa khoa Trung ương Cần Thơ
-        ProviderType = ProviderType.Facility,
-        ServiceId = 29, // Vật lý trị liệu
-        ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.AwaitingPayment,
-        PaymentId = 7, // VnPay Pending
-        Date = new DateTime(2025, 4, 25, 15, 30, 0)
-    },
-
-    // Failed payment
-    new Appointment
-    {
-        Id = 13,
-        PatientId = 1, // Trần Thị Bích
-        ProviderId = 12, // Bệnh viện Đa khoa tỉnh Lào Cai
-        ProviderType = ProviderType.Facility,
-        ServiceId = 41, // Khám và điều trị y học cổ truyền
-        ServiceType = ServiceType.Public,
-        Status = AppointmentStatus.AwaitingPayment,
-        PaymentId = 9, // VnPay Failed
-        Date = new DateTime(2025, 4, 28, 8, 30, 0)
+        Status = AppointmentStatus.NoShow,
+        PaymentId = 6,
+        ExpectedStart = new DateTime(2025, 4, 15, 10, 30, 0),
+        TicketNo = 6
     }
-           );
+);
+
         }
     }
 }

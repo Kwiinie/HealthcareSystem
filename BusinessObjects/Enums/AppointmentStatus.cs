@@ -8,14 +8,12 @@ namespace BusinessObjects.Enums
 {
     public enum AppointmentStatus
     {
-        AwaitingPayment, //waiting for payment
-        Pending, //after paying successfully
-        Expired, //after 30 mins no payment
-        Confirmed, //professional confirms
-        Rescheduled, //patient rescheduled before 2 days of appointment 
-        Cancelled, //patient cancelled
-        Rejected, //professional rejects
-        Completed, //professional confirm after appointment
-        None,
+        Scheduled, //slot booked
+        CheckedIn, //patient arrived at front desk
+        InExam, //doctor started the encouter
+        Completed, //confirmed by doctor
+        CancelledByPatient, //patient cancels before the exam starts (at least 2 hours)
+        CancelledByDoctor,
+        NoShow, //auto-marked if not checked in (after expected time 15min)
     }
 }

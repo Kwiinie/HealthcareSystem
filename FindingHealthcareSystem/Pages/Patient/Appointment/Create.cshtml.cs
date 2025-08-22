@@ -3,6 +3,7 @@ using BusinessObjects.DTOs.Appointment;
 using BusinessObjects.DTOs.Facility;
 using BusinessObjects.DTOs.Payment;
 using BusinessObjects.DTOs.Professional;
+using BusinessObjects.DTOs.Schedule;
 using BusinessObjects.DTOs.Service;
 using BusinessObjects.Entities;
 using BusinessObjects.Enums;
@@ -12,7 +13,9 @@ using Newtonsoft.Json;
 using Repositories.Interfaces;
 using Services.Interfaces;
 using Services.Services;
+using System;
 using System.Globalization;
+
 
 namespace FindingHealthcareSystem.Pages.Patient.Appointment
 {
@@ -21,66 +24,202 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
         private readonly IProfessionalService _professionalService;
         private readonly IFacilityService _facilityService;
         private readonly IAppointmentService _appointmentService;
-        private readonly IPaymentService _paymentService;
 
-        public CreateModel(IProfessionalService professionalService, IFacilityService facilityService, IAppointmentService appointmentService, IPaymentService paymentService)
+        public CreateModel(IProfessionalService professionalService, IFacilityService facilityService, IAppointmentService appointmentService)
         {
             _facilityService = facilityService;
             _professionalService = professionalService;
             _appointmentService = appointmentService;
-            _paymentService = paymentService;
         }
 
         /// <summary>
         /// PROPERTIES
         /// </summary>
         public List<string> TimeSlots { get; set; } = new List<string>();
+        [BindProperty(SupportsGet = true)]
         public int? ProviderId { get; set; }
-        public string ProviderType { get; set; }
-        public DateTime SelectedDate { get; set; } = DateTime.Today;
+
+        [BindProperty(SupportsGet = true)]
+        public string ProviderType { get; set; } = "";
+
+        public DateOnly? ScheduleStartDate { get; set; }
+        public DateOnly? ScheduleEndDate { get; set; }
+        public string WorkingWeekdaysJson { get; set; } = "[]";        
+        public string ClosedExceptionDatesJson { get; set; } = "[]";
+        [BindProperty(SupportsGet = true)]
+        public DateTime? SelectedDate { get; set; } = DateTime.Today;
         public string SelectedTimeSlot { get; set; }
         [BindProperty]
         public int SelectedServiceId { get; set; }
         public ProfessionalDto? professional { get; set; }
+
         public SearchingFacilityDto? facility { get; set; }
         public List<ServiceDto> services { get; set; } = new List<ServiceDto>();
 
-        public async Task<IActionResult> OnGetAsync(int? ProviderId, string ProviderType, string SelectedDate, string SelectedTimeSlot = null, int SelectedServiceId = 0)
+        public async Task<IActionResult> OnGetAsync(
+    int? ProviderId,
+    string ProviderType,
+    string SelectedDate,
+    string SelectedTimeSlot = null,
+    int SelectedServiceId = 0)
         {
             this.ProviderId = ProviderId;
             this.ProviderType = ProviderType;
 
             if (!string.IsNullOrEmpty(SelectedDate) && DateTime.TryParse(SelectedDate, out DateTime parsedDate))
-            {
                 this.SelectedDate = parsedDate;
-            }
 
             this.SelectedTimeSlot = SelectedTimeSlot;
             this.SelectedServiceId = SelectedServiceId;
 
-            string workingHours = null;
+            TimeSlots = new List<string>();
+
             if (ProviderId.HasValue)
             {
                 if (ProviderType == "Professional")
                 {
                     professional = await _professionalService.GetById(ProviderId.Value);
-                    services = professional?.PrivateServices ?? new List<ServiceDto>();
-                    workingHours = professional?.WorkingHours;
+                    if (professional == null) return NotFound();
+
+                    services = professional.PrivateServices ?? new List<ServiceDto>();
+
+                    var active = professional.ActiveSchedule
+                              ?? professional.Schedules?
+                                 .Where(s => s != null)
+                                 .OrderBy(s => s.StartDate)
+                                 .FirstOrDefault();
+
+                    if (active != null)
+                    {
+                        ScheduleStartDate = active.StartDate;
+                        ScheduleEndDate   = active.EndDate;
+
+                        var weekdays = (active.WorkingDates ?? new List<WorkingDateDto>())
+                                        .Select(w => w.Weekday)
+                                        .Distinct()
+                                        .OrderBy(x => x)
+                                        .ToList();
+
+                        var closedDates = (professional.ScheduleExceptions ?? new List<ScheduleExceptionDto>())
+                                            .Where(e => e.IsClosed)
+                                            .Select(e => e.Date.ToString("yyyy-MM-dd"))
+                                            .Distinct()
+                                            .OrderBy(d => d)
+                                            .ToList();
+
+                        WorkingWeekdaysJson      = JsonConvert.SerializeObject(weekdays);
+                        ClosedExceptionDatesJson = JsonConvert.SerializeObject(closedDates);
+
+                        if (!this.SelectedDate.HasValue)
+                        {
+                            var today = DateOnly.FromDateTime(DateTime.Today);
+                            var pick = ClampToRange(today, active.StartDate, active.EndDate);
+                            var valid = FindNextValidDate(pick, active, weekdays, closedDates);
+                            this.SelectedDate = new DateTime(valid.Year, valid.Month, valid.Day);
+                        }
+
+                        if (this.SelectedDate.HasValue)
+                        {
+                            var dateOnly = DateOnly.FromDateTime(this.SelectedDate.Value.Date);
+
+                            if (dateOnly >= active.StartDate && dateOnly <= active.EndDate)
+                            {
+                                int jsDow = (int)this.SelectedDate.Value.DayOfWeek; // 0..6
+                                int dbDow = jsDow == 0 ? 1 : jsDow + 1;              // map sang 1..7
+
+                                var workingDatesForDay = active.WorkingDates?
+                                                            .Where(w => w.Weekday == dbDow)
+                                                            .ToList();
+
+                                var ex = professional.ScheduleExceptions?
+                                                       .FirstOrDefault(e => e.Date == dateOnly);
+
+                                if (ex?.IsClosed == true)
+                                {
+                                    TimeSlots.Clear(); // nghỉ hẳn
+                                }
+                                else if (workingDatesForDay != null && workingDatesForDay.Any())
+                                {
+                                    foreach (var wd in workingDatesForDay)
+                                    {
+                                        var start = wd.StartTime;
+                                        var end = wd.EndTime;
+
+                                        // Nếu có override exception
+                                        if (ex?.NewStartTime.HasValue == true && ex?.NewEndTime.HasValue == true)
+                                        {
+                                            start = ex.NewStartTime.Value;
+                                            end   = ex.NewEndTime.Value;
+                                        }
+
+                                        string fmt(TimeOnly t) => t.ToString("H\\:mm");
+                                        TimeSlots.Add($"{fmt(start)} - {fmt(end)}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        this.SelectedDate ??= DateTime.Today;
+                        WorkingWeekdaysJson = "[]";
+                        ClosedExceptionDatesJson = "[]";
+                    }
                 }
                 else if (ProviderType == "Facility")
                 {
                     facility = await _facilityService.GetFacilityById(ProviderId.Value);
                     services = facility?.PublicServices ?? new List<ServiceDto>();
-                    workingHours = "7:00 - 16:00"; 
+
+                    var start = DateOnly.FromDateTime(DateTime.Today);
+                    var end = start.AddDays(30);
+                    ScheduleStartDate = start;
+                    ScheduleEndDate   = end;
+
+                    var weekdays = new List<int> { 2, 3, 4, 5, 6, 7 }; // T2..T7
+                    WorkingWeekdaysJson = JsonConvert.SerializeObject(weekdays);
+                    ClosedExceptionDatesJson = "[]";
+                    this.SelectedDate ??= DateTime.Today;
+
+                    TimeSlots.Add("7:00 - 16:00");
                 }
 
-                TimeSlots = GenerateTimeSlots(workingHours, this.SelectedDate);
-                var bookedSlots = await GetBookedSlots(ProviderId.Value, ProviderType, this.SelectedDate);
+                var bookedSlots = await GetBookedSlots(ProviderId.Value, ProviderType, this.SelectedDate.Value);
                 ViewData["BookedSlots"] = bookedSlots;
             }
 
             return Page();
         }
+
+        private static DateOnly ClampToRange(DateOnly d, DateOnly start, DateOnly end)
+        {
+            if (d < start) return start;
+            if (d > end) return end;
+            return d;
+        }
+
+        private static DateOnly FindNextValidDate(DateOnly startTry,
+                                                  ScheduleDto active,
+                                                  List<int> weekdaysDb,           
+                                                  List<string> closedDatesYmd)    
+        {
+            var d = startTry;
+            while (d <= active.EndDate)
+            {
+                if (d >= active.StartDate && d <= active.EndDate)
+                {
+                    var jsDow = (int)d.DayOfWeek; // 0..6
+                    var dbDow = jsDow == 0 ? 1 : jsDow + 1;
+
+                    var ymd = d.ToString("yyyy-MM-dd");
+                    if (weekdaysDb.Contains(dbDow) && !closedDatesYmd.Contains(ymd))
+                        return d;
+                }
+                d = d.AddDays(1);
+            }
+            return startTry;
+        }
+    
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -129,101 +268,139 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
             };
 
             var result = await _appointmentService.AddAsync(createAppointmentDto);
+            return Page();
 
+            //if (result.Success)
+            //{
 
-            
+            //    var paymentRequest = new PaymentRequestDto
+            //    {
+            //        AppointmentId = result.Data.Id.Value,
+            //        Amount = (float)depositAmount
+            //    };
 
-            if (result.Success)
-            {
+            //    string paymentUrl = await _paymentService.CreatePaymentAsync(paymentRequest, HttpContext);
+            //    return Redirect(paymentUrl);
 
-                var paymentRequest = new PaymentRequestDto
-                {
-                    AppointmentId = result.Data.Id.Value,
-                    Amount = (float)depositAmount
-                };
-
-                string paymentUrl = await _paymentService.CreatePaymentAsync(paymentRequest, HttpContext);
-                return Redirect(paymentUrl);
-
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                return Page();
-            }
+            //}
+            //else
+            //{
+            //    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            //    return Page();
+            //}
         }
 
 
-        /// <summary>
-        /// THIS FOR GENERATING ALL TIME SLOTS BASED ON WORKING HOURS
-        /// </summary>
-        private List<string> GenerateTimeSlots(string workingHours, DateTime selectedDate)
+        private static readonly AppointmentStatus[] _effectiveStatuses = new[]
         {
-            List<string> slots = new List<string>();
+    AppointmentStatus.Scheduled,
+    AppointmentStatus.CheckedIn,
+    AppointmentStatus.InExam,
+    AppointmentStatus.Completed
+};
 
-            if (selectedDate.DayOfWeek == DayOfWeek.Sunday)
-                return slots;
+        private async Task<List<(DateTime start, DateTime end, int stepMinutes)>> GetWorkingIntervalsForDayAsync(
+            int providerId, string providerType, DateOnly day)
+        {
+            var intervals = new List<(DateTime, DateTime, int)>();
 
-            if (string.IsNullOrEmpty(workingHours))
-                return slots;
-
-            string[] hours = workingHours.Split('-');
-            if (hours.Length != 2)
-                return slots;
-
-            TimeSpan startTime;
-            TimeSpan endTime;
-
-            if (!TimeSpan.TryParseExact(hours[0].Trim(), "h\\:mm", CultureInfo.InvariantCulture, out startTime))
+            if (providerType == "Professional")
             {
-                if (!TimeSpan.TryParse(hours[0].Trim(), out startTime))
-                    return slots;
-            }
+                var pro = await _professionalService.GetById(providerId);
+                if (pro == null) return intervals;
 
-            if (!TimeSpan.TryParseExact(hours[1].Trim(), "h\\:mm", CultureInfo.InvariantCulture, out endTime))
-            {
-                if (!TimeSpan.TryParse(hours[1].Trim(), out endTime))
-                    return slots;
-            }
+                var active = pro.ActiveSchedule
+                          ?? pro.Schedules?.Where(s => s != null)
+                                           .OrderBy(s => s.StartDate)
+                                           .FirstOrDefault();
+                if (active == null) return intervals;
 
-            // Generate one-hour slots
-            while (startTime < endTime)
-            {
-                TimeSpan nextSlot = startTime.Add(TimeSpan.FromHours(1));
-                if (nextSlot <= endTime)
+                var jsDow = (int)day.DayOfWeek; // 0..6
+                var dbDow = jsDow == 0 ? 1 : jsDow + 1;
+
+                var wds = active.WorkingDates?.Where(w => w.Weekday == dbDow).ToList();
+                if (wds == null || wds.Count == 0) return intervals;
+
+                var ex = pro.ScheduleExceptions?.FirstOrDefault(e => e.Date == day);
+                if (ex?.IsClosed == true) return intervals; 
+
+                foreach (var wd in wds)
                 {
-                    string formattedStart = $"{startTime.Hours:D2}:{startTime.Minutes:D2}";
-                    string formattedEnd = $"{nextSlot.Hours:D2}:{nextSlot.Minutes:D2}";
-                    slots.Add($"{formattedStart} - {formattedEnd}");
+                    var start = wd.StartTime;
+                    var end = wd.EndTime;
+
+                    if (ex?.NewStartTime.HasValue == true && ex?.NewEndTime.HasValue == true)
+                    {
+                        start = ex.NewStartTime.Value;
+                        end   = ex.NewEndTime.Value;
+                    }
+
+                    if (end <= start) continue;
+
+                    var step = wd.SlotDuration + wd.SlotBuffer; 
+                    var stepMinutes = (int)Math.Max(1, step.TotalMinutes);
+
+                    var s = day.ToDateTime(start);
+                    var e = day.ToDateTime(end);
+
+                    intervals.Add((s, e, stepMinutes));
                 }
-                startTime = nextSlot;
+            }
+            else if (providerType == "Facility")
+            {
+                var s = day.ToDateTime(new TimeOnly(7, 0));
+                var e = day.ToDateTime(new TimeOnly(16, 0));
+                var stepMinutes = 30; 
+                intervals.Add((s, e, stepMinutes));
             }
 
-            return slots;
+            return intervals.OrderBy(t => t.Item1).ToList();
         }
 
-        /// <summary>
-        ///  FINDING AVAILABLE SLOTS FOR BOOKING
-        /// </summary>
         private async Task<List<string>> GetBookedSlots(int providerId, string providerType, DateTime date)
         {
-            List<string> bookedSlots = new List<string>();
+            var result = new List<string>();
+            var day = DateOnly.FromDateTime(date.Date);
 
-            //FIND APPOINTMENT LIST BY DATE AND PROVIDER
-            var appointments = await _appointmentService.GetAppointmentsByProviderAndDate(providerId, providerType, date);
-
-            foreach (var appointment in appointments)
+            int? currentUserId = null;
+            var currentUserJson = HttpContext.Session.GetString("User");
+            if (!string.IsNullOrEmpty(currentUserJson))
             {
-                var appointmentStart = appointment.Date;
-                var appointmentEnd = appointment.Date.AddHours(1);
-
-                string formattedStart = $"{appointmentStart.Hour:D2}:{appointmentStart.Minute:D2}";
-                string formattedEnd = $"{appointmentEnd.Hour:D2}:{appointmentEnd.Minute:D2}";
-
-                bookedSlots.Add($"{formattedStart} - {formattedEnd}");
+                var currentUser = JsonConvert.DeserializeObject<GeneralUserDto>(currentUserJson);
+                currentUserId = currentUser?.Id;
             }
 
-            return bookedSlots;
+            var intervals = await GetWorkingIntervalsForDayAsync(providerId, providerType, day);
+            if (intervals.Count == 0) return result;
+
+            var dayAppts = await _appointmentService.GetAppointmentsByProviderAndDate(providerId, providerType, date);
+            var effective = dayAppts.Where(a => _effectiveStatuses.Contains(a.Status)).ToList();
+
+            foreach (var (start, end, stepMinutes) in intervals)
+            {
+                var totalMinutes = (end - start).TotalMinutes;
+                var slotsInBlock = Math.Max(1, (int)Math.Floor(totalMinutes / stepMinutes));
+
+                var onlineCap = Math.Max(1, (int)Math.Floor(slotsInBlock * 0.7));
+
+                var bookedOnlineCount = effective.Count(a =>
+                    a.Source == AppointmentSource.Booked &&
+                    a.Date >= start && a.Date < end);
+
+                var currentUserHasAppt = currentUserId.HasValue &&
+                    effective.Any(a => a.PatientId == currentUserId.Value &&
+                                       a.Date >= start && a.Date < end);
+
+                if (bookedOnlineCount >= onlineCap || currentUserHasAppt)
+                {
+                    string formatted = $"{start: H\\:mm} - {end: H\\:mm}".Trim();
+                    formatted = formatted.Replace(" 0", " 0").Replace(" :", ":");
+                    result.Add(formatted);
+                }
+            }
+
+            return result;
         }
+
     };
 }

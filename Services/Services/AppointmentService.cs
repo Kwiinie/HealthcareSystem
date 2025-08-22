@@ -70,7 +70,7 @@ namespace Services.Services
                     return Result<AppointmentDTO>.ErrorResult("Invalid ProviderType.");
                 }
 
-                entity.Status = AppointmentStatus.AwaitingPayment;
+                entity.Status = AppointmentStatus.Scheduled;
                 entity.PatientId = patient.Id;
                 var appointmentEntity = _mapper.Map<Appointment>(entity);
                 appointmentEntity.Patient = patient;

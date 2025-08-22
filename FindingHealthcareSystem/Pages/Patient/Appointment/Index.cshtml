@@ -107,16 +107,16 @@
                                     @{
                                         var statusText = appointment.Status switch
                                         {
-                                            AppointmentStatus.AwaitingPayment => "Chờ thanh toán",
-                                            AppointmentStatus.Pending => "Chờ xác nhận",
-                                            AppointmentStatus.Confirmed => "Đã xác nhận",
+                                            AppointmentStatus.Scheduled => "Đã đặt lịch",
+                                            AppointmentStatus.CheckedIn => "Đã đến khám",
+                                            AppointmentStatus.InExam => "Đang khám",
                                             AppointmentStatus.Completed => "Hoàn thành",
-                                            AppointmentStatus.Rescheduled => "Dời lịch",
-                                            AppointmentStatus.Cancelled => "Hủy",
-                                            AppointmentStatus.Rejected => "Từ chối",
-                                            AppointmentStatus.Expired => "Thanh toán thất bại",
+                                            AppointmentStatus.CancelledByPatient => "Bệnh nhân hủy",
+                                            AppointmentStatus.CancelledByDoctor => "Bác sĩ hủy",
+                                            AppointmentStatus.NoShow => "Không đến",
                                             _ => appointment.Status.ToString()
                                         };
+
                                     }
                                     <span class="status-badge status-@appointment.Status.ToString().ToLower()">@statusText</span>
                                 </td>

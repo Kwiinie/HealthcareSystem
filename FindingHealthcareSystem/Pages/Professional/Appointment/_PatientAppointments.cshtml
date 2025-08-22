@@ -26,14 +26,18 @@
     {
         return status switch
         {
-            AppointmentStatus.Pending => @"background-color: rgb(0, 128, 0);",    // Xanh lá đậm
-            AppointmentStatus.Rejected => @"background-color: rgb(204, 0, 0);",   // Đỏ đậm
-            AppointmentStatus.Completed => @"background-color: rgb(0, 128, 0);",  // Xanh lá đậm
-            AppointmentStatus.Confirmed => @"background-color: rgb(0, 100, 0);",  // Xanh lá đậm (màu tối hơn)
-            AppointmentStatus.Cancelled => @"background-color: rgb(255, 87, 34);",  // Cam đậm
-            AppointmentStatus.Rescheduled => @"background-color: rgb(255, 87, 34);",  // Cam đậm
+            AppointmentStatus.Scheduled => "background-color: rgb(0, 123, 255);",   // Xanh dương (đã đặt lịch)
+            AppointmentStatus.CheckedIn => "background-color: rgb(40, 167, 69);",   // Xanh lá (đã đến)
+            AppointmentStatus.InExam => "background-color: rgb(23, 162, 184);",  // Xanh ngọc (đang khám)
+            AppointmentStatus.Completed => "background-color: rgb(0, 128, 0);",     // Xanh lá đậm (hoàn thành)
+            AppointmentStatus.CancelledByPatient => "background-color: rgb(255, 193, 7);",   // Vàng cam (bệnh nhân hủy)
+            AppointmentStatus.CancelledByDoctor => "background-color: rgb(220, 53, 69);",   // Đỏ (bác sĩ hủy)
+            AppointmentStatus.NoShow => "background-color: rgb(108, 117, 125);", // Xám (không đến)
             _ => ""
         };
+
+
+
     }
 
 }

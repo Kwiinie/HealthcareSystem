@@ -58,6 +58,10 @@ public partial class FindingHealthcareSystemContext : DbContext
     public virtual DbSet<Specialty> Specialties { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Schedule> Schedules { get; set; }
+    public virtual DbSet<ScheduleException> ScheduleExceptions { get; set; }
+    public virtual DbSet<WorkingDate> WorkingDates { get; set; }
+
 
     private string GetConnectionString()
     {
@@ -105,6 +109,10 @@ public partial class FindingHealthcareSystemContext : DbContext
             .Property(a => a.Status)
             .HasConversion<string>();
 
+        modelBuilder.Entity<Appointment>()
+            .Property(p => p.Source)
+            .HasConversion<string>();
+
         modelBuilder.Entity<Payment>()
             .Property(p => p.PaymentMethod)
             .HasConversion<string>();
@@ -136,6 +144,7 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.Entity<Review>()
         .Property(a => a.ProviderType)
         .HasConversion<string>();
+
         //config polymorphic relationship
         modelBuilder.Entity<Appointment>()
             .HasOne(a => a.PrivateService)
@@ -160,13 +169,6 @@ public partial class FindingHealthcareSystemContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Appointment>()
-            .HasOne(a => a.Professional)
-            .WithMany()
-            .HasForeignKey(a => a.ProviderId)
-            .HasConstraintName("FK_Appointment_Professional")
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Appointment>()
             .HasOne(a => a.Facility)
             .WithMany()
             .HasForeignKey(a => a.ProviderId)
@@ -179,6 +181,7 @@ public partial class FindingHealthcareSystemContext : DbContext
             .HasForeignKey(a => a.ProviderId)
             .HasConstraintName("FK_Review_Facility")
             .OnDelete(DeleteBehavior.Restrict);
+
 
         modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
         modelBuilder.ApplyConfiguration(new ArticleConfiguration());
@@ -200,6 +203,9 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
         modelBuilder.ApplyConfiguration(new SpecialtyConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new ScheduleConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkingDateConfiguration());
+        modelBuilder.ApplyConfiguration(new ScheduleExceptionConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
 

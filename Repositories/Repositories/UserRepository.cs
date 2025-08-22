@@ -58,11 +58,11 @@ namespace Repositories.Repositories
         }
 
 
-public async Task<User?> GetByIdAsync(int id)
+    public async Task<User?> GetByIdAsync(int id)
     {
         return await _context.Users
-            .Include(u => u.Patient)        // Nếu cần lấy Patient
-            .Include(u => u.Professional)   // Nếu cần lấy Professional
+            .Include(u => u.Patients)        
+            .Include(u => u.Professional)   
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 

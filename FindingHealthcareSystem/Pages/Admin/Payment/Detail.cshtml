@@ -106,21 +106,34 @@
                                 <tr>
                                     <th>Status:</th>
                                     <td>
-                                        @switch (Model.Appointment.Status)
+                                    @switch (Model.Appointment.Status)
                                         {
-                                            case BusinessObjects.Enums.AppointmentStatus.Pending:
-                                                <span class="badge bg-warning">Pending</span>
+                                            case BusinessObjects.Enums.AppointmentStatus.Scheduled:
+                                                <span class="badge bg-primary">Scheduled</span>
                                                 break;
-                                            case BusinessObjects.Enums.AppointmentStatus.Confirmed:
-                                                <span class="badge bg-info">Confirmed</span>
+                                            case BusinessObjects.Enums.AppointmentStatus.CheckedIn:
+                                                <span class="badge bg-info">Checked In</span>
+                                                break;
+                                            case BusinessObjects.Enums.AppointmentStatus.InExam:
+                                                <span class="badge bg-warning text-dark">In Exam</span>
                                                 break;
                                             case BusinessObjects.Enums.AppointmentStatus.Completed:
                                                 <span class="badge bg-success">Completed</span>
                                                 break;
+                                            case BusinessObjects.Enums.AppointmentStatus.CancelledByPatient:
+                                                <span class="badge bg-secondary">Cancelled by Patient</span>
+                                                break;
+                                            case BusinessObjects.Enums.AppointmentStatus.CancelledByDoctor:
+                                                <span class="badge bg-danger">Cancelled by Doctor</span>
+                                                break;
+                                            case BusinessObjects.Enums.AppointmentStatus.NoShow:
+                                                <span class="badge bg-dark">No Show</span>
+                                                break;
                                             default:
-                                                <span class="badge bg-secondary">Unknown</span>
+                                                <span class="badge bg-light text-dark">Unknown</span>
                                                 break;
                                         }
+
                                     </td>
                                 </tr>
                                 <tr>

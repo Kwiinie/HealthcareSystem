@@ -18,10 +18,11 @@ namespace DataAccessObjects.Configurations
             builder.HasKey(x => x.Id);
 
 
-            builder.HasOne(u => u.Patient)
-                   .WithOne(p => p.User)
-                   .HasForeignKey<Patient>(p => p.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(u => u.Patients)
+            .WithOne(p => p.User)
+            .HasForeignKey(p => p.UserId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(u => u.Professional)
                  .WithOne(p => p.User)

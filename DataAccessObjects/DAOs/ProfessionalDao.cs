@@ -28,6 +28,8 @@ namespace DataAccessObjects.DAOs
                .Include(f => f.PrivateServices)
                .Include(f => f.ProfessionalSpecialties)
                .ThenInclude(f => f.Specialty)
+               .Include(f => f.Schedules).ThenInclude(f => f.WorkingDates)
+               .Include(f => f.ScheduleExceptions)
                .FirstOrDefaultAsync(f => f.Id == id);
         }
 

@@ -64,7 +64,7 @@ namespace FindingHealthcareSystem
             services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<IPublicServiceLayer, PublicServiceLayer>();
             services.AddScoped<IAppointmentService, AppointmentService>();
-            services.AddScoped<IPaymentService, PaymentService>();
+            //services.AddScoped<IPaymentService, PaymentService>();
             services.AddSingleton<VNPayHelper>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IExpertiseService, ExpertiseService>();

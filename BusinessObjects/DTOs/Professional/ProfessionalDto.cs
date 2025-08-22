@@ -1,4 +1,5 @@
-﻿using BusinessObjects.DTOs.Service;
+﻿using BusinessObjects.DTOs.Schedule;
+using BusinessObjects.DTOs.Service;
 using BusinessObjects.Enums;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,14 @@ namespace BusinessObjects.DTOs.Professional
         public List<string> Specialties { get; set; } = new List<string>(); 
 
         public List<ServiceDto> PrivateServices { get; set; } = new List<ServiceDto>();
+
+        public List<ScheduleDto> Schedules { get; set; } = new();
+        public List<ScheduleExceptionDto> ScheduleExceptions { get; set; } = new();
+
+        public ScheduleDto? ActiveSchedule { get; set; }
+
+        public DateOnly? ScheduleStartDate => ActiveSchedule?.StartDate;
+        public DateOnly? ScheduleEndDate => ActiveSchedule?.EndDate;
     }
 
 

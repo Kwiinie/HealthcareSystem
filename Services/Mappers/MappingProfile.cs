@@ -1,23 +1,25 @@
 ﻿using AutoMapper;
 using BusinessObjects.Dtos.User;
+using BusinessObjects.DTOs;
+using BusinessObjects.DTOs.Appointment;
+using BusinessObjects.DTOs.Article;
 using BusinessObjects.DTOs.Auth;
 using BusinessObjects.DTOs.Auth;
+using BusinessObjects.DTOs.Category;
 using BusinessObjects.DTOs.Department;
 using BusinessObjects.DTOs.Facility;
+using BusinessObjects.DTOs.Payment;
+using BusinessObjects.DTOs.Professional;
+using BusinessObjects.DTOs.Schedule;
+using BusinessObjects.DTOs.Service;
 using BusinessObjects.Entities;
+using BusinessObjects.Enums;
+using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BusinessObjects.DTOs.Article;
-using BusinessObjects.DTOs.Professional;
-using BusinessObjects.DTOs.Service;
-using BusinessObjects.DTOs.Appointment;
-using BusinessObjects.DTOs;
-using BusinessObjects.DTOs.Category;
-using BusinessObjects.Enums;
-using BusinessObjects.DTOs.Payment;
 
 namespace Services.Mappers
 {
@@ -57,6 +59,9 @@ namespace Services.Mappers
                         : (int?)null
             ));
             CreateMap<Expertise, ExpertiseDTO>().ReverseMap();
+            CreateMap<WorkingDate, WorkingDateDto>();
+            CreateMap<Schedule, ScheduleDto>();
+            CreateMap<ScheduleException, ScheduleExceptionDto>();
 
 
 
@@ -81,7 +86,11 @@ namespace Services.Mappers
                Name = ps.Name,
                Price = ps.Price,
                Description = ps.Description
-           }).ToList()));
+           })
+           .ToList()))
+           .ForMember(dest => dest.Schedules, opt => opt.MapFrom(src => src.Schedules))
+            .ForMember(dest => dest.ScheduleExceptions, opt => opt.MapFrom(src => src.ScheduleExceptions))
+            .ForMember(dest => dest.ActiveSchedule, opt => opt.MapFrom<ActiveScheduleResolver>());
 
 
             ////////////////////////////////////////////////////////////////

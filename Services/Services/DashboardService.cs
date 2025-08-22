@@ -48,14 +48,13 @@ namespace Services.Services
                 {
                     Label = g.Key switch
                     {
-                        AppointmentStatus.AwaitingPayment => "Chờ thanh toán",
-                        AppointmentStatus.Pending => "Chờ xác nhận",
-                        AppointmentStatus.Confirmed => "Đã xác nhận",
+                        AppointmentStatus.Scheduled => "Đã đặt lịch",
+                        AppointmentStatus.CheckedIn => "Đã đến khám",
+                        AppointmentStatus.InExam => "Đang khám",
                         AppointmentStatus.Completed => "Hoàn thành",
-                        AppointmentStatus.Rescheduled => "Dời lịch",
-                        AppointmentStatus.Cancelled => "Đã hủy",
-                        AppointmentStatus.Rejected => "Từ chối",
-                        AppointmentStatus.Expired => "Thanh toán thất bại",
+                        AppointmentStatus.CancelledByPatient => "Bệnh nhân hủy",
+                        AppointmentStatus.CancelledByDoctor => "Bác sĩ hủy",
+                        AppointmentStatus.NoShow => "Không đến",
                         _ => g.Key.ToString()
                     },
                     Count = g.Count()
@@ -90,7 +89,7 @@ namespace Services.Services
 
             var result = appointments
                 .Where(a => a.Date.HasValue &&
-                      (a.Status == AppointmentStatus.Confirmed || a.Status == AppointmentStatus.Completed || a.Status == AppointmentStatus.Rescheduled))
+                      (a.Status == AppointmentStatus.Completed))
                 .GroupBy(a => a.Date.Value.Month)
                 .OrderBy(g => g.Key)
                 .Select(g => new MonthlyAppointmentDto

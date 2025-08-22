@@ -20,6 +20,7 @@ public partial class Professional : BaseEntity
     public string? Address { get; set; }
 
     public string? Degree { get; set; }
+    public string? DegreeFile { get; set; } 
 
     public string? Experience { get; set; }
 
@@ -32,6 +33,8 @@ public partial class Professional : BaseEntity
     public virtual ICollection<PrivateService> PrivateServices { get; set; } = new List<PrivateService>();
 
     public virtual ICollection<ProfessionalSpecialty> ProfessionalSpecialties { get; set; } = new List<ProfessionalSpecialty>();
+    public ICollection<ScheduleException> ScheduleExceptions { get; set; }
+    public ICollection<Schedule> Schedules { get; set; }
 
     public virtual User? User { get; set; }
 
