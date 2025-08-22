@@ -46,7 +46,8 @@ namespace DataAccessObjects.Configurations
                      Gender = "Nam",
                      Birthday = new DateOnly(1990, 1, 1),
                      Status = UserStatus.Active,
-                     ImgUrl = "/images/users/admin_avatar.jpg"
+                     ImgUrl = "/images/users/admin_avatar.jpg",
+                     IsVerified = true
                  },
     new User
     {
@@ -59,7 +60,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1995, 5, 20),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/patient_female_1.jpg"
+        ImgUrl = "/images/users/patient_female_1.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -72,7 +74,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1988, 10, 12),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/patient_male_1.jpg"
+        ImgUrl = "/images/users/patient_male_1.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -85,7 +88,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1985, 3, 15),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_male_1.jpg"
+        ImgUrl = "/images/users/doctor_male_1.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -98,7 +102,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1987, 7, 30),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_female_1.jpg"
+        ImgUrl = "/images/users/doctor_female_1.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -111,7 +116,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1992, 8, 25),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/patient_female_2.jpg"
+        ImgUrl = "/images/users/patient_female_2.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -124,7 +130,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1998, 4, 17),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/patient_male_2.jpg"
+        ImgUrl = "/images/users/patient_male_2.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -137,7 +144,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1980, 11, 5),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_male_2.jpg"
+        ImgUrl = "/images/users/doctor_male_2.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -150,7 +158,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1983, 6, 10),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_female_2.jpg"
+        ImgUrl = "/images/users/doctor_female_2.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -163,7 +172,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1990, 9, 15),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/patient_male_3.jpg"
+        ImgUrl = "/images/users/patient_male_3.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -176,7 +186,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1994, 2, 28),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/patient_female_3.jpg"
+        ImgUrl = "/images/users/patient_female_3.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -189,7 +200,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1978, 4, 20),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_male_3.jpg"
+        ImgUrl = "/images/users/doctor_male_3.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -202,7 +214,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1982, 5, 15),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_female_3.jpg"
+        ImgUrl = "/images/users/doctor_female_3.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -215,7 +228,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1970, 8, 22),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_male_4.jpg"
+        ImgUrl = "/images/users/doctor_male_4.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -228,7 +242,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1990, 3, 10),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_female_4.jpg"
+        ImgUrl = "/images/users/doctor_female_4.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -358,7 +373,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1978, 8, 20),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_male_10.jpg"
+        ImgUrl = "/images/users/doctor_male_10.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -371,7 +387,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nữ",
         Birthday = new DateOnly(1987, 3, 12),
         Status = UserStatus.Active,
-        ImgUrl = "/images/users/doctor_female_9.jpg"
+        ImgUrl = "/images/users/doctor_female_9.jpg",
+        IsVerified = true
     },
     new User
     {
@@ -384,7 +401,8 @@ namespace DataAccessObjects.Configurations
         Gender = "Nam",
         Birthday = new DateOnly(1991, 10, 8),
         Status = UserStatus.Inactive,
-        ImgUrl = "/images/users/doctor_male_11.jpg"
+        ImgUrl = "/images/users/doctor_male_11.jpg",
+        IsVerified = true
     }
 
 
