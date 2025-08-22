@@ -38,7 +38,10 @@ namespace FindingHealthcareSystem
             services.AddScoped<IProfessionalRepository, ProfessionalRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-            
+            services.AddScoped<IProfessionalDocumentRepository, ProfessionalDocumentRepository>();
+            services.AddScoped<IProfessionalRepository, ProfessionalRepository>();
+
+
 
             ////////////////////////////////////////////////
             ///                 SERVICES                ///
@@ -69,7 +72,7 @@ namespace FindingHealthcareSystem
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IExpertiseService, ExpertiseService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
-
+            services.AddScoped<IProfessionalVerificationService, ProfessionalVerificationService>();
 
 
             return services;

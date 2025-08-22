@@ -7,7 +7,7 @@ namespace Services.Interfaces
     public interface IProfessionalVerificationService
     {
         Task<Result<ProfessionalDocumentDto>> UploadDocumentAsync(UploadDocumentDto uploadDto);
-        Task<Result<bool>> VerifyDocumentAsync(VerifyDocumentDto verifyDto);
+        Task<Result<ProfessionalDocumentDto>> VerifyDocumentAsync(VerifyDocumentDto verifyDto);
         Task<DocumentVerificationSummaryDto> GetVerificationSummaryAsync(int professionalId);
         Task<List<ProfessionalDocumentDto>> GetExpiringDocumentsAsync(int daysAhead = 30);
         Task<bool> CanProfessionalProvideServicesAsync(int professionalId);

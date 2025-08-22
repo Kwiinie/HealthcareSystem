@@ -1,9 +1,11 @@
+using BusinessObjects.Commons;
 using BusinessObjects.DTOs.Professional;
 using BusinessObjects.Entities;
 using BusinessObjects.Enums;
 using Microsoft.AspNetCore.Http;
 using Services.Interfaces;
-using BusinessObjects.Commons;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Services.Services
 {
@@ -114,17 +116,24 @@ namespace Services.Services
             }
         }
 
-        public async Task<BusinessObjects.Commons.Result<bool>> VerifyDocumentAsync(VerifyDocumentDto verifyDto)
+        public async Task<Result<ProfessionalDocumentDto>> VerifyDocumentAsync(VerifyDocumentDto verifyDto)
         {
             try
             {
-                var document = await _unitOfWork.ProfessionalDocumentRepository.GetByIdAsync(verifyDto.DocumentId);
-                if (document == null)
-                    return BusinessObjects.Commons.Result<bool>.Failure("Không tìm thấy tài liệu");
+                Console.WriteLine($"Starting verification for document {verifyDto.DocumentId}");
 
-                // Business rule: Only admins can verify documents
-                var previousStatus = document.VerificationStatus;
-                
+                var documentRepo = _unitOfWork.GetRepository<ProfessionalDocument>();
+                var document = await documentRepo.GetByIdAsync(verifyDto.DocumentId);
+
+                if (document == null)
+                {
+                    Console.WriteLine($"Document {verifyDto.DocumentId} not found");
+                    return Result<ProfessionalDocumentDto>.Failure("Không tìm thấy chứng chỉ");
+                }
+
+                Console.WriteLine($"Found document {document.Id}, current status: {document.VerificationStatus}");
+
+                // Update document verification status
                 document.VerificationStatus = verifyDto.VerificationStatus;
                 document.AdminNotes = verifyDto.AdminNotes;
                 document.RejectionReason = verifyDto.RejectionReason;
@@ -132,18 +141,33 @@ namespace Services.Services
                 document.ReviewedAt = DateTime.UtcNow;
                 document.UpdatedAt = DateTime.UtcNow;
 
-                await _unitOfWork.ProfessionalDocumentRepository.UpdateAsync(document);
+                Console.WriteLine($"Updating document to status: {verifyDto.VerificationStatus}");
 
-                // Update professional status based on overall document verification status
-                await UpdateProfessionalStatusAfterVerification(document.ProfessionalId);
+                documentRepo.Update(document);
+                var saveResult = await _unitOfWork.SaveChangesAsync();
 
-                await _unitOfWork.SaveChangesAsync();
+                Console.WriteLine($"Save changes result: {saveResult} changes saved");
 
-                return BusinessObjects.Commons.Result<bool>.Success(true);
+                // Return updated document
+                var updatedDocuments = await GetPendingVerificationDocumentsAsync();
+                var updatedDocument = updatedDocuments.FirstOrDefault(d => d.Id == verifyDto.DocumentId);
+
+                if (updatedDocument != null)
+                {
+                    Console.WriteLine($"Updated document verification status: {updatedDocument.VerificationStatus}");
+                }
+                else
+                {
+                    Console.WriteLine("Updated document not found in list");
+                }
+
+                return Result<ProfessionalDocumentDto>.Success(updatedDocument);
             }
             catch (Exception ex)
             {
-                return BusinessObjects.Commons.Result<bool>.Failure($"Lỗi khi xác thực tài liệu: {ex.Message}");
+                Console.WriteLine($"Exception in VerifyDocumentAsync: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Result<ProfessionalDocumentDto>.Failure($"Lỗi khi xác thực chứng chỉ: {ex.Message}");
             }
         }
 
@@ -187,12 +211,14 @@ namespace Services.Services
 
         public async Task<List<ProfessionalDocumentDto>> GetExpiringDocumentsAsync(int daysAhead = 30)
         {
-            var cutoffDate = DateOnly.FromDateTime(DateTime.Now.AddDays(daysAhead));
-            var documents = await _unitOfWork.ProfessionalDocumentRepository.GetExpiringDocumentsAsync(cutoffDate);
-            
-            return documents.Where(d => d.ExpiryDate.HasValue && d.ExpiryDate <= cutoffDate)
-                           .Select(MapToDto)
-                           .ToList();
+            var allDocuments = await GetPendingVerificationDocumentsAsync();
+            var cutoffDate = DateTime.Now.AddDays(daysAhead);
+
+            return allDocuments.Where(d => d.ExpiryDate.HasValue &&
+                                         d.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) <= cutoffDate &&
+                                         d.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) >= DateTime.Now)
+                             .OrderBy(d => d.ExpiryDate)
+                             .ToList();
         }
 
         public async Task<bool> CanProfessionalProvideServicesAsync(int professionalId)
@@ -230,11 +256,68 @@ namespace Services.Services
             return documents.Select(MapToDto).ToList();
         }
 
+        public async Task<List<ProfessionalDocumentDto>> GetDocumentsByProfessionalIdAsync(int professionalId)
+        {
+            var allDocuments = await GetPendingVerificationDocumentsAsync();
+            return allDocuments.Where(d => d.ProfessionalId == professionalId).ToList();
+        }
+
         public async Task<List<ProfessionalDocumentDto>> GetPendingVerificationDocumentsAsync()
         {
-            var pendingDocuments = await _unitOfWork.ProfessionalDocumentRepository.GetByVerificationStatusAsync(
-                DocumentVerificationStatus.PendingVerification);
-            return pendingDocuments.Select(MapToDto).ToList();
+            var documentRepo = _unitOfWork.GetRepository<ProfessionalDocument>();
+            var documents = await documentRepo.GetAllAsync();
+
+            // Get all documents with their related Professional and User data
+            var documentsWithRelatedData = new List<ProfessionalDocumentDto>();
+
+            foreach (var doc in documents.Where(d => !d.IsDeleted))
+            {
+                var professional = await _unitOfWork.ProfessionalRepository.GetByIdAsync(doc.ProfessionalId);
+                var user = professional?.User;
+
+                var dto = new ProfessionalDocumentDto
+                {
+                    Id = doc.Id,
+                    ProfessionalId = doc.ProfessionalId,
+                    DocumentType = doc.DocumentType,
+                    DocumentName = doc.DocumentName,
+                    DocumentUrl = doc.DocumentUrl,
+                    DocumentNumber = doc.DocumentNumber,
+                    IssueDate = doc.IssueDate,
+                    ExpiryDate = doc.ExpiryDate,
+                    IssuingAuthority = doc.IssuingAuthority,
+                    VerificationStatus = doc.VerificationStatus,
+                    AdminNotes = doc.AdminNotes,
+                    ReviewedByUserId = doc.ReviewedByUserId,
+                    ReviewedAt = doc.ReviewedAt,
+                    RejectionReason = doc.RejectionReason,
+                    FileSizeBytes = doc.FileSizeBytes,
+                    FileExtension = doc.FileExtension,
+                    OriginalFileName = doc.OriginalFileName,
+                    CreatedAt = doc.CreatedAt,
+
+                    // Populate the missing fields with actual data
+                    ProfessionalName = user?.Fullname ?? $"Professional ID: {doc.ProfessionalId}",
+                    DocumentTypeName = GetEnumDisplayName(doc.DocumentType),
+                    VerificationStatusName = GetEnumDisplayName(doc.VerificationStatus),
+                    IsExpiringSoon = doc.ExpiryDate.HasValue &&
+                                   doc.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) <= DateTime.Now.AddDays(30),
+                    IsExpired = doc.ExpiryDate.HasValue &&
+                              doc.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) < DateTime.Now
+                };
+
+                // Get reviewer name if available
+                if (doc.ReviewedByUserId.HasValue)
+                {
+                    var reviewerRepo = _unitOfWork.GetRepository<User>();
+                    var reviewer = await reviewerRepo.GetByIdAsync(doc.ReviewedByUserId.Value);
+                    dto.ReviewedByName = reviewer?.Fullname;
+                }
+
+                documentsWithRelatedData.Add(dto);
+            }
+
+            return documentsWithRelatedData.OrderByDescending(d => d.CreatedAt).ToList();
         }
 
         public async Task<Result<bool>> RequestAdditionalDocumentsAsync(int professionalId, string reason, List<DocumentType> requiredDocuments)
@@ -404,6 +487,13 @@ namespace Services.Services
                 IsExpiringSoon = document.ExpiryDate.HasValue && 
                                document.ExpiryDate.Value <= DateOnly.FromDateTime(DateTime.Now.AddDays(ExpiryWarningDays))
             };
+        }
+
+        private string GetEnumDisplayName(Enum enumValue)
+        {
+            var field = enumValue.GetType().GetField(enumValue.ToString());
+            var attribute = field?.GetCustomAttribute<DisplayAttribute>();
+            return attribute?.Name ?? enumValue.ToString();
         }
 
         private string GetVerificationStatusName(DocumentVerificationStatus status)

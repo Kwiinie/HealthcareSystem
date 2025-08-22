@@ -30,8 +30,8 @@ namespace Services.Services
             _httpContextAccessor = httpContextAccessor;
             
             // Initialize Cloudinary
-            var cloudinaryUrl = configuration.GetConnectionString("Cloudinary") ?? 
-                              "cloudinary://your_api_key:your_api_secret@your_cloud_name";
+            var cloudinaryUrl = configuration.GetConnectionString("CloudinarySettings") ??
+                              "cloudinary://617478869489255:anr6kzuQuHhCx8bScRMtuvsMSuY@djsifikxn";
             _cloudinary = new Cloudinary(cloudinaryUrl);
         }
 

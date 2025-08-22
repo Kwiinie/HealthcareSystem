@@ -19,7 +19,7 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
 
         public List<ProfessionalDocumentDto> Documents { get; set; } = new();
         public DocumentVerificationStatistics Statistics { get; set; } = new();
-        
+
         // Filter properties
         public string? FilterStatus { get; set; }
         public string? FilterDocumentType { get; set; }
@@ -50,7 +50,7 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
             }
         }
 
-        public async Task<IActionResult> OnPostAsync(VerifyDocumentDto verifyDto)
+        public async Task<IActionResult> OnPostVerifyDocumentAsync(int documentId, string verificationStatus, string? adminNotes)
         {
             try
             {
@@ -58,31 +58,40 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
                 if (currentUser?.Role != BusinessObjects.Enums.Role.Admin.ToString())
                     return Unauthorized();
 
-                verifyDto.ReviewedByUserId = currentUser.Id;
-                
+                Console.WriteLine($"Verifying document ID: {documentId}, Status: {verificationStatus}, Admin: {currentUser.Id}");
+
+                var verifyDto = new VerifyDocumentDto
+                {
+                    DocumentId = documentId,
+                    VerificationStatus = DocumentVerificationStatus.Verified, // Always set to Verified for this handler
+                    AdminNotes = adminNotes,
+                    ReviewedByUserId = currentUser.Id
+                };
+
                 var result = await _verificationService.VerifyDocumentAsync(verifyDto);
-                
+
                 if (result.IsSuccess)
                 {
-                    var statusText = verifyDto.VerificationStatus == DocumentVerificationStatus.Verified 
-                        ? "xác thực" : "từ chối";
-                    TempData["SuccessMessage"] = $"Đã {statusText} chứng chỉ thành công";
+                    TempData["SuccessMessage"] = "Đã xác thực chứng chỉ thành công";
+                    Console.WriteLine("Verification successful");
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = result.ErrorMessage;
+                    TempData["ErrorMessage"] = result.ErrorMessage ?? "Có lỗi xảy ra khi xác thực";
+                    Console.WriteLine($"Verification failed: {result.ErrorMessage}");
                 }
 
                 return RedirectToPage();
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception in verification: {ex.Message}");
                 TempData["ErrorMessage"] = "Có lỗi xảy ra khi xử lý xác thực";
                 return RedirectToPage();
             }
         }
 
-        public async Task<IActionResult> OnGetExpiringDocumentsAsync(int daysAhead = 30)
+        public async Task<IActionResult> OnPostRejectDocumentAsync(int documentId, string rejectionReason, string? adminNotes)
         {
             try
             {
@@ -90,27 +99,78 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
                 if (currentUser?.Role != BusinessObjects.Enums.Role.Admin.ToString())
                     return Unauthorized();
 
-                var expiringDocs = await _verificationService.GetExpiringDocumentsAsync(daysAhead);
-                
-                return new JsonResult(new
+                Console.WriteLine($"Rejecting document ID: {documentId}, Reason: {rejectionReason}, Admin: {currentUser.Id}");
+
+                var verifyDto = new VerifyDocumentDto
                 {
-                    success = true,
-                    data = expiringDocs.Select(d => new
-                    {
-                        id = d.Id,
-                        professionalName = d.ProfessionalName,
-                        documentName = d.DocumentName,
-                        documentTypeName = d.DocumentTypeName,
-                        expiryDate = d.ExpiryDate?.ToString("dd/MM/yyyy"),
-                        daysUntilExpiry = d.ExpiryDate.HasValue 
-                            ? (d.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days
-                            : (int?)null
-                    })
-                });
+                    DocumentId = documentId,
+                    VerificationStatus = DocumentVerificationStatus.Rejected,
+                    RejectionReason = rejectionReason,
+                    AdminNotes = adminNotes,
+                    ReviewedByUserId = currentUser.Id
+                };
+
+                var result = await _verificationService.VerifyDocumentAsync(verifyDto);
+
+                if (result.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = "Đã từ chối chứng chỉ thành công";
+                    Console.WriteLine("Rejection successful");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = result.ErrorMessage ?? "Có lỗi xảy ra khi từ chối";
+                    Console.WriteLine($"Rejection failed: {result.ErrorMessage}");
+                }
+
+                return RedirectToPage();
             }
             catch (Exception ex)
             {
-                return new JsonResult(new { success = false, message = "Có lỗi xảy ra" });
+                Console.WriteLine($"Exception in rejection: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi từ chối chứng chỉ";
+                return RedirectToPage();
+            }
+        }
+
+        public async Task<IActionResult> OnPostSetUnderReviewAsync(int documentId, string? adminNotes)
+        {
+            try
+            {
+                var currentUser = GetCurrentUser();
+                if (currentUser?.Role != BusinessObjects.Enums.Role.Admin.ToString())
+                    return Unauthorized();
+
+                Console.WriteLine($"Setting under review for document ID: {documentId}, Admin: {currentUser.Id}");
+
+                var verifyDto = new VerifyDocumentDto
+                {
+                    DocumentId = documentId,
+                    VerificationStatus = DocumentVerificationStatus.UnderReview,
+                    AdminNotes = adminNotes,
+                    ReviewedByUserId = currentUser.Id
+                };
+
+                var result = await _verificationService.VerifyDocumentAsync(verifyDto);
+
+                if (result.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = "Đã đặt trạng thái đang xem xét thành công";
+                    Console.WriteLine("Set under review successful");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = result.ErrorMessage ?? "Có lỗi xảy ra khi đặt trạng thái";
+                    Console.WriteLine($"Set under review failed: {result.ErrorMessage}");
+                }
+
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in set under review: {ex.Message}");
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi đặt trạng thái";
+                return RedirectToPage();
             }
         }
 
@@ -134,6 +194,7 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
                     data = new
                     {
                         id = document.Id,
+                        professionalId = document.ProfessionalId,
                         professionalName = document.ProfessionalName,
                         documentName = document.DocumentName,
                         documentTypeName = document.DocumentTypeName,
@@ -146,8 +207,46 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
                         verificationStatusName = document.VerificationStatusName,
                         adminNotes = document.AdminNotes,
                         rejectionReason = document.RejectionReason,
-                        createdAt = document.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
+                        createdAt = document.CreatedAt?.ToString("dd/MM/yyyy HH:mm"),
+                        reviewedByName = document.ReviewedByName,
+                        reviewedAt = document.ReviewedAt?.ToString("dd/MM/yyyy HH:mm"),
+                        fileSizeBytes = document.FileSizeBytes,
+                        fileExtension = document.FileExtension,
+                        originalFileName = document.OriginalFileName,
+                        isExpired = document.IsExpired,
+                        isExpiringSoon = document.IsExpiringSoon
                     }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = "Có lỗi xảy ra" });
+            }
+        }
+        public async Task<IActionResult> OnGetExpiringDocumentsAsync(int daysAhead = 30)
+        {
+            try
+            {
+                var currentUser = GetCurrentUser();
+                if (currentUser?.Role != BusinessObjects.Enums.Role.Admin.ToString())
+                    return Unauthorized();
+
+                var expiringDocs = await _verificationService.GetExpiringDocumentsAsync(daysAhead);
+
+                return new JsonResult(new
+                {
+                    success = true,
+                    data = expiringDocs.Select(d => new
+                    {
+                        id = d.Id,
+                        professionalName = d.ProfessionalName,
+                        documentName = d.DocumentName,
+                        documentTypeName = d.DocumentTypeName,
+                        expiryDate = d.ExpiryDate?.ToString("dd/MM/yyyy"),
+                        daysUntilExpiry = d.ExpiryDate.HasValue
+                            ? (d.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days
+                            : (int?)null
+                    })
                 });
             }
             catch (Exception ex)
@@ -182,7 +281,7 @@ namespace FindingHealthcareSystem.Pages.Admin.DocumentVerification
         private async Task<DocumentVerificationStatistics> GetDocumentStatisticsAsync()
         {
             var allDocuments = await _verificationService.GetPendingVerificationDocumentsAsync();
-            
+
             return new DocumentVerificationStatistics
             {
                 PendingVerification = allDocuments.Count(d => d.VerificationStatus == DocumentVerificationStatus.PendingVerification),
