@@ -1,0 +1,348 @@
+@page "/admin/document-verification"
+@model FindingHealthcareSystem.Pages.Admin.DocumentVerification.IndexModel
+@using BusinessObjects.Enums
+@{
+    ViewData["Title"] = "Xác thực chứng chỉ bác sĩ";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/admin-document-verification.css">
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-shield-alt me-2"></i>Xác thực chứng chỉ bác sĩ</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Làm mới
+                    </button>
+                    <button class="btn btn-warning" onclick="showExpiringDocuments()">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Sắp hết hạn
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card pending">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.PendingVerification</h3>
+                            <p>Chờ xác thực</p>
+                        </div>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card under-review">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.UnderReview</h3>
+                            <p>Đang xem xét</p>
+                        </div>
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card verified">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.Verified</h3>
+                            <p>Đã xác thực</p>
+                        </div>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card rejected">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.Rejected</h3>
+                            <p>Bị từ chối</p>
+                        </div>
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display Messages -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="fas fa-check-circle me-2"></i>
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Trạng thái</label>
+                            <select name="status" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option value="PendingVerification" selected="@(Model.FilterStatus == "PendingVerification")">Chờ xác thực</option>
+                                <option value="UnderReview" selected="@(Model.FilterStatus == "UnderReview")">Đang xem xét</option>
+                                <option value="Verified" selected="@(Model.FilterStatus == "Verified")">Đã xác thực</option>
+                                <option value="Rejected" selected="@(Model.FilterStatus == "Rejected")">Bị từ chối</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Loại chứng chỉ</label>
+                            <select name="documentType" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option value="MedicalDegree" selected="@(Model.FilterDocumentType == "MedicalDegree")">Bằng tốt nghiệp</option>
+                                <option value="MedicalLicense" selected="@(Model.FilterDocumentType == "MedicalLicense")">Giấy phép hành nghề</option>
+                                <option value="SpecialtyCertificate" selected="@(Model.FilterDocumentType == "SpecialtyCertificate")">Chứng chỉ chuyên khoa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Từ ngày</label>
+                            <input type="date" name="fromDate" class="form-control" value="@Model.FilterFromDate?.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter me-2"></i>Lọc
+                            </button>
+                            <a href="/admin/document-verification" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Xóa bộ lọc
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Documents List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        Danh sách chứng chỉ cần xác thực
+                        <span class="badge bg-primary">@Model.Documents.Count</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Documents.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+                            <h5>Không có chứng chỉ nào cần xác thực</h5>
+                            <p class="text-muted">Tất cả chứng chỉ đã được xác thực hoặc không có chứng chỉ mới</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Bác sĩ</th>
+                                        <th>Loại chứng chỉ</th>
+                                        <th>Tên chứng chỉ</th>
+                                        <th>Ngày tải lên</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var document in Model.Documents)
+                                    {
+                                        var professionalName = document.ProfessionalName ?? "Không xác định";
+                                        var documentName = document.DocumentName ?? "Không có tên";
+                                        var documentTypeName = document.DocumentTypeName ?? "Không xác định";
+                                        var verificationStatusName = document.VerificationStatusName ?? document.VerificationStatus.ToString();
+                                        var documentUrl = document.DocumentUrl ?? "#";
+
+                                        <tr data-document-id="@document.Id">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="/images/users/doctor_avatar.jpg" class="avatar-sm me-3" alt="" style="width: 40px; height: 40px; border-radius: 50%;">
+                                                    <div>
+                                                        <div class="fw-bold">@professionalName</div>
+                                                        <small class="text-muted">ID: #@document.ProfessionalId</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="document-type-badge">
+                                                    <i class="fas fa-certificate me-1"></i>
+                                                    @documentTypeName
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>@documentName</div>
+                                                @if (!string.IsNullOrEmpty(document.DocumentNumber))
+                                                {
+                                                    <small class="text-muted">Số: @document.DocumentNumber</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>@(document.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</div>
+                                                <small class="text-muted">@(document.CreatedAt?.ToString("HH:mm") ?? "")</small>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-@document.VerificationStatus.ToString().ToLower()">
+                                                    @verificationStatusName
+                                                </span>
+                                                @if (document.IsExpiringSoon)
+                                                {
+                                                    <i class="fas fa-exclamation-triangle text-warning ms-1" title="Sắp hết hạn"></i>
+                                                }
+                                                @if (document.IsExpired)
+                                                {
+                                                    <i class="fas fa-times-circle text-danger ms-1" title="Đã hết hạn"></i>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                            onclick="viewDocument(@document.Id, '@Html.Raw(documentUrl.Replace("'", "\\'"))', '@Html.Raw(documentName.Replace("'", "\\'"))')">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    @if (document.VerificationStatus == DocumentVerificationStatus.PendingVerification ||
+                                                                                                document.VerificationStatus == DocumentVerificationStatus.UnderReview)
+                                                    {
+                                                        <button class="btn btn-sm btn-success"
+                                                                onclick="verifyDocument(@document.Id, '@Html.Raw(professionalName.Replace("'", "\\'"))', '@Html.Raw(documentName.Replace("'", "\\'"))')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger"
+                                                                onclick="rejectDocument(@document.Id, '@Html.Raw(professionalName.Replace("'", "\\'"))', '@Html.Raw(documentName.Replace("'", "\\'"))')">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Viewer Modal -->
+<div class="modal fade" id="documentViewerModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xem chứng chỉ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="documentViewer">
+                    <!-- Document will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verify Document Modal -->
+<div class="modal fade" id="verifyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="verifyForm" method="post" asp-page-handler="VerifyDocument">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác thực chứng chỉ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="DocumentId" id="verifyDocumentId">
+                    <input type="hidden" name="VerificationStatus" value="Verified">
+
+                    <div class="mb-3">
+                        <label class="form-label">Bác sĩ</label>
+                        <input type="text" class="form-control" id="verifyProfessionalName" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên chứng chỉ</label>
+                        <input type="text" class="form-control" id="verifyDocumentName" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú xác thực</label>
+                        <textarea name="AdminNotes" class="form-control" rows="3" placeholder="Nhập ghi chú về việc xác thực (nếu có)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Xác thực
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Document Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="rejectForm" method="post" asp-page-handler="RejectDocument">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Từ chối chứng chỉ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="DocumentId" id="rejectDocumentId">
+                    <input type="hidden" name="VerificationStatus" value="Rejected">
+
+                    <div class="mb-3">
+                        <label class="form-label">Bác sĩ</label>
+                        <input type="text" class="form-control" id="rejectProfessionalName" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên chứng chỉ</label>
+                        <input type="text" class="form-control" id="rejectDocumentName" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Lý do từ chối <span class="text-danger">*</span></label>
+                        <select name="RejectionReasonType" class="form-select mb-2" onchange="handleRejectionReasonChange(this)">
+                            <option value="">Chọn lý do từ chối</option>
+                            <option value="invalid_document">Chứng chỉ không hợp lệ</option>
+                            <option value="expired">Chứng chỉ đã hết hạn</option>
+                            <option value="poor_quality">Chất lượng hình ảnh kém</option>
+                            <option value="missing_info">Thiếu thông tin bắt buộc</option>
+                            <option value="fake_document">Nghi ngờ giả mạo</option>
+                            <option value="wrong_type">Sai loại chứng chỉ</option>
+                            <option value="other">Lý do khác</option>
+                        </select>
+                        <textarea name="RejectionReason" class="form-control" rows="3" placeholder="Nhập chi tiết lý do từ chối" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú thêm</label>
+                        <textarea name="AdminNotes" class="form-control" rows="2" placeholder="Ghi chú thêm cho bác sĩ (nếu có)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times me-2"></i>Từ chối
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/admin-document-verification.js"></script>

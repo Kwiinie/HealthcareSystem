@@ -32,7 +32,7 @@ namespace FindingHealthcareSystem.Pages.Auth
             {
                 var result = await _authService.LoginAsync(loginDto);
 
-                if (result.Success)
+                if (result.IsSuccess)
                 {
 
                     var accountJson = JsonConvert.SerializeObject(result.Data);

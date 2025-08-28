@@ -1,22 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BusinessObjects.Enums
 {
     public enum ProfessionalRequestStatus
     {
-        [Display(Name = "Đang chờ duyệt")]
+        [Display(Name = "Chờ nộp hồ sơ")]
+        AwaitingDocuments,
+
+        [Display(Name = "Đang chờ duyệt hồ sơ")]
         Pending,
+
+        [Display(Name = "Đang xác thực chứng chỉ")]
+        DocumentVerification,
+
+        [Display(Name = "Cần bổ sung hồ sơ")]
+        RequiresAdditionalDocuments,
 
         [Display(Name = "Đã phê duyệt")]
         Approved,
 
         [Display(Name = "Bị từ chối")]
-        Rejected
+        Rejected,
+
+        [Display(Name = "Tạm đình chỉ")]
+        Suspended
     }
 
 }

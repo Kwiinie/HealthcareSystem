@@ -1,0 +1,312 @@
+﻿@page "/admin/expired-documents"
+@model FindingHealthcareSystem.Pages.Admin.ExpiredDocuments.IndexModel
+@using BusinessObjects.Enums
+@{
+    ViewData["Title"] = "Quản lý chứng chỉ hết hạn";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/admin-expired-documents.css">
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-exclamation-triangle text-warning me-2"></i>Quản lý chứng chỉ hết hạn</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Làm mới
+                    </button>
+                    <button class="btn btn-warning" onclick="sendBulkReminders()">
+                        <i class="fas fa-envelope me-2"></i>Gửi nhắc nhở hàng loạt
+                    </button>
+                    <!-- Temporary debug button -->
+                    <button class="btn btn-outline-info" onclick="testFunction()">
+                        <i class="fas fa-bug me-2"></i>Test
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alert Statistics -->
+            <div class="row mb-4">
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="alert-card critical">
+                        <div class="alert-content">
+                            <h3>@Model.Statistics.ExpiredCount</h3>
+                            <p>Đã hết hạn</p>
+                            <small>Cần gia hạn ngay</small>
+                        </div>
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="alert-card warning">
+                        <div class="alert-content">
+                            <h3>@Model.Statistics.ExpiringSoon7Days</h3>
+                            <p>Hết hạn trong 7 ngày</p>
+                            <small>Cần xử lý khẩn cấp</small>
+                        </div>
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <div class="alert-card info">
+                        <div class="alert-content">
+                            <h3>@Model.Statistics.ExpiringSoon30Days</h3>
+                            <p>Hết hạn trong 30 ngày</p>
+                            <small>Cần theo dõi</small>
+                        </div>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Trạng thái hết hạn</label>
+                            <select name="expiryStatus" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option value="expired" selected="@(Model.FilterExpiryStatus == "expired")">Đã hết hạn</option>
+                                <option value="expiring7" selected="@(Model.FilterExpiryStatus == "expiring7")">Hết hạn trong 7 ngày</option>
+                                <option value="expiring30" selected="@(Model.FilterExpiryStatus == "expiring30")">Hết hạn trong 30 ngày</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Loại chứng chỉ</label>
+                            <select name="documentType" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option value="MedicalLicense" selected="@(Model.FilterDocumentType == "MedicalLicense")">Giấy phép hành nghề</option>
+                                <option value="SpecialtyCertificate" selected="@(Model.FilterDocumentType == "SpecialtyCertificate")">Chứng chỉ chuyên khoa</option>
+                                <option value="ContinuingEducationCertificate" selected="@(Model.FilterDocumentType == "ContinuingEducationCertificate")">Chứng chỉ đào tạo liên tục</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tỉnh/Thành phố</label>
+                            <input type="text" name="province" class="form-control" value="@Model.FilterProvince" placeholder="Nhập tỉnh/thành phố">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter me-2"></i>Lọc
+                            </button>
+                            <a href="/admin/expired-documents" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Xóa bộ lọc
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Expired Documents List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        Danh sách chứng chỉ hết hạn/sắp hết hạn
+                        <span class="badge bg-danger">@Model.ExpiredDocuments.Count</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.ExpiredDocuments.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h5>Tuyệt vời! Không có chứng chỉ nào hết hạn</h5>
+                            <p class="text-muted">Tất cả chứng chỉ đều còn hiệu lực</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                                        </th>
+                                        <th>Chuyên gia y tế</th>
+                                        <th>Loại chứng chỉ</th>
+                                        <th>Tên chứng chỉ</th>
+                                        <th>Ngày cấp</th>
+                                        <th>Ngày hết hạn</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var doc in Model.ExpiredDocuments)
+                                    {
+                                        var isExpired = doc.IsExpired;
+                                        var isExpiringSoon = doc.IsExpiringSoon && !isExpired;
+                                        var daysUntilExpiry = doc.ExpiryDate.HasValue
+                                        ? (doc.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue) - DateTime.Now).Days
+                                        : 0;
+
+                                        <tr class="@(isExpired ? "table-danger" : isExpiringSoon ? "table-warning" : "")" data-document-id="@doc.Id">
+                                            <td>
+                                                <input type="checkbox" class="document-checkbox" value="@doc.Id">
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="/images/users/doctor_avatar.jpg" class="avatar-sm me-3" alt="">
+                                                    <div>
+                                                        <div class="fw-bold">@(doc.ProfessionalName ?? "N/A")</div>
+                                                        <small class="text-muted">ID: #@doc.ProfessionalId</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@(doc.DocumentTypeName ?? "N/A")</span>
+                                            </td>
+                                            <td>
+                                                <div>@(doc.DocumentName ?? "N/A")</div>
+                                                @if (!string.IsNullOrEmpty(doc.DocumentNumber))
+                                                {
+                                                    <small class="text-muted">Số: @doc.DocumentNumber</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (doc.IssueDate.HasValue)
+                                                {
+                                                    <span>@doc.IssueDate.Value.ToString("dd/MM/yyyy")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Chưa có</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (doc.ExpiryDate.HasValue)
+                                                {
+                                                    <div>@doc.ExpiryDate.Value.ToString("dd/MM/yyyy")</div>
+                                                    @if (isExpired)
+                                                    {
+                                                        <small class="text-danger">Đã hết hạn @Math.Abs(daysUntilExpiry) ngày</small>
+                                                    }
+                                                    else if (isExpiringSoon)
+                                                    {
+                                                        <small class="text-warning">Còn @daysUntilExpiry ngày</small>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Không thời hạn</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (isExpired)
+                                                {
+                                                    <span class="badge bg-danger">Đã hết hạn</span>
+                                                }
+                                                else if (daysUntilExpiry <= 7)
+                                                {
+                                                    <span class="badge bg-warning">Hết hạn trong 7 ngày</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-info">Sắp hết hạn</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-sm btn-outline-primary"
+                                                            onclick="viewDocument(@doc.Id, '@Html.Raw((doc.DocumentUrl ?? "#").Replace("'", "\\'"))', '@Html.Raw((doc.DocumentName ?? "").Replace("'", "\\'"))')">
+                                                        <i class="fas fa-eye" title="Xem tài liệu"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-warning"
+                                                            onclick="sendRenewalReminder(@doc.Id, '@Html.Raw((doc.ProfessionalName ?? "").Replace("'", "\\'"))')">
+                                                        <i class="fas fa-envelope" title="Gửi nhắc nhở"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success"
+                                                            onclick="markAsRenewed(@doc.Id)">
+                                                        <i class="fas fa-check" title="Đánh dấu đã gia hạn"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Bulk Actions -->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span id="selectedCount">0</span> tài liệu được chọn
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-warning" onclick="sendSelectedReminders()" disabled id="bulkReminderBtn">
+                                        <i class="fas fa-envelope me-2"></i>Gửi nhắc nhở
+                                    </button>
+                                    <button class="btn btn-success" onclick="markSelectedAsRenewed()" disabled id="bulkRenewBtn">
+                                        <i class="fas fa-check me-2"></i>Đánh dấu đã gia hạn
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Viewer Modal -->
+<div class="modal fade" id="documentViewerModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xem chứng chỉ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="documentViewer">
+                    <!-- Document will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Renewal Reminder Modal -->
+<div class="modal fade" id="renewalReminderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="reminderForm" method="post" asp-page-handler="SendReminder">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Gửi nhắc nhở gia hạn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="DocumentId" id="reminderDocumentId">
+
+                    <div class="mb-3">
+                        <label class="form-label">Chuyên gia y tế</label>
+                        <input type="text" class="form-control" id="reminderProfessionalName" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung nhắc nhở</label>
+                        <textarea name="ReminderMessage" class="form-control" rows="4" placeholder="Nhập nội dung nhắc nhở...">Kính gửi bác sĩ,
+
+Chúng tôi xin thông báo rằng chứng chỉ hành nghề của bạn sắp hết hạn. Vui lòng tiến hành gia hạn để đảm bảo tính liên tục trong hoạt động khám chữa bệnh.
+
+Trân trọng,
+Ban quản trị hệ thống</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-envelope me-2"></i>Gửi nhắc nhở
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/admin-expired-documents.js"></script>

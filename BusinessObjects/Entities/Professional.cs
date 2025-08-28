@@ -36,6 +36,8 @@ public partial class Professional : BaseEntity
     public ICollection<ScheduleException> ScheduleExceptions { get; set; }
     public ICollection<Schedule> Schedules { get; set; }
 
+    public virtual ICollection<ProfessionalDocument> Documents { get; set; } = new List<ProfessionalDocument>();
+
     public virtual User? User { get; set; }
 
     // Thêm các thuộc tính từ User

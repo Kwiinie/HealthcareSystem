@@ -207,6 +207,13 @@ namespace DataAccessObjects.DAOs
             _dbSet.Update(entity);
         }
 
+        public async Task UpdateAsync(T entity)
+        {
+            _dbSet.Update(entity);
+            // Note: EF Core Update is synchronous, but we provide async signature for consistency
+            await Task.CompletedTask;
+        }
+
         public void Remove(T entity)
         {
             _dbSet.Remove(entity);

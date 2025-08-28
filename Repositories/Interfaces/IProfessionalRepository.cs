@@ -24,5 +24,7 @@ namespace Repositories.Interfaces
             int pageIndex,
             int pageSize,
             Func<IQueryable<Professional>, IOrderedQueryable<Professional>> orderBy = null);
+        Task UpdateAsync(Professional professional);
+        Task<Professional> GetProfessionalByUserIdAsync(int userId);
     }
 }

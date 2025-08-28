@@ -81,6 +81,11 @@ namespace Repositories.Repositories
             _dao.Update(entity);
         }
 
+        public async Task UpdateAsync(T entity)
+        {
+            await _dao.UpdateAsync(entity);
+        }
+
         public void Remove(T entity)
         {
             _dao.Remove(entity);

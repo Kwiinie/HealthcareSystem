@@ -20,43 +20,25 @@ public partial class FindingHealthcareSystemContext : DbContext
     }
 
     public virtual DbSet<Appointment> Appointments { get; set; }
-
     public virtual DbSet<Article> Articles { get; set; }
-
-    public virtual DbSet<ArticleImage> ArticleImage { get; set; }  // Thêm dòng này
-
+    public virtual DbSet<ArticleImage> ArticleImage { get; set; }
     public virtual DbSet<Attachment> Attachments { get; set; }
-
     public virtual DbSet<Category> Categories { get; set; }
-
     public virtual DbSet<Department> Departments { get; set; }
-
     public virtual DbSet<Expertise> Expertises { get; set; }
-
     public virtual DbSet<Facility> Facilities { get; set; }
-
     public virtual DbSet<FacilityDepartment> FacilityDepartments { get; set; }
-
     public virtual DbSet<FacilityType> FacilityTypes { get; set; }
-
     public virtual DbSet<MedicalRecord> MedicalRecords { get; set; }
-
     public virtual DbSet<Patient> Patients { get; set; }
-
     public virtual DbSet<Payment> Payments { get; set; }
-
     public virtual DbSet<PrivateService> PrivateServices { get; set; }
-
     public virtual DbSet<Professional> Professionals { get; set; }
-
+    public virtual DbSet<ProfessionalDocument> ProfessionalDocuments { get; set; }
     public virtual DbSet<ProfessionalSpecialty> ProfessionalSpecialties { get; set; }
-
     public virtual DbSet<PublicService> PublicServices { get; set; }
-
     public virtual DbSet<Review> Reviews { get; set; }
-
     public virtual DbSet<Specialty> Specialties { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Schedule> Schedules { get; set; }
     public virtual DbSet<ScheduleException> ScheduleExceptions { get; set; }
@@ -145,6 +127,15 @@ public partial class FindingHealthcareSystemContext : DbContext
         .Property(a => a.ProviderType)
         .HasConversion<string>();
 
+        // ProfessionalDocument enum conversions
+        modelBuilder.Entity<ProfessionalDocument>()
+            .Property(p => p.DocumentType)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<ProfessionalDocument>()
+            .Property(p => p.VerificationStatus)
+            .HasConversion<string>();
+
         //config polymorphic relationship
         modelBuilder.Entity<Appointment>()
             .HasOne(a => a.PrivateService)
@@ -159,7 +150,6 @@ public partial class FindingHealthcareSystemContext : DbContext
             .HasForeignKey(a => a.ServiceId)
             .HasConstraintName("FK_Appointment_PublicService")
             .OnDelete(DeleteBehavior.Restrict);
-
 
         modelBuilder.Entity<Appointment>()
             .HasOne<Professional>()
@@ -182,7 +172,6 @@ public partial class FindingHealthcareSystemContext : DbContext
             .HasConstraintName("FK_Review_Facility")
             .OnDelete(DeleteBehavior.Restrict);
 
-
         modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
         modelBuilder.ApplyConfiguration(new ArticleConfiguration());
         modelBuilder.ApplyConfiguration(new ArticleImageConfiguration());
@@ -198,6 +187,7 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.ApplyConfiguration(new PaymentConfiguration());
         modelBuilder.ApplyConfiguration(new PrivateServiceConfiguration());
         modelBuilder.ApplyConfiguration(new ProfessionalConfiguration());
+        modelBuilder.ApplyConfiguration(new ProfessionalDocumentConfiguration());
         modelBuilder.ApplyConfiguration(new ProfessionalSpecialtyConfiguration());
         modelBuilder.ApplyConfiguration(new PublicServiceConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
@@ -208,7 +198,6 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.ApplyConfiguration(new ScheduleExceptionConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
-
     }
 
     public override int SaveChanges()
@@ -220,7 +209,6 @@ public partial class FindingHealthcareSystemContext : DbContext
                 entry.Entity.CreatedAt = DateTime.UtcNow;
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
                 entry.Entity.IsDeleted = false;
-
             }
 
             if (entry.State == EntityState.Modified)
@@ -241,7 +229,6 @@ public partial class FindingHealthcareSystemContext : DbContext
                 entry.Entity.CreatedAt = DateTime.UtcNow;
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
                 entry.Entity.IsDeleted = false;
-
             }
 
             if (entry.State == EntityState.Modified)
@@ -255,4 +242,3 @@ public partial class FindingHealthcareSystemContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
-
