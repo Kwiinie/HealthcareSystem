@@ -44,6 +44,8 @@ public partial class FindingHealthcareSystemContext : DbContext
     public virtual DbSet<ScheduleException> ScheduleExceptions { get; set; }
     public virtual DbSet<WorkingDate> WorkingDates { get; set; }
 
+    public virtual DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
+
 
     private string GetConnectionString()
     {
@@ -196,6 +198,7 @@ public partial class FindingHealthcareSystemContext : DbContext
         modelBuilder.ApplyConfiguration(new ScheduleConfiguration());
         modelBuilder.ApplyConfiguration(new WorkingDateConfiguration());
         modelBuilder.ApplyConfiguration(new ScheduleExceptionConfiguration());
+        modelBuilder.ApplyConfiguration(new EmailVerificationTokenConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
     }

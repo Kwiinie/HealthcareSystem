@@ -34,7 +34,7 @@ namespace Services.Interfaces
 
         Task<List<Expertise>> GetAllExpertises();
         Task UpdateUserStatus(GeneralUserDto userDto);
-        Task RegisterUserAsync(RegisterUserDto userDto);
+        Task<User> RegisterUserAsync(RegisterUserDto userDto);
 
         Task UpdateProfessionalAsync(Professional professional);
         Task UpdatePatientAsync(Patient patient);

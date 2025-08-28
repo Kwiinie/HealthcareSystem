@@ -13,44 +13,32 @@ namespace BusinessObjects.DTOs.Appointment
 {
     public class AppointmentDTO
     {
-        [NotMapped]
-        public int? Id { get; set; }
-        public DateTime Date { get; set; }
+        public int Id { get; set; }
         public int? PatientId { get; set; }
-
-        [NotMapped]
-        public PatientDTO Patient { get; set; }
-
         public int? ProviderId { get; set; }
-        public string? Diagnose { get; set; }
         public ProviderType ProviderType { get; set; }
         public int? ServiceId { get; set; }
         public ServiceType ServiceType { get; set; }
         public AppointmentStatus Status { get; set; }
         public int? PaymentId { get; set; }
-        public string Description { get; set; }
-        [NotMapped]
-        public PaymentDto Payment { get; set; }
-        [NotMapped]
-        public ServiceDto PrivateService { get; set; }
-        [NotMapped]
-        public ServiceDto PublicService { get; set; }
-
         public AppointmentSource Source { get; set; }
 
-        [NotMapped]
-        public int Age
-        {
-            get
-            {
-                DateTime today = DateTime.Now;
-                int age = today.Year - Patient.User.Birthday.Year;
-                if (Patient.User.Birthday.Year > today.Year)
-                {
-                    age--;
-                }
-                return age;
-            }
-        }
+        public DateTime ExpectedStart { get; set; }       
+        public DateTime? CheckedInAt { get; set; }
+        public DateTime? StartAt { get; set; }
+        public DateTime? EndAt { get; set; }
+
+        public DateTime? Date { get; set; }
+
+        public int? TicketNo { get; set; }
+
+        public string? Description { get; set; }
+
+        public PatientDTO? Patient { get; set; }
+        public PaymentDto? Payment { get; set; }
+        public ServiceDto? PrivateService { get; set; }
+        public ServiceDto? PublicService { get; set; }
+
+        
     }
 }

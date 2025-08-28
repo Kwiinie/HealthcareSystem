@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccessObjects.Migrations
 {
     /// <inheritdoc />
-    public partial class document : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -202,6 +202,32 @@ namespace DataAccessObjects.Migrations
                     table.ForeignKey(
                         name: "FK_Articles_Users_CreatedById",
                         column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailVerificationTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailVerificationTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailVerificationTokens_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -795,21 +821,21 @@ namespace DataAccessObjects.Migrations
                 columns: new[] { "Id", "Birthday", "Email", "Fullname", "Gender", "ImgUrl", "IsVerified", "Password", "PhoneNumber", "Role", "Status" },
                 values: new object[,]
                 {
-                    { 1, new DateOnly(1990, 1, 1), "admin@example.com", "Nguyễn Văn Admin", "Nam", "/images/users/admin_avatar.jpg", false, "ad123456", "0901234567", "Admin", "Active" },
-                    { 2, new DateOnly(1995, 5, 20), "patient1@example.com", "Trần Thị Bích", "Nữ", "/images/users/patient_female_1.jpg", false, "pa123456", "0902345678", "Patient", "Active" },
-                    { 3, new DateOnly(1988, 10, 12), "patient2@example.com", "Lê Văn Cường", "Nam", "/images/users/patient_male_1.jpg", false, "pa123456", "0903456789", "Patient", "Active" },
-                    { 4, new DateOnly(1985, 3, 15), "professional1@example.com", "Phạm Minh Đức", "Nam", "/images/users/doctor_male_1.jpg", false, "pro123456", "0904567890", "Professional", "Active" },
-                    { 5, new DateOnly(1987, 7, 30), "professional2@example.com", "Vũ Thị Hương", "Nữ", "/images/users/doctor_female_1.jpg", false, "pro123456", "0905678901", "Professional", "Active" },
-                    { 6, new DateOnly(1992, 8, 25), "patient3@example.com", "Hoàng Thị Mai", "Nữ", "/images/users/patient_female_2.jpg", false, "pa123456", "0906789012", "Patient", "Active" },
-                    { 7, new DateOnly(1998, 4, 17), "patient4@example.com", "Đỗ Quang Nam", "Nam", "/images/users/patient_male_2.jpg", false, "pa123456", "0907890123", "Patient", "Active" },
-                    { 8, new DateOnly(1980, 11, 5), "professional3@example.com", "Ngô Thanh Tùng", "Nam", "/images/users/doctor_male_2.jpg", false, "pro123456", "0908901234", "Professional", "Active" },
-                    { 9, new DateOnly(1983, 6, 10), "professional4@example.com", "Lý Thị Hoa", "Nữ", "/images/users/doctor_female_2.jpg", false, "pro123456", "0909012345", "Professional", "Active" },
-                    { 10, new DateOnly(1990, 9, 15), "patient5@example.com", "Dương Văn Khải", "Nam", "/images/users/patient_male_3.jpg", false, "pa123456", "0910123456", "Patient", "Active" },
-                    { 11, new DateOnly(1994, 2, 28), "patient6@example.com", "Trịnh Thu Phương", "Nữ", "/images/users/patient_female_3.jpg", false, "pa123456", "0911234567", "Patient", "Active" },
-                    { 12, new DateOnly(1978, 4, 20), "professional5@example.com", "Bùi Quốc Anh", "Nam", "/images/users/doctor_male_3.jpg", false, "pro123456", "0912345678", "Professional", "Active" },
-                    { 13, new DateOnly(1982, 5, 15), "lananh@example.com", "Nguyễn Thị Lan Anh", "Nữ", "/images/users/doctor_female_3.jpg", false, "pro123456", "0913456789", "Professional", "Active" },
-                    { 14, new DateOnly(1970, 8, 22), "tranminh@example.com", "Trần Văn Minh", "Nam", "/images/users/doctor_male_4.jpg", false, "pro123456", "0912345678", "Professional", "Active" },
-                    { 15, new DateOnly(1990, 3, 10), "thanhhuong@example.com", "Phan Thị Thanh Hương", "Nữ", "/images/users/doctor_female_4.jpg", false, "pro123456", "0923456789", "Professional", "Active" },
+                    { 1, new DateOnly(1990, 1, 1), "admin@example.com", "Nguyễn Văn Admin", "Nam", "/images/users/admin_avatar.jpg", true, "ad123456", "0901234567", "Admin", "Active" },
+                    { 2, new DateOnly(1995, 5, 20), "patient1@example.com", "Trần Thị Bích", "Nữ", "/images/users/patient_female_1.jpg", true, "pa123456", "0902345678", "Patient", "Active" },
+                    { 3, new DateOnly(1988, 10, 12), "patient2@example.com", "Lê Văn Cường", "Nam", "/images/users/patient_male_1.jpg", true, "pa123456", "0903456789", "Patient", "Active" },
+                    { 4, new DateOnly(1985, 3, 15), "professional1@example.com", "Phạm Minh Đức", "Nam", "/images/users/doctor_male_1.jpg", true, "pro123456", "0904567890", "Professional", "Active" },
+                    { 5, new DateOnly(1987, 7, 30), "professional2@example.com", "Vũ Thị Hương", "Nữ", "/images/users/doctor_female_1.jpg", true, "pro123456", "0905678901", "Professional", "Active" },
+                    { 6, new DateOnly(1992, 8, 25), "patient3@example.com", "Hoàng Thị Mai", "Nữ", "/images/users/patient_female_2.jpg", true, "pa123456", "0906789012", "Patient", "Active" },
+                    { 7, new DateOnly(1998, 4, 17), "patient4@example.com", "Đỗ Quang Nam", "Nam", "/images/users/patient_male_2.jpg", true, "pa123456", "0907890123", "Patient", "Active" },
+                    { 8, new DateOnly(1980, 11, 5), "professional3@example.com", "Ngô Thanh Tùng", "Nam", "/images/users/doctor_male_2.jpg", true, "pro123456", "0908901234", "Professional", "Active" },
+                    { 9, new DateOnly(1983, 6, 10), "professional4@example.com", "Lý Thị Hoa", "Nữ", "/images/users/doctor_female_2.jpg", true, "pro123456", "0909012345", "Professional", "Active" },
+                    { 10, new DateOnly(1990, 9, 15), "patient5@example.com", "Dương Văn Khải", "Nam", "/images/users/patient_male_3.jpg", true, "pa123456", "0910123456", "Patient", "Active" },
+                    { 11, new DateOnly(1994, 2, 28), "patient6@example.com", "Trịnh Thu Phương", "Nữ", "/images/users/patient_female_3.jpg", true, "pa123456", "0911234567", "Patient", "Active" },
+                    { 12, new DateOnly(1978, 4, 20), "professional5@example.com", "Bùi Quốc Anh", "Nam", "/images/users/doctor_male_3.jpg", true, "pro123456", "0912345678", "Professional", "Active" },
+                    { 13, new DateOnly(1982, 5, 15), "lananh@example.com", "Nguyễn Thị Lan Anh", "Nữ", "/images/users/doctor_female_3.jpg", true, "pro123456", "0913456789", "Professional", "Active" },
+                    { 14, new DateOnly(1970, 8, 22), "tranminh@example.com", "Trần Văn Minh", "Nam", "/images/users/doctor_male_4.jpg", true, "pro123456", "0912345678", "Professional", "Active" },
+                    { 15, new DateOnly(1990, 3, 10), "thanhhuong@example.com", "Phan Thị Thanh Hương", "Nữ", "/images/users/doctor_female_4.jpg", true, "pro123456", "0923456789", "Professional", "Active" },
                     { 16, new DateOnly(1988, 11, 5), "mylinh@example.com", "Ngô Thị Mỹ Linh", "Nữ", "/images/users/doctor_female_5.jpg", false, "pro123456", "0934567890", "Professional", "Active" },
                     { 17, new DateOnly(1985, 4, 18), "quoctuan@example.com", "Đặng Quốc Tuấn", "Nam", "/images/users/doctor_male_5.jpg", false, "pro123456", "0945678901", "Professional", "Active" },
                     { 18, new DateOnly(1981, 6, 25), "kimngan@example.com", "Lê Thị Kim Ngân", "Nữ", "/images/users/doctor_female_6.jpg", false, "pro123456", "0956789012", "Professional", "Active" },
@@ -819,9 +845,9 @@ namespace DataAccessObjects.Migrations
                     { 22, new DateOnly(1982, 9, 28), "thuytrang@example.com", "Phạm Thị Thùy Trang", "Nữ", "/images/users/doctor_female_7.jpg", false, "pro123456", "0990123456", "Professional", "Active" },
                     { 23, new DateOnly(1979, 12, 5), "vanhung@example.com", "Bùi Văn Hưng", "Nam", "/images/users/doctor_male_9.jpg", false, "pro123456", "0901234567", "Professional", "Active" },
                     { 24, new DateOnly(1984, 5, 15), "bichngoc@example.com", "Nguyễn Thị Bích Ngọc", "Nữ", "/images/users/doctor_female_8.jpg", false, "pro123456", "0912345678", "Professional", "Active" },
-                    { 25, new DateOnly(1978, 8, 20), "quangvinh@example.com", "Trương Quang Vinh", "Nam", "/images/users/doctor_male_10.jpg", false, "pro123456", "0923456789", "Professional", "Active" },
-                    { 26, new DateOnly(1987, 3, 12), "duongha@example.com", "Dương Thị Hà", "Nữ", "/images/users/doctor_female_9.jpg", false, "pro123456", "0934567890", "Professional", "Active" },
-                    { 27, new DateOnly(1991, 10, 8), "vanthang@example.com", "Mai Văn Thắng", "Nam", "/images/users/doctor_male_11.jpg", false, "pro123456", "0945678901", "Professional", "Inactive" }
+                    { 25, new DateOnly(1978, 8, 20), "quangvinh@example.com", "Trương Quang Vinh", "Nam", "/images/users/doctor_male_10.jpg", true, "pro123456", "0923456789", "Professional", "Active" },
+                    { 26, new DateOnly(1987, 3, 12), "duongha@example.com", "Dương Thị Hà", "Nữ", "/images/users/doctor_female_9.jpg", true, "pro123456", "0934567890", "Professional", "Active" },
+                    { 27, new DateOnly(1991, 10, 8), "vanthang@example.com", "Mai Văn Thắng", "Nam", "/images/users/doctor_male_11.jpg", true, "pro123456", "0945678901", "Professional", "Inactive" }
                 });
 
             migrationBuilder.InsertData(
@@ -1250,6 +1276,22 @@ namespace DataAccessObjects.Migrations
                 column: "MedicalRecordId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_Email",
+                table: "EmailVerificationTokens",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_Token",
+                table: "EmailVerificationTokens",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_UserId",
+                table: "EmailVerificationTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Facilities_TypeId",
                 table: "Facilities",
                 column: "TypeId");
@@ -1376,6 +1418,9 @@ namespace DataAccessObjects.Migrations
 
             migrationBuilder.DropTable(
                 name: "Attachments");
+
+            migrationBuilder.DropTable(
+                name: "EmailVerificationTokens");
 
             migrationBuilder.DropTable(
                 name: "FacilityDepartments");

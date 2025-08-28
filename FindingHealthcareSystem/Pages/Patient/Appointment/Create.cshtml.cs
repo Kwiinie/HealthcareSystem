@@ -1,21 +1,14 @@
 ﻿using BusinessObjects.Dtos.User;
 using BusinessObjects.DTOs.Appointment;
 using BusinessObjects.DTOs.Facility;
-using BusinessObjects.DTOs.Payment;
 using BusinessObjects.DTOs.Professional;
 using BusinessObjects.DTOs.Schedule;
 using BusinessObjects.DTOs.Service;
-using BusinessObjects.Entities;
 using BusinessObjects.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
-using Repositories.Interfaces;
 using Services.Interfaces;
-using Services.Services;
-using System;
-using System.Globalization;
-
 
 namespace FindingHealthcareSystem.Pages.Patient.Appointment
 {
@@ -25,7 +18,10 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
         private readonly IFacilityService _facilityService;
         private readonly IAppointmentService _appointmentService;
 
-        public CreateModel(IProfessionalService professionalService, IFacilityService facilityService, IAppointmentService appointmentService)
+        public CreateModel(
+            IProfessionalService professionalService,
+            IFacilityService facilityService,
+            IAppointmentService appointmentService)
         {
             _facilityService = facilityService;
             _professionalService = professionalService;
@@ -36,6 +32,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
         /// PROPERTIES
         /// </summary>
         public List<string> TimeSlots { get; set; } = new List<string>();
+
         [BindProperty(SupportsGet = true)]
         public int? ProviderId { get; set; }
 
@@ -44,24 +41,27 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
 
         public DateOnly? ScheduleStartDate { get; set; }
         public DateOnly? ScheduleEndDate { get; set; }
-        public string WorkingWeekdaysJson { get; set; } = "[]";        
+        public string WorkingWeekdaysJson { get; set; } = "[]";
         public string ClosedExceptionDatesJson { get; set; } = "[]";
+
         [BindProperty(SupportsGet = true)]
         public DateTime? SelectedDate { get; set; } = DateTime.Today;
-        public string SelectedTimeSlot { get; set; }
+
+        public string? SelectedTimeSlot { get; set; }
+
         [BindProperty]
         public int SelectedServiceId { get; set; }
-        public ProfessionalDto? professional { get; set; }
 
+        public ProfessionalDto? professional { get; set; }
         public SearchingFacilityDto? facility { get; set; }
         public List<ServiceDto> services { get; set; } = new List<ServiceDto>();
 
         public async Task<IActionResult> OnGetAsync(
-    int? ProviderId,
-    string ProviderType,
-    string SelectedDate,
-    string SelectedTimeSlot = null,
-    int SelectedServiceId = 0)
+            int? ProviderId,
+            string ProviderType,
+            string SelectedDate,
+            string SelectedTimeSlot = null,
+            int SelectedServiceId = 0)
         {
             this.ProviderId = ProviderId;
             this.ProviderType = ProviderType;
@@ -92,7 +92,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                     if (active != null)
                     {
                         ScheduleStartDate = active.StartDate;
-                        ScheduleEndDate   = active.EndDate;
+                        ScheduleEndDate = active.EndDate;
 
                         var weekdays = (active.WorkingDates ?? new List<WorkingDateDto>())
                                         .Select(w => w.Weekday)
@@ -107,7 +107,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                                             .OrderBy(d => d)
                                             .ToList();
 
-                        WorkingWeekdaysJson      = JsonConvert.SerializeObject(weekdays);
+                        WorkingWeekdaysJson = JsonConvert.SerializeObject(weekdays);
                         ClosedExceptionDatesJson = JsonConvert.SerializeObject(closedDates);
 
                         if (!this.SelectedDate.HasValue)
@@ -149,7 +149,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                                         if (ex?.NewStartTime.HasValue == true && ex?.NewEndTime.HasValue == true)
                                         {
                                             start = ex.NewStartTime.Value;
-                                            end   = ex.NewEndTime.Value;
+                                            end = ex.NewEndTime.Value;
                                         }
 
                                         string fmt(TimeOnly t) => t.ToString("H\\:mm");
@@ -174,7 +174,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                     var start = DateOnly.FromDateTime(DateTime.Today);
                     var end = start.AddDays(30);
                     ScheduleStartDate = start;
-                    ScheduleEndDate   = end;
+                    ScheduleEndDate = end;
 
                     var weekdays = new List<int> { 2, 3, 4, 5, 6, 7 }; // T2..T7
                     WorkingWeekdaysJson = JsonConvert.SerializeObject(weekdays);
@@ -184,7 +184,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                     TimeSlots.Add("7:00 - 16:00");
                 }
 
-                var bookedSlots = await GetBookedSlots(ProviderId.Value, ProviderType, this.SelectedDate.Value);
+                var bookedSlots = await GetBookedSlots(ProviderId.Value, ProviderType, this.SelectedDate!.Value);
                 ViewData["BookedSlots"] = bookedSlots;
             }
 
@@ -198,10 +198,11 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
             return d;
         }
 
-        private static DateOnly FindNextValidDate(DateOnly startTry,
-                                                  ScheduleDto active,
-                                                  List<int> weekdaysDb,           
-                                                  List<string> closedDatesYmd)    
+        private static DateOnly FindNextValidDate(
+            DateOnly startTry,
+            ScheduleDto active,
+            List<int> weekdaysDb,
+            List<string> closedDatesYmd)
         {
             var d = startTry;
             while (d <= active.EndDate)
@@ -219,7 +220,6 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
             }
             return startTry;
         }
-    
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -228,6 +228,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
             var selectedDateStr = Request.Form["SelectedDate"];
             var selectedTimeSlot = Request.Form["SelectedTimeSlot"];
             var priceStr = Request.Form["SelectedServicePrice"];
+
             if (!decimal.TryParse(priceStr, out var depositAmount))
             {
                 ModelState.AddModelError(string.Empty, "Giá dịch vụ không hợp lệ.");
@@ -235,11 +236,17 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
             }
 
             var currentUserJson = HttpContext.Session.GetString("User");
-            GeneralUserDto currentUser = null;
+            GeneralUserDto? currentUser = null;
 
             if (!string.IsNullOrEmpty(currentUserJson))
             {
                 currentUser = JsonConvert.DeserializeObject<GeneralUserDto>(currentUserJson);
+            }
+
+            if (currentUser == null)
+            {
+                ModelState.AddModelError(string.Empty, "Bạn cần đăng nhập để đặt lịch.");
+                return Page();
             }
 
             if (!DateTime.TryParse(selectedDateStr, out DateTime selectedDate))
@@ -248,56 +255,47 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                 return Page();
             }
 
-            var selectedTimeSlotString = selectedTimeSlot.ToString();
-            var timeSlotParts = selectedTimeSlotString.Split(new char[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
-            if (timeSlotParts.Length != 2 || !TimeSpan.TryParse(timeSlotParts[0], out TimeSpan startTime) || !TimeSpan.TryParse(timeSlotParts[1], out TimeSpan endTime))
+            // Parse "H:mm - H:mm"
+            if (string.IsNullOrWhiteSpace(selectedTimeSlot))
             {
-                ModelState.AddModelError(string.Empty, "Invalid time slot format.");
+                ModelState.AddModelError(string.Empty, "Vui lòng chọn khung giờ.");
                 return Page();
             }
 
-            DateTime appointmentDateTime = selectedDate.Date.Add(startTime);
+            var selectedTimeSlotString = selectedTimeSlot.ToString(); var timeSlotParts = selectedTimeSlotString.Split(new char[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries); if (timeSlotParts.Length != 2 || !TimeSpan.TryParse(timeSlotParts[0], out TimeSpan startTime) || !TimeSpan.TryParse(timeSlotParts[1], out TimeSpan endTime)) { ModelState.AddModelError(string.Empty, "Invalid time slot format."); return Page(); }
+
+            var appointmentDateTime = selectedDate.Date.Add(startTime);
 
             var createAppointmentDto = new CreateAppointmentDto
             {
-                Date = appointmentDateTime,
+                // Service sẽ tự map userId -> patient.Id
+                Date = appointmentDateTime, // Service đảm bảo ExpectedStart = Date nếu ExpectedStart chưa có
                 PatientId = currentUser.Id,
                 ProviderId = providerId,
                 ProviderType = Enum.Parse<ProviderType>(providerType),
                 ServiceId = SelectedServiceId,
+                Source = AppointmentSource.Booked,
+                Status = AppointmentStatus.Scheduled
             };
 
             var result = await _appointmentService.AddAsync(createAppointmentDto);
-            return Page();
+            if (!result.IsSuccess || result.Data == null || result.Data.Id == 0)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Không thể tạo lịch hẹn.");
+                return Page();
+            }
 
-            //if (result.Success)
-            //{
-
-            //    var paymentRequest = new PaymentRequestDto
-            //    {
-            //        AppointmentId = result.Data.Id.Value,
-            //        Amount = (float)depositAmount
-            //    };
-
-            //    string paymentUrl = await _paymentService.CreatePaymentAsync(paymentRequest, HttpContext);
-            //    return Redirect(paymentUrl);
-
-            //}
-            //else
-            //{
-            //    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-            //    return Page();
-            //}
+            // Điều hướng sang trang hiển thị số thứ tự (Ticket)
+            return RedirectToPage("/Patient/Appointment/Ticket", new { appointmentId = result.Data.Id });
         }
-
 
         private static readonly AppointmentStatus[] _effectiveStatuses = new[]
         {
-    AppointmentStatus.Scheduled,
-    AppointmentStatus.CheckedIn,
-    AppointmentStatus.InExam,
-    AppointmentStatus.Completed
-};
+            AppointmentStatus.Scheduled,
+            AppointmentStatus.CheckedIn,
+            AppointmentStatus.InExam,
+            AppointmentStatus.Completed
+        };
 
         private async Task<List<(DateTime start, DateTime end, int stepMinutes)>> GetWorkingIntervalsForDayAsync(
             int providerId, string providerType, DateOnly day)
@@ -322,7 +320,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                 if (wds == null || wds.Count == 0) return intervals;
 
                 var ex = pro.ScheduleExceptions?.FirstOrDefault(e => e.Date == day);
-                if (ex?.IsClosed == true) return intervals; 
+                if (ex?.IsClosed == true) return intervals;
 
                 foreach (var wd in wds)
                 {
@@ -332,12 +330,12 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
                     if (ex?.NewStartTime.HasValue == true && ex?.NewEndTime.HasValue == true)
                     {
                         start = ex.NewStartTime.Value;
-                        end   = ex.NewEndTime.Value;
+                        end = ex.NewEndTime.Value;
                     }
 
                     if (end <= start) continue;
 
-                    var step = wd.SlotDuration + wd.SlotBuffer; 
+                    var step = wd.SlotDuration + wd.SlotBuffer;
                     var stepMinutes = (int)Math.Max(1, step.TotalMinutes);
 
                     var s = day.ToDateTime(start);
@@ -350,7 +348,7 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
             {
                 var s = day.ToDateTime(new TimeOnly(7, 0));
                 var e = day.ToDateTime(new TimeOnly(16, 0));
-                var stepMinutes = 30; 
+                var stepMinutes = 30;
                 intervals.Add((s, e, stepMinutes));
             }
 
@@ -383,24 +381,25 @@ namespace FindingHealthcareSystem.Pages.Patient.Appointment
 
                 var onlineCap = Math.Max(1, (int)Math.Floor(slotsInBlock * 0.7));
 
+                // So sánh bằng (Date ?? ExpectedStart) để tránh null
+                bool InBlock(AppointmentDTO a) =>
+                    (a.Date ?? a.ExpectedStart) >= start &&
+                    (a.Date ?? a.ExpectedStart) < end;
+
                 var bookedOnlineCount = effective.Count(a =>
-                    a.Source == AppointmentSource.Booked &&
-                    a.Date >= start && a.Date < end);
+                    a.Source == AppointmentSource.Booked && InBlock(a));
 
                 var currentUserHasAppt = currentUserId.HasValue &&
-                    effective.Any(a => a.PatientId == currentUserId.Value &&
-                                       a.Date >= start && a.Date < end);
+                    effective.Any(a => a.PatientId == currentUserId.Value && InBlock(a));
 
                 if (bookedOnlineCount >= onlineCap || currentUserHasAppt)
                 {
-                    string formatted = $"{start: H\\:mm} - {end: H\\:mm}".Trim();
-                    formatted = formatted.Replace(" 0", " 0").Replace(" :", ":");
+                    string formatted = $"{start:HH\\:mm} - {end:HH\\:mm}";
                     result.Add(formatted);
                 }
             }
 
             return result;
         }
-
     };
 }

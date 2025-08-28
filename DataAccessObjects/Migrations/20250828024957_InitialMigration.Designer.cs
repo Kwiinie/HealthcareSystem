@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(FindingHealthcareSystemContext))]
-    [Migration("20250827021750_document")]
-    partial class document
+    [Migration("20250828024957_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -866,6 +866,62 @@ namespace DataAccessObjects.Migrations
                             Name = "Khoa Dinh dưỡng",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.EmailVerificationToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsUsed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EmailVerificationTokens", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObjects.Entities.Expertise", b =>
@@ -4796,7 +4852,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/admin_avatar.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "ad123456",
                             PhoneNumber = "0901234567",
                             Role = "Admin",
@@ -4813,7 +4869,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/patient_female_1.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0902345678",
                             Role = "Patient",
@@ -4830,7 +4886,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/patient_male_1.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0903456789",
                             Role = "Patient",
@@ -4847,7 +4903,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_1.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0904567890",
                             Role = "Professional",
@@ -4864,7 +4920,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_1.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0905678901",
                             Role = "Professional",
@@ -4881,7 +4937,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/patient_female_2.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0906789012",
                             Role = "Patient",
@@ -4898,7 +4954,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/patient_male_2.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0907890123",
                             Role = "Patient",
@@ -4915,7 +4971,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_2.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0908901234",
                             Role = "Professional",
@@ -4932,7 +4988,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_2.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0909012345",
                             Role = "Professional",
@@ -4949,7 +5005,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/patient_male_3.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0910123456",
                             Role = "Patient",
@@ -4966,7 +5022,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/patient_female_3.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0911234567",
                             Role = "Patient",
@@ -4983,7 +5039,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_3.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0912345678",
                             Role = "Professional",
@@ -5000,7 +5056,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_3.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0913456789",
                             Role = "Professional",
@@ -5017,7 +5073,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_4.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0912345678",
                             Role = "Professional",
@@ -5034,7 +5090,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_4.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0923456789",
                             Role = "Professional",
@@ -5204,7 +5260,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_10.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0923456789",
                             Role = "Professional",
@@ -5221,7 +5277,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_9.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0934567890",
                             Role = "Professional",
@@ -5238,7 +5294,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_11.jpg",
                             IsDeleted = false,
-                            IsVerified = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0945678901",
                             Role = "Professional",
@@ -5693,6 +5749,17 @@ namespace DataAccessObjects.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("MedicalRecord");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.EmailVerificationToken", b =>
+                {
+                    b.HasOne("BusinessObjects.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BusinessObjects.Entities.Facility", b =>

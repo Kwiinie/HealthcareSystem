@@ -39,6 +39,9 @@ namespace FindingHealthcareSystem
             // Bind cấu hình từ appsettings.json
             builder.Services.Configure<CloudinarySettings>(
                 builder.Configuration.GetSection("CloudinarySettings"));
+                
+            builder.Services.Configure<EmailSettings>(
+                builder.Configuration.GetSection("EmailSettings"));
 
 /*            builder.Services.AddSingleton<CloudinaryService>();*/
 

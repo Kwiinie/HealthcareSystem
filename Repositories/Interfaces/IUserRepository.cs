@@ -28,7 +28,7 @@ namespace Repositories.Interfaces
 
         Task<List<Expertise>> GetAllExpertises();
 
-        Task RegisterUserAsync(RegisterUserDto userDto);
+        Task<User> RegisterUserAsync(RegisterUserDto userDto);
         Task<bool> EmailExistsAsync(string email);
         Task UpdateProfessionalAsync(Professional professional);
         Task UpdatePatientAsync(Patient patient);

@@ -11,6 +11,7 @@ using DataAccessObjects.DAOs;
 using Services;
 using BusinessObjects.Entities;
 using Services.Helpers;
+using Services.Setups;
 
 namespace FindingHealthcareSystem
 {
@@ -74,6 +75,7 @@ namespace FindingHealthcareSystem
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<IProfessionalVerificationService, ProfessionalVerificationService>();
 
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

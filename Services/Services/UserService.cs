@@ -189,7 +189,7 @@ namespace Services.Services
             return await _userRepository.GetAllHospitalsAsync();
         }
 
-        public async Task RegisterUserAsync(RegisterUserDto userDto)
+        public async Task<User> RegisterUserAsync(RegisterUserDto userDto)
         {
             var date = userDto.Birthday;
             try
@@ -205,8 +205,8 @@ namespace Services.Services
                 {
                     throw new Exception("Email đã tồn tại. Vui lòng sử dụng email khác.");
                 }
-                await _userRepository.RegisterUserAsync(userDto);
-
+                var user = await _userRepository.RegisterUserAsync(userDto);
+                return user;
             }
             catch(Exception ex)
             {

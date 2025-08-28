@@ -75,7 +75,7 @@ namespace Repositories.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task RegisterUserAsync(RegisterUserDto userDto)
+        public async Task<User> RegisterUserAsync(RegisterUserDto userDto)
         {
             try
             {
@@ -102,7 +102,8 @@ namespace Repositories.Repositories
                     ImgUrl = userDto.ImgUrl,
                     Status = UserStatus.Active,
                     Birthday = userDto.Birthday,
-                    Gender = userDto.Gender
+                    Gender = userDto.Gender,
+                    IsVerified = false // Email chưa được xác nhận
                 };
 
                 _context.Users.Add(user);
@@ -157,6 +158,8 @@ namespace Repositories.Repositories
 
                    
                 }
+
+                return user;
             }
             catch (Exception ex)
             {
