@@ -22,12 +22,13 @@ public partial class User : BaseEntity
     public DateOnly? Birthday { get; set; }
 
     public UserStatus Status { get; set; }
+    public bool IsVerified { get; set; }
 
     public string? ImgUrl { get; set; }
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
 
-    public virtual Patient? Patient { get; set; }
+    public virtual ICollection<Patient>? Patients { get; set;  }
 
     public virtual Professional? Professional { get; set; }
 }

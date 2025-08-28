@@ -12,5 +12,8 @@ namespace Services.Interfaces
     public interface IAuthService
     {
         Task<Result<GeneralUserDto>> LoginAsync(LoginDto loginDto);
+        Task<Result<bool>> SendEmailVerificationAsync(int userId, string email, string fullName);
+        Task<Result<bool>> VerifyEmailAsync(string token, string email);
+        Task<Result<bool>> ResendEmailVerificationAsync(string email);
     }
 }

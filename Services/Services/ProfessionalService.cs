@@ -197,5 +197,10 @@ namespace Services.Services
             }
             return _mapper.Map<ServiceDto>(pubService);
         }
+        
+        public async Task<Professional> GetProfessionalByUserIdAsync(int userId)
+        {
+            return await _unitOfWork.ProfessionalRepository.GetProfessionalByUserIdAsync(userId);
+        }
     }
 }

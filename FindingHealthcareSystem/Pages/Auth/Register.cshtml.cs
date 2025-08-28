@@ -16,6 +16,7 @@ namespace FindingHealthcareSystem.Pages.Auth
     {
         private readonly IUserService _userService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly IAuthService _authService;
 
         [BindProperty]
         public RegisterViewModel Input { get; set; } = new();
@@ -25,10 +26,11 @@ namespace FindingHealthcareSystem.Pages.Auth
         public List<Expertise> Expertises { get; private set; }
         public List<CaLamViec> DanhSachCa { get; set; } = new();
 
-        public RegisterModel(IUserService userService, IFileUploadService fileUploadService)
+        public RegisterModel(IUserService userService, IFileUploadService fileUploadService, IAuthService authService)
         {
             _userService = userService;
             _fileUploadService = fileUploadService;
+            _authService = authService;
         }
 
         public async Task OnGetAsync()
@@ -116,9 +118,20 @@ namespace FindingHealthcareSystem.Pages.Auth
                     SpecialtyIds = Input.SpecialtyIds,
                 };
 
-                await _userService.RegisterUserAsync(userDto);
+                var registrationResult = await _userService.RegisterUserAsync(userDto);
 
-                TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+                // Send email verification
+                var emailResult = await _authService.SendEmailVerificationAsync(registrationResult.Id, userDto.Email, userDto.Fullname);
+                
+                if (emailResult.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.";
+                }
+                else
+                {
+                    TempData["WarningMessage"] = "Đăng ký thành công! Tuy nhiên không thể gửi email xác nhận. Vui lòng liên hệ hỗ trợ.";
+                }
+                
                 return RedirectToPage("/Auth/Login");
             }
             catch (Exception ex)

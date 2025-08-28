@@ -18,12 +18,18 @@ public partial class Appointment : BaseEntity
     public ServiceType ServiceType { get; set; }
 
     public AppointmentStatus Status { get; set; }
-
     public int? PaymentId { get; set; }
 
+    public DateTime ExpectedStart { get; set; }
+    public DateTime? CheckedInAt { get; set; }
+
+    public DateTime? StartAt { get; set; }
+    public DateTime? EndAt { get; set; }
+    public int? TicketNo { get; set; }
+    public AppointmentSource Source { get; set; }
     public string? Description { get; set; }
 
-    public DateTime? Date { get; set; }
+    public DateTime? Date { get; set; } 
 
     public virtual ICollection<MedicalRecord>? MedicalRecords { get; set; } = new List<MedicalRecord>();
 

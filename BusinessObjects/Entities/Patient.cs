@@ -16,15 +16,8 @@ public partial class Patient : BaseEntity
 
     public virtual User? User { get; set; }
 
-    // Thêm các thuộc tính từ User
-    public string? Fullname => User?.Fullname;
-    public string? Email => User?.Email;
-    public string? PhoneNumber => User?.PhoneNumber;
-    public string? Gender => User?.Gender;
-    public DateOnly? Birthday => User?.Birthday;
+    public string? Fullname {  get; set; }
+    public string? Gender {  get; set; }
+    public DateOnly? Birthday {  get; set; }
 
-    public static implicit operator Patient(User v)
-    {
-        throw new NotImplementedException();
-    }
 }

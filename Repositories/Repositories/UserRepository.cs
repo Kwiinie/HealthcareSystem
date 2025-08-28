@@ -58,11 +58,11 @@ namespace Repositories.Repositories
         }
 
 
-public async Task<User?> GetByIdAsync(int id)
+    public async Task<User?> GetByIdAsync(int id)
     {
         return await _context.Users
-            .Include(u => u.Patient)        // Nếu cần lấy Patient
-            .Include(u => u.Professional)   // Nếu cần lấy Professional
+            .Include(u => u.Patients)        
+            .Include(u => u.Professional)   
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
@@ -75,7 +75,7 @@ public async Task<User?> GetByIdAsync(int id)
             await _context.SaveChangesAsync();
         }
 
-        public async Task RegisterUserAsync(RegisterUserDto userDto)
+        public async Task<User> RegisterUserAsync(RegisterUserDto userDto)
         {
             try
             {
@@ -102,7 +102,8 @@ public async Task<User?> GetByIdAsync(int id)
                     ImgUrl = userDto.ImgUrl,
                     Status = UserStatus.Active,
                     Birthday = userDto.Birthday,
-                    Gender = userDto.Gender
+                    Gender = userDto.Gender,
+                    IsVerified = false // Email chưa được xác nhận
                 };
 
                 _context.Users.Add(user);
@@ -157,6 +158,8 @@ public async Task<User?> GetByIdAsync(int id)
 
                    
                 }
+
+                return user;
             }
             catch (Exception ex)
             {

@@ -1,0 +1,237 @@
+﻿@page "/admin/document-management"
+@model FindingHealthcareSystem.Pages.Admin.DocumentManagement.IndexModel
+@using BusinessObjects.Enums
+@{
+    ViewData["Title"] = "Quản lý tài liệu chứng chỉ";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/admin-document-management.css">
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-file-medical me-2"></i>Quản lý tài liệu chứng chỉ</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Làm mới
+                    </button>
+                    <button class="btn btn-info" onclick="exportDocuments()">
+                        <i class="fas fa-file-excel me-2"></i>Xuất Excel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overview Statistics -->
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card total">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.TotalDocuments</h3>
+                            <p>Tổng số tài liệu</p>
+                        </div>
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card pending">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.PendingDocuments</h3>
+                            <p>Chờ xác thực</p>
+                        </div>
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card verified">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.VerifiedDocuments</h3>
+                            <p>Đã xác thực</p>
+                        </div>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card expired">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.ExpiredDocuments</h3>
+                            <p>Đã hết hạn</p>
+                        </div>
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card expiring">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.ExpiringSoonDocuments</h3>
+                            <p>Sắp hết hạn</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="stat-card rejected">
+                        <div class="stat-content">
+                            <h3>@Model.Statistics.RejectedDocuments</h3>
+                            <p>Bị từ chối</p>
+                        </div>
+                        <i class="fas fa-ban"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-2">
+                    <a href="/admin/document-verification?status=PendingVerification" class="btn btn-warning w-100">
+                        <i class="fas fa-clock me-2"></i>Xem tài liệu chờ duyệt
+                    </a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="/admin/expired-documents" class="btn btn-danger w-100">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Xem tài liệu hết hạn
+                    </a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <button class="btn btn-success w-100" onclick="sendRenewalReminders()">
+                        <i class="fas fa-envelope me-2"></i>Gửi nhắc nhở gia hạn
+                    </button>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <button class="btn btn-info w-100" onclick="generateReport()">
+                        <i class="fas fa-chart-bar me-2"></i>Tạo báo cáo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Document Types Distribution -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Phân bố loại chứng chỉ</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="documentTypeChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Trạng thái xác thực</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="verificationStatusChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Documents -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Tài liệu tải lên gần đây</h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.RecentDocuments.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5>Không có tài liệu nào</h5>
+                            <p class="text-muted">Chưa có tài liệu nào được tải lên gần đây</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Chuyên gia y tế</th>
+                                        <th>Loại chứng chỉ</th>
+                                        <th>Tên tài liệu</th>
+                                        <th>Ngày tải lên</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var doc in Model.RecentDocuments.Take(10))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="/images/users/doctor_avatar.jpg" class="avatar-sm me-3" alt="">
+                                                    <div>
+                                                        <div class="fw-bold">@(doc.ProfessionalName ?? "N/A")</div>
+                                                        <small class="text-muted">ID: #@doc.ProfessionalId</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">@(doc.DocumentTypeName ?? "N/A")</span>
+                                            </td>
+                                            <td>
+                                                <div>@(doc.DocumentName ?? "N/A")</div>
+                                                @if (!string.IsNullOrEmpty(doc.DocumentNumber))
+                                                {
+                                                    <small class="text-muted">Số: @doc.DocumentNumber</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>@(doc.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</div>
+                                                <small class="text-muted">@(doc.CreatedAt?.ToString("HH:mm") ?? "")</small>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-@doc.VerificationStatus.ToString().ToLower()">
+                                                    @(doc.VerificationStatusName ?? doc.VerificationStatus.ToString())
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button class="btn btn-sm btn-outline-primary" onclick="viewDocumentDetails(@doc.Id)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <a href="/admin/document-verification" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="/admin/document-verification" class="btn btn-primary">
+                                Xem tất cả tài liệu
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Details Modal -->
+<div class="modal fade" id="documentDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết tài liệu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="documentDetailsContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/admin-document-management.js"></script>

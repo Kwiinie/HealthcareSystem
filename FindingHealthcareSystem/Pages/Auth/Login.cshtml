@@ -17,6 +17,11 @@
     {
         <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
     }
+
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning">@TempData["WarningMessage"]</div>
+    }
     <h2 class="fw-bolder text-black-50 mb-5">Đăng nhập vào FindingHealthcare</h2>
 
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
@@ -36,7 +41,8 @@
         </div>
         <button type="submit" class="btn btn-login">Đăng nhập</button>
         <div class="forgot-password">
-            <a href="#">Quên mật khẩu?</a>
+            <a href="#">Quên mật khẩu?</a> | 
+            <a href="/Auth/ResendVerification">Gửi lại email xác nhận</a>
         </div>
         <div class="signup">
             <button type="button" class="btn btn-signup">

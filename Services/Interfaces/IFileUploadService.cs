@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+using BusinessObjects.Commons;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,10 @@ namespace Services.Interfaces
         Task<List<string>> UploadImagesAsync(IEnumerable<IFormFile> files, string entityType);
         Task DeleteImageAsync(string imageUrl);
         Task<bool> ValidateImageFile(IFormFile file, int maxSizeMB = 5);
+        
+        // New methods for document uploads
+        Task<Result<string>> UploadAsync(IFormFile file, string folder);
+        Task<Result<string>> UploadDocumentAsync(IFormFile file, string folder);
+        Task<bool> ValidateDocumentFile(IFormFile file, int maxSizeMB = 10);
     }
 }

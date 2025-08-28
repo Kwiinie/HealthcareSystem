@@ -1,5 +1,3 @@
-using BusinessObjects.DTOs.Department;
-using BusinessObjects.DTOs.Facility;
 using BusinessObjects.DTOs.Professional;
 using BusinessObjects.LocationModels;
 using FindingHealthcareSystem.Helpers;
@@ -11,31 +9,24 @@ namespace FindingHealthcareSystem.Pages.Search
 {
     public class IndexModel : BasePageModel
     {
-        private readonly IFacilityService _facilityService;
         private readonly IProfessionalService _professionalService;
         private readonly ISpecialtyService _specialtyService;
-        private readonly IDepartmentService _departmentService;
         private readonly ILocationService _locationService;
 
-
-        public IndexModel(IFacilityService facilityService, IProfessionalService professionalService,
-                         ISpecialtyService specialtyService, IDepartmentService departmentService, 
+        public IndexModel(IProfessionalService professionalService,
+                         ISpecialtyService specialtyService,
                          ILocationService locationService)
         {
-            _facilityService = facilityService;
             _professionalService = professionalService;
             _specialtyService = specialtyService;
-            _departmentService = departmentService;
             _locationService = locationService;
         }
 
         /// <summary>
         /// LIST OF ITEMS
         /// </summary>
-        public IEnumerable<SearchingFacilityDto> Facilities { get; set; } = new List<SearchingFacilityDto>();
         public IEnumerable<ProfessionalDto> Professionals { get; set; } = new List<ProfessionalDto>();
         public IEnumerable<SpecialtyDto> Specialties { get; set; } = new List<SpecialtyDto>();
-        public IEnumerable<DepartmentDto> Departments { get; set; } = new List<DepartmentDto>();
 
         /// <summary>
         /// LOCATION ITEMS
@@ -58,49 +49,29 @@ namespace FindingHealthcareSystem.Pages.Search
         public string Ward { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public string Department { get; set; }
-
-        [BindProperty(SupportsGet = true)]
         public string Specialty { get; set; }
-
-        [BindProperty(SupportsGet = true)]
-        public string ProviderType { get; set; } = "facility"; // Default to facility
 
         public string ProvinceName { get; set; }
         public string DistrictName { get; set; }
         public string WardName { get; set; }
 
-
         /// <summary>
-        /// GET LIST FACILITES/PROFESSIONALS
+        /// GET LIST PROFESSIONALS
         /// </summary>
         /// <returns></returns>
         public async Task OnGetAsync()
         {
-            //FETCH SPECIALTIES, DEPARTMENTS FOR SELECT INPUT
+            //FETCH SPECIALTIES FOR SELECT INPUT
             Specialties = await _specialtyService.GetAllSpecialties();
-            Departments = await _departmentService.GetAllDepartments();
 
             //FETCH LOCATIONS FOR SELECT INPUT
             Provinces = await _locationService.GetProvinces();
 
             await ResolveLocationNames();
 
-
-            //GET LIST FACILITIES/PROFESSIONALS
-            if (ProviderType == "facility" || string.IsNullOrEmpty(ProviderType))
-            {
-                Facilities = await _facilityService.SearchAsync(SearchKeyword, ProvinceName, DistrictName, WardName, Department);
-                Professionals = new List<ProfessionalDto>();
-            }
-            else if (ProviderType == "professional")
-            {
-                Professionals = await _professionalService.SearchAsync(ProvinceName, DistrictName, WardName, Specialty, SearchKeyword);
-                Facilities = new List<SearchingFacilityDto>();
-            }
+            //GET LIST PROFESSIONALS
+            Professionals = await _professionalService.SearchAsync(ProvinceName, DistrictName, WardName, Specialty, SearchKeyword);
         }
-
-
 
         /// <summary>
         /// GETTING PRO/DIS/WARD NAME BASED ON THEIR CODES
@@ -137,7 +108,6 @@ namespace FindingHealthcareSystem.Pages.Search
             }
         }
 
-
         /// <summary>
         /// GETTING DISTRICTS BASED ON PROVINCE
         /// </summary>
@@ -169,6 +139,5 @@ namespace FindingHealthcareSystem.Pages.Search
             var wards = await _locationService.GetWards(districtCode);
             return new JsonResult(wards);
         }
-
     }
 }

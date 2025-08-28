@@ -1,0 +1,63 @@
+@page
+@model FindingHealthcareSystem.Pages.Auth.VerifyEmailModel
+@{
+    ViewData["Title"] = "Xác nhận Email";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    @if (Model.IsSuccess)
+                    {
+                        <div class="text-success mb-4">
+                            <i class="fas fa-check-circle" style="font-size: 4rem;"></i>
+                        </div>
+                        <h2 class="text-success mb-3">Email đã được xác nhận!</h2>
+                        <p class="mb-4">Tài khoản của bạn đã được kích hoạt thành công. Bạn có thể đăng nhập ngay bây giờ.</p>
+                        <a href="/Login" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="text-danger mb-4">
+                            <i class="fas fa-times-circle" style="font-size: 4rem;"></i>
+                        </div>
+                        <h2 class="text-danger mb-3">Xác nhận email thất bại!</h2>
+                        <p class="mb-4">@Model.ErrorMessage</p>
+                        
+                        <div class="d-flex flex-column gap-3">
+                            <a href="/Auth/ResendVerification" class="btn btn-warning">
+                                <i class="fas fa-envelope me-2"></i>Gửi lại email xác nhận
+                            </a>
+                            <a href="/Auth/Register" class="btn btn-secondary">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký lại
+                            </a>
+                            <a href="/Login" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Quay lại đăng nhập
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+    
+    .btn {
+        border-radius: 25px;
+        padding: 12px 30px;
+    }
+    
+    .fas {
+        color: inherit;
+    }
+</style>

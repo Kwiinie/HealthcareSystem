@@ -78,11 +78,12 @@ namespace FindingHealthcareSystem.Pages.Patient.Profile
             var allAppointments = await _appointmentService.GetMyAppointment(userId);
             var filtered = allAppointments.AsQueryable();
             Appointments = filtered
-                .Where(a => a.Date.Date >= DateTime.UtcNow.Date &&
-                           (a.Status == AppointmentStatus.Pending ||
-                            a.Status == AppointmentStatus.Confirmed ||
-                            a.Status == AppointmentStatus.Rescheduled))
-                .ToList();
+    .Where(a => a.Date.Date >= DateTime.UtcNow.Date &&
+               (a.Status == AppointmentStatus.Scheduled ||   // đã đặt slot
+                a.Status == AppointmentStatus.CheckedIn ||   // đã đến
+                a.Status == AppointmentStatus.InExam))       // đang khám
+    .ToList();
+
 
             return Page();
         }

@@ -3,6 +3,8 @@
 
 // Write your JavaScript code.
 
+//site.js
+
 /////////////////////////////////////////////////////////////////////
 ///                     ACTIVE NAV-LINK                          ///
 ///////////////////////////////////////////////////////////////////
@@ -17,33 +19,15 @@ if (currentPage === "/") {
     document.getElementById('article-link').classList.add('active');
 }
 
-
-
 ////////////////////////////////////////////////////////////////////
 ///                 LOCATION DROPDOWN SECTIONS                  ///
 //////////////////////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', function () {
-    toggleProviderSpecifics();
-
     const provinceSelect = document.getElementById('province');
-    if (provinceSelect.value) {
+    if (provinceSelect && provinceSelect.value) {
         loadDistricts();
     }
 });
-
-function toggleProviderSpecifics() {
-    const providerType = document.getElementById('providerType').value;
-
-    document.querySelectorAll('.provider-specific').forEach(el => {
-        el.classList.add('d-none');
-    });
-
-    if (providerType) {
-        document.querySelectorAll(`.${providerType}-specific`).forEach(el => {
-            el.classList.remove('d-none');
-        });
-    }
-}
 
 async function loadDistricts() {
     const provinceCode = document.getElementById('province').value;
@@ -137,7 +121,6 @@ async function loadWards() {
         console.error('Error loading wards:', error);
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////
 ///                      SIDEBAR SECTIONS                       ///

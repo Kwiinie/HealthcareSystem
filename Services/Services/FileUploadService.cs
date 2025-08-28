@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using BusinessObjects.Commons;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,14 +17,22 @@ namespace Services.Services
     {
         private readonly IWebHostEnvironment _environment;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Cloudinary _cloudinary;
         private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+        private readonly string[] _allowedDocumentExtensions = { ".pdf", ".jpg", ".jpeg", ".png" };
 
         public FileUploadService(
             IWebHostEnvironment environment,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _environment = environment;
             _httpContextAccessor = httpContextAccessor;
+            
+            // Initialize Cloudinary
+            var cloudinaryUrl = configuration.GetConnectionString("CloudinarySettings") ??
+                              "cloudinary://617478869489255:anr6kzuQuHhCx8bScRMtuvsMSuY@djsifikxn";
+            _cloudinary = new Cloudinary(cloudinaryUrl);
         }
 
         public async Task<string> UploadImageAsync(IFormFile file, string entityType)
@@ -137,8 +149,119 @@ namespace Services.Services
                 return false;
             }
 
+            return true;
+        }
+
+        public async Task<Result<string>> UploadAsync(IFormFile file, string folder)
+        {
+            return await UploadDocumentAsync(file, folder);
+        }
+
+        public async Task<Result<string>> UploadDocumentAsync(IFormFile file, string folder)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                    return Result<string>.Failure("Không có tệp nào được chọn");
+
+                if (!await ValidateDocumentFile(file))
+                    return Result<string>.Failure("Tệp không hợp lệ. Vui lòng tải lên tệp PDF, JPG, JPEG hoặc PNG dưới 10MB");
+
+                // Generate unique public ID
+                var publicId = $"{folder}/{Guid.NewGuid()}_{Path.GetFileNameWithoutExtension(file.FileName)}";
+                
+                using var stream = file.OpenReadStream();
+                
+                // Check if the file is an image to use appropriate upload parameters
+                if (IsImageFile(file))
+                {
+                    // Use ImageUploadParams for image files to enable Cloudinary optimizations
+                    var imageUploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        PublicId = publicId,
+                        Folder = folder,
+                        UseFilename = true,
+                        UniqueFilename = true,
+                        Overwrite = false,
+                        // Add image optimization for certificates
+                        Transformation = new Transformation()
+                            .Quality("auto:good") // Automatic quality optimization
+                            .FetchFormat("auto") // Automatic format selection (WebP when supported)
+                            .Flags("progressive") // Progressive JPEG loading
+                    };
+
+                    var uploadResult = await _cloudinary.UploadAsync(imageUploadParams);
+
+                    if (uploadResult.Error != null)
+                        return Result<string>.Failure($"Lỗi upload: {uploadResult.Error.Message}");
+
+                    return Result<string>.Success(uploadResult.SecureUrl.ToString());
+                }
+                else
+                {
+                    // Use RawUploadParams for PDF files
+                    var rawUploadParams = new RawUploadParams()
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        PublicId = publicId,
+                        Folder = folder,
+                        UseFilename = true,
+                        UniqueFilename = true,
+                        Overwrite = false
+                    };
+
+                    var uploadResult = await _cloudinary.UploadAsync(rawUploadParams);
+
+                    if (uploadResult.Error != null)
+                        return Result<string>.Failure($"Lỗi upload: {uploadResult.Error.Message}");
+
+                    return Result<string>.Success(uploadResult.SecureUrl.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                return Result<string>.Failure($"Lỗi khi tải lên tệp: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> ValidateDocumentFile(IFormFile file, int maxSizeMB = 10)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return false;
+            }
+
+            // Check file size (default: 10MB max for documents)
+            if (file.Length > maxSizeMB * 1024 * 1024)
+            {
+                return false;
+            }
+
+            // Check file extension
+            string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(extension) || !_allowedDocumentExtensions.Contains(extension))
+            {
+                return false;
+            }
 
             return true;
+        }
+
+        /// <summary>
+        /// Determines if the uploaded file is an image type that should use Cloudinary's image optimization features
+        /// </summary>
+        /// <param name="file">The uploaded file to check</param>
+        /// <returns>True if the file is an image (jpg, jpeg, png), False if it's a PDF or other document type</returns>
+        private bool IsImageFile(IFormFile file)
+        {
+            if (file == null)
+                return false;
+
+            var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+            var imageExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            
+            return !string.IsNullOrEmpty(extension) && imageExtensions.Contains(extension);
         }
     }
     

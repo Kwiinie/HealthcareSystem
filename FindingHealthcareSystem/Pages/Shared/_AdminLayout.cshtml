@@ -14,8 +14,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-
 </head>
 
 <body>
@@ -51,7 +49,6 @@
                 </li>
                 <div class="sidebar-divider"></div>
 
-
                 <!-- Quản lý người dùng with submenu -->
                 <li class="sidebar-item">
                     <a href="#userManagement" class="sidebar-link" data-bs-toggle="collapse">
@@ -86,12 +83,44 @@
                 </li>
                 <div class="sidebar-divider"></div>
 
+                <!-- Quản lý chứng chỉ - NEW SECTION -->
+                <li class="sidebar-item">
+                    <a href="#documentManagement" class="sidebar-link" data-bs-toggle="collapse">
+                        <div class="icon-circle">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <span class="sidebar-text">Quản lý chứng chỉ</span>
+                        <i class="bi bi-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="documentManagement">
+                        <ul class="sidebar-submenu">
+                            <li class="sidebar-item">
+                                <a href="/admin/document-verification" class="sidebar-link">
+                                    <i class="bi bi-clipboard-check"></i>
+                                    <span class="sidebar-text">Xác thực chứng chỉ</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="/admin/document-management" class="sidebar-link">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    <span class="sidebar-text">Quản lý tài liệu</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="/admin/expired-documents" class="sidebar-link">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    <span class="sidebar-text">Chứng chỉ hết hạn</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <div class="sidebar-divider"></div>
 
                 <!-- Quản lý cơ sở y tế with submenu -->
                 <li class="sidebar-item">
                     <a href="#facilityManagement" class="sidebar-link" data-bs-toggle="collapse">
                         <div class="icon-circle">
-
                             <i class="bi bi-building-fill"></i>
                         </div>
                         <span class="sidebar-text">Quản lý cơ sở y tế</span>
@@ -105,12 +134,10 @@
                                     <span class="sidebar-text">Quản lý cơ sở y tế</span>
                                 </a>
                             </li>
-                            
                         </ul>
                     </div>
                 </li>
                 <div class="sidebar-divider"></div>
-
 
                 <!-- Quản lý bài viết with submenu -->
                 <li class="sidebar-item">
@@ -128,7 +155,7 @@
                                     <i class="bi bi-file-earmark-fill"></i>
                                     <span class="sidebar-text">Tất cả bài viết</span>
                                 </a>
-                            </li
+                            </li>
                             <li class="sidebar-item">
                                 <a href="/admin/category" class="sidebar-link">
                                     <i class="bi bi-tags-fill"></i>
@@ -140,20 +167,15 @@
                 </li>
                 <div class="sidebar-divider"></div>
 
-
-                <!-- Quản lý đánh giá with submenu -->
+                <!-- Quản lý giao dịch -->
                 <li class="sidebar-item">
-                    <a href="/admin/payment" class="sidebar-link active">
+                    <a href="/admin/payment" class="sidebar-link">
                         <div class="icon-circle">
                             <i class="bi bi-credit-card-fill"></i>
                         </div>
                         <span class="sidebar-text">Quản lý giao dịch</span>
                     </a>
                 </li>
-
-
-                <!-- Additional menu items -->
-
             </ul>
         </aside>
 
@@ -284,9 +306,9 @@
     </div>
     @RenderSection("Scripts", required: false)
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <script>
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/notificationHub")
@@ -373,12 +395,27 @@
 
             setTimeout(() => toast.remove(), 4000);
         }
-        </script>
 
+        // Add script to handle active menu highlighting
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const menuLinks = document.querySelectorAll('.sidebar-link');
 
+            menuLinks.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+
+                if (href && currentPath.includes(href) && href !== '#') {
+                    link.classList.add('active');
+
+                    // If it's a submenu item, expand the parent
+                    const parentCollapse = link.closest('.collapse');
+                    if (parentCollapse) {
+                        parentCollapse.classList.add('show');
+                    }
+                }
+            });
+        });
+    </script>
 </body>
-
-
 </html>
-
-

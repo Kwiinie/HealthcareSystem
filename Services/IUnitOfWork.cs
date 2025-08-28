@@ -18,6 +18,7 @@ namespace Services
 
         IFacilityRepository FacilityRepository { get; }
         IProfessionalRepository ProfessionalRepository { get; }
+        IProfessionalDocumentRepository ProfessionalDocumentRepository { get; }
         IAppointmentRepository AppointmentRepository { get; }
         IUserRepository UserRepository { get; }
 

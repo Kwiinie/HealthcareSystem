@@ -36,6 +36,8 @@ namespace BusinessObjects.DTOs.Appointment
         [NotMapped]
         public ServiceDto PublicService { get; set; }
 
+        public AppointmentSource Source { get; set; }
+
         [NotMapped]
         public int Age
         {

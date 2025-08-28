@@ -1,0 +1,130 @@
+@page
+@model FindingHealthcareSystem.Pages.Auth.ChooseRoleModel
+
+@{
+    ViewData["Title"] = "Choose Registration Type";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 mb-3">Chào mừng đến với Hệ thống Y tế</h1>
+                <p class="lead text-muted">Vui lòng chọn loại tài khoản bạn muốn đăng ký</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Patient Registration -->
+                <div class="col-md-6">
+                    <div class="card role-card h-100 border-primary">
+                        <div class="card-body text-center p-4">
+                            <div class="role-icon mb-4">
+                                <i class="fas fa-user-injured fa-4x text-primary"></i>
+                            </div>
+                            <h3 class="card-title mb-3">Bệnh nhân</h3>
+                            <p class="card-text text-muted mb-4">
+                                Đăng ký tài khoản để đặt lịch khám bệnh, theo dõi sức khỏe và quản lý hồ sơ y tế của bạn.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Đặt lịch khám bệnh trực tuyến</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Quản lý hồ sơ y tế cá nhân</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Theo dõi lịch sử khám bệnh</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Nhận tư vấn y tế</li>
+                            </ul>
+                            <a href="/Auth/RegisterPatient" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký Bệnh nhân
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doctor Registration -->
+                <div class="col-md-6">
+                    <div class="card role-card h-100 border-success">
+                        <div class="card-body text-center p-4">
+                            <div class="role-icon mb-4">
+                                <i class="fas fa-user-md fa-4x text-success"></i>
+                            </div>
+                            <h3 class="card-title mb-3">Bác sĩ</h3>
+                            <p class="card-text text-muted mb-4">
+                                Đăng ký tài khoản bác sĩ để cung cấp dịch vụ y tế, quản lý bệnh nhân và phát triển sự nghiệp.
+                            </p>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Quản lý lịch khám bệnh</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Tư vấn y tế trực tuyến</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Quản lý hồ sơ bệnh nhân</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Xây dựng danh tiếng chuyên môn</li>
+                            </ul>
+                            <a href="/Auth/RegisterDoctor" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-user-md me-2"></i>Đăng ký Bác sĩ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <p class="text-muted">
+                    Đã có tài khoản? 
+                    <a href="/Auth/Login" class="text-decoration-none">Đăng nhập ngay</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .role-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .role-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 123, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .border-success .role-icon {
+            background: rgba(25, 135, 84, 0.1);
+        }
+
+        .display-5 {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .lead {
+            font-size: 1.1rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .list-unstyled li {
+            padding: 0.25rem 0;
+        }
+    </style>
+}

@@ -42,11 +42,11 @@ namespace Repositories.Repositories
             };
             var validStatuses = new[]
             {
-                AppointmentStatus.AwaitingPayment,
-                AppointmentStatus.Pending,
-                AppointmentStatus.Confirmed,
-                AppointmentStatus.Rescheduled,
-                AppointmentStatus.Completed
+                AppointmentStatus.Scheduled,
+                AppointmentStatus.CheckedIn,
+                AppointmentStatus.InExam,
+                AppointmentStatus.Completed,
+                AppointmentStatus.NoShow 
             };
 
             var appointmentQuery = _dao.GetFilteredQuery(filters);

@@ -38,5 +38,7 @@ namespace Services.Interfaces
         Task Delete(int publicServiceId);
 
         Task<ServiceDto> Update(int proId, int publicServiceId, ServiceDto publicServiceDto);
+        
+        Task<Professional> GetProfessionalByUserIdAsync(int userId);
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccessObjects.Migrations
 {
     /// <inheritdoc />
-    public partial class seedData : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -133,6 +133,7 @@ namespace DataAccessObjects.Migrations
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Birthday = table.Column<DateOnly>(type: "date", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: false),
                     ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
@@ -207,6 +208,32 @@ namespace DataAccessObjects.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmailVerificationTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailVerificationTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailVerificationTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Patients",
                 columns: table => new
                 {
@@ -214,6 +241,9 @@ namespace DataAccessObjects.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fullname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Birthday = table.Column<DateOnly>(type: "date", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
@@ -226,7 +256,7 @@ namespace DataAccessObjects.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -242,6 +272,7 @@ namespace DataAccessObjects.Migrations
                     Ward = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Degree = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DegreeFile = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Experience = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WorkingHours = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RequestStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -408,6 +439,49 @@ namespace DataAccessObjects.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProfessionalDocuments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProfessionalId = table.Column<int>(type: "int", nullable: false),
+                    DocumentType = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DocumentName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DocumentUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    DocumentNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IssueDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    ExpiryDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    IssuingAuthority = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    VerificationStatus = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AdminNotes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ReviewedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RejectionReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    FileSizeBytes = table.Column<long>(type: "bigint", nullable: false),
+                    FileExtension = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfessionalDocuments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProfessionalDocuments_Professionals_ProfessionalId",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Professionals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProfessionalDocuments_Users_ReviewedByUserId",
+                        column: x => x.ReviewedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProfessionalSpecialties",
                 columns: table => new
                 {
@@ -437,6 +511,59 @@ namespace DataAccessObjects.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ScheduleExceptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProfessionalId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    IsClosed = table.Column<bool>(type: "bit", nullable: false),
+                    NewStartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    NewEndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Note = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScheduleExceptions", x => x.Id);
+                    table.CheckConstraint("CK_ScheduleException_TimeOrClosed", "[IsClosed] = 1 OR [NewStartTime] < [NewEndTime]");
+                    table.ForeignKey(
+                        name: "FK_ScheduleException_Professional",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Professionals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Schedules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProfessionalId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Schedules", x => x.Id);
+                    table.CheckConstraint("CK_Schedule_DateRange", "[StartDate] <= [EndDate]");
+                    table.ForeignKey(
+                        name: "FK_Schedule_Professional",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Professionals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointments",
                 columns: table => new
                 {
@@ -449,8 +576,15 @@ namespace DataAccessObjects.Migrations
                     ServiceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentId = table.Column<int>(type: "int", nullable: true),
+                    ExpectedStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckedInAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StartAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TicketNo = table.Column<int>(type: "int", nullable: true),
+                    Source = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProfessionalId = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
@@ -494,6 +628,40 @@ namespace DataAccessObjects.Migrations
                         principalTable: "Payments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Professionals_ProfessionalId",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Professionals",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkingDates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ScheduleId = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    SlotDuration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    SlotBuffer = table.Column<TimeSpan>(type: "time", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkingDates", x => x.Id);
+                    table.CheckConstraint("CK_WorkingDate_TimeRange", "[StartTime] < [EndTime]");
+                    table.CheckConstraint("CK_WorkingDate_Weekday", "[Weekday] BETWEEN 1 AND 7");
+                    table.ForeignKey(
+                        name: "FK_WorkingDate_Schedule",
+                        column: x => x.ScheduleId,
+                        principalTable: "Schedules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -635,54 +803,51 @@ namespace DataAccessObjects.Migrations
                 values: new object[,]
                 {
                     { 1, "Chuyên ngành điều trị các bệnh lý nội bộ của cơ thể như bệnh tim mạch, tiêu hóa, hô hấp, thận.", "Chuyên khoa Nội" },
-                    { 2, "Chuyên ngành liên quan đến phẫu thuật và điều trị các bệnh lý cần can thiệp phẫu thuật.", "Chuyên khoa Ngoại" },
-                    { 3, "Chuyên ngành chuyên sâu về bệnh lý tim mạch, bao gồm các bệnh liên quan đến tim và mạch máu.", "Chuyên khoa Tim mạch" },
-                    { 4, "Chuyên ngành chẩn đoán và điều trị các bệnh liên quan đến hệ thần kinh như đột quỵ, động kinh.", "Chuyên khoa Thần kinh" },
-                    { 5, "Chuyên ngành chăm sóc và điều trị các bệnh lý về da như mụn, eczema, bệnh vảy nến.", "Chuyên khoa Da liễu" },
-                    { 6, "Chuyên ngành điều trị các bệnh lý liên quan đến hệ sinh sản và chăm sóc sức khỏe phụ nữ.", "Chuyên khoa Sản phụ khoa" },
-                    { 7, "Chuyên ngành chăm sóc sức khỏe và điều trị bệnh lý cho trẻ em.", "Chuyên khoa Nhi" },
-                    { 8, "Chuyên ngành điều trị và quản lý các bệnh lý ung thư.", "Chuyên khoa Ung bướu" },
-                    { 9, "Chuyên ngành điều trị và chăm sóc các bệnh lý về mắt, bao gồm đục thủy tinh thể, tật khúc xạ.", "Chuyên khoa Mắt" },
-                    { 10, "Chuyên ngành liên quan đến các bệnh lý tai, mũi, họng và các cấu trúc liên quan.", "Chuyên khoa Tai Mũi Họng" },
-                    { 11, "Chuyên ngành tập trung vào phục hồi sức khỏe cho bệnh nhân sau phẫu thuật, tai nạn, hoặc các bệnh lý nghiêm trọng.", "Chuyên khoa Phục hồi chức năng" },
-                    { 12, "Chuyên ngành sử dụng các phương pháp y học cổ truyền như châm cứu, bấm huyệt để điều trị bệnh.", "Chuyên khoa Y học cổ truyền" },
-                    { 13, "Chuyên ngành nghiên cứu và điều trị các bệnh lý về hô hấp như viêm phổi, hen suyễn.", "Chuyên khoa Hô hấp" },
-                    { 14, "Chuyên ngành điều trị các bệnh lý liên quan đến nội tiết tố như tiểu đường, rối loạn tuyến giáp.", "Chuyên khoa Nội tiết" },
-                    { 15, "Chuyên ngành chăm sóc sức khỏe răng miệng, bao gồm điều trị sâu răng, chỉnh hình răng miệng.", "Chuyên khoa Nha khoa" }
+                    { 2, "Chuyên ngành chuyên sâu về bệnh lý tim mạch, bao gồm các bệnh liên quan đến tim và mạch máu.", "Chuyên khoa Tim mạch" },
+                    { 3, "Chuyên ngành chẩn đoán và điều trị các bệnh liên quan đến hệ thần kinh như đột quỵ, động kinh.", "Chuyên khoa Thần kinh" },
+                    { 4, "Chuyên ngành chăm sóc và điều trị các bệnh lý về da như mụn, eczema, bệnh vảy nến.", "Chuyên khoa Da liễu" },
+                    { 5, "Chuyên ngành điều trị các bệnh lý liên quan đến hệ sinh sản và chăm sóc sức khỏe phụ nữ.", "Chuyên khoa Sản phụ khoa" },
+                    { 6, "Chuyên ngành chăm sóc sức khỏe và điều trị bệnh lý cho trẻ em.", "Chuyên khoa Nhi" },
+                    { 7, "Chuyên ngành điều trị và chăm sóc các bệnh lý về mắt, bao gồm đục thủy tinh thể, tật khúc xạ.", "Chuyên khoa Mắt" },
+                    { 8, "Chuyên ngành liên quan đến các bệnh lý tai, mũi, họng và các cấu trúc liên quan.", "Chuyên khoa Tai Mũi Họng" },
+                    { 9, "Chuyên ngành tập trung vào phục hồi sức khỏe cho bệnh nhân sau phẫu thuật, tai nạn, hoặc các bệnh lý nghiêm trọng.", "Chuyên khoa Phục hồi chức năng" },
+                    { 10, "Chuyên ngành sử dụng các phương pháp y học cổ truyền như châm cứu, bấm huyệt để điều trị bệnh.", "Chuyên khoa Y học cổ truyền" },
+                    { 11, "Chuyên ngành nghiên cứu và điều trị các bệnh lý về hô hấp như viêm phổi, hen suyễn.", "Chuyên khoa Hô hấp" },
+                    { 12, "Chuyên ngành điều trị các bệnh lý liên quan đến nội tiết tố như tiểu đường, rối loạn tuyến giáp.", "Chuyên khoa Nội tiết" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Birthday", "Email", "Fullname", "Gender", "ImgUrl", "Password", "PhoneNumber", "Role", "Status" },
+                columns: new[] { "Id", "Birthday", "Email", "Fullname", "Gender", "ImgUrl", "IsVerified", "Password", "PhoneNumber", "Role", "Status" },
                 values: new object[,]
                 {
-                    { 1, new DateOnly(1990, 1, 1), "admin@example.com", "Nguyễn Văn Admin", "Nam", "/images/users/admin_avatar.jpg", "ad123456", "0901234567", "Admin", "Active" },
-                    { 2, new DateOnly(1995, 5, 20), "patient1@example.com", "Trần Thị Bích", "Nữ", "/images/users/patient_female_1.jpg", "pa123456", "0902345678", "Patient", "Active" },
-                    { 3, new DateOnly(1988, 10, 12), "patient2@example.com", "Lê Văn Cường", "Nam", "/images/users/patient_male_1.jpg", "pa123456", "0903456789", "Patient", "Active" },
-                    { 4, new DateOnly(1985, 3, 15), "professional1@example.com", "Phạm Minh Đức", "Nam", "/images/users/doctor_male_1.jpg", "pro123456", "0904567890", "Professional", "Active" },
-                    { 5, new DateOnly(1987, 7, 30), "professional2@example.com", "Vũ Thị Hương", "Nữ", "/images/users/doctor_female_1.jpg", "pro123456", "0905678901", "Professional", "Active" },
-                    { 6, new DateOnly(1992, 8, 25), "patient3@example.com", "Hoàng Thị Mai", "Nữ", "/images/users/patient_female_2.jpg", "pa123456", "0906789012", "Patient", "Active" },
-                    { 7, new DateOnly(1998, 4, 17), "patient4@example.com", "Đỗ Quang Nam", "Nam", "/images/users/patient_male_2.jpg", "pa123456", "0907890123", "Patient", "Active" },
-                    { 8, new DateOnly(1980, 11, 5), "professional3@example.com", "Ngô Thanh Tùng", "Nam", "/images/users/doctor_male_2.jpg", "pro123456", "0908901234", "Professional", "Active" },
-                    { 9, new DateOnly(1983, 6, 10), "professional4@example.com", "Lý Thị Hoa", "Nữ", "/images/users/doctor_female_2.jpg", "pro123456", "0909012345", "Professional", "Active" },
-                    { 10, new DateOnly(1990, 9, 15), "patient5@example.com", "Dương Văn Khải", "Nam", "/images/users/patient_male_3.jpg", "pa123456", "0910123456", "Patient", "Active" },
-                    { 11, new DateOnly(1994, 2, 28), "patient6@example.com", "Trịnh Thu Phương", "Nữ", "/images/users/patient_female_3.jpg", "pa123456", "0911234567", "Patient", "Active" },
-                    { 12, new DateOnly(1978, 4, 20), "professional5@example.com", "Bùi Quốc Anh", "Nam", "/images/users/doctor_male_3.jpg", "pro123456", "0912345678", "Professional", "Active" },
-                    { 13, new DateOnly(1982, 5, 15), "lananh@example.com", "Nguyễn Thị Lan Anh", "Nữ", "/images/users/doctor_female_3.jpg", "pro123456", "0913456789", "Professional", "Active" },
-                    { 14, new DateOnly(1970, 8, 22), "tranminh@example.com", "Trần Văn Minh", "Nam", "/images/users/doctor_male_4.jpg", "pro123456", "0912345678", "Professional", "Active" },
-                    { 15, new DateOnly(1990, 3, 10), "thanhhuong@example.com", "Phan Thị Thanh Hương", "Nữ", "/images/users/doctor_female_4.jpg", "pro123456", "0923456789", "Professional", "Active" },
-                    { 16, new DateOnly(1988, 11, 5), "mylinh@example.com", "Ngô Thị Mỹ Linh", "Nữ", "/images/users/doctor_female_5.jpg", "pro123456", "0934567890", "Professional", "Active" },
-                    { 17, new DateOnly(1985, 4, 18), "quoctuan@example.com", "Đặng Quốc Tuấn", "Nam", "/images/users/doctor_male_5.jpg", "pro123456", "0945678901", "Professional", "Active" },
-                    { 18, new DateOnly(1981, 6, 25), "kimngan@example.com", "Lê Thị Kim Ngân", "Nữ", "/images/users/doctor_female_6.jpg", "pro123456", "0956789012", "Professional", "Active" },
-                    { 19, new DateOnly(1965, 10, 15), "ducthinh@example.com", "Hoàng Đức Thịnh", "Nam", "/images/users/doctor_male_6.jpg", "pro123456", "0967890123", "Professional", "Active" },
-                    { 20, new DateOnly(1989, 2, 8), "minhquan@example.com", "Vũ Minh Quân", "Nam", "/images/users/doctor_male_7.jpg", "pro123456", "0978901234", "Professional", "Active" },
-                    { 21, new DateOnly(1986, 7, 12), "minhhai@example.com", "Trịnh Minh Hải", "Nam", "/images/users/doctor_male_8.jpg", "pro123456", "0989012345", "Professional", "Active" },
-                    { 22, new DateOnly(1982, 9, 28), "thuytrang@example.com", "Phạm Thị Thùy Trang", "Nữ", "/images/users/doctor_female_7.jpg", "pro123456", "0990123456", "Professional", "Active" },
-                    { 23, new DateOnly(1979, 12, 5), "vanhung@example.com", "Bùi Văn Hưng", "Nam", "/images/users/doctor_male_9.jpg", "pro123456", "0901234567", "Professional", "Active" },
-                    { 24, new DateOnly(1984, 5, 15), "bichngoc@example.com", "Nguyễn Thị Bích Ngọc", "Nữ", "/images/users/doctor_female_8.jpg", "pro123456", "0912345678", "Professional", "Active" },
-                    { 25, new DateOnly(1978, 8, 20), "quangvinh@example.com", "Trương Quang Vinh", "Nam", "/images/users/doctor_male_10.jpg", "pro123456", "0923456789", "Professional", "Active" },
-                    { 26, new DateOnly(1987, 3, 12), "duongha@example.com", "Dương Thị Hà", "Nữ", "/images/users/doctor_female_9.jpg", "pro123456", "0934567890", "Professional", "Active" },
-                    { 27, new DateOnly(1991, 10, 8), "vanthang@example.com", "Mai Văn Thắng", "Nam", "/images/users/doctor_male_11.jpg", "pro123456", "0945678901", "Professional", "Inactive" }
+                    { 1, new DateOnly(1990, 1, 1), "admin@example.com", "Nguyễn Văn Admin", "Nam", "/images/users/admin_avatar.jpg", true, "ad123456", "0901234567", "Admin", "Active" },
+                    { 2, new DateOnly(1995, 5, 20), "patient1@example.com", "Trần Thị Bích", "Nữ", "/images/users/patient_female_1.jpg", true, "pa123456", "0902345678", "Patient", "Active" },
+                    { 3, new DateOnly(1988, 10, 12), "patient2@example.com", "Lê Văn Cường", "Nam", "/images/users/patient_male_1.jpg", true, "pa123456", "0903456789", "Patient", "Active" },
+                    { 4, new DateOnly(1985, 3, 15), "professional1@example.com", "Phạm Minh Đức", "Nam", "/images/users/doctor_male_1.jpg", true, "pro123456", "0904567890", "Professional", "Active" },
+                    { 5, new DateOnly(1987, 7, 30), "professional2@example.com", "Vũ Thị Hương", "Nữ", "/images/users/doctor_female_1.jpg", true, "pro123456", "0905678901", "Professional", "Active" },
+                    { 6, new DateOnly(1992, 8, 25), "patient3@example.com", "Hoàng Thị Mai", "Nữ", "/images/users/patient_female_2.jpg", true, "pa123456", "0906789012", "Patient", "Active" },
+                    { 7, new DateOnly(1998, 4, 17), "patient4@example.com", "Đỗ Quang Nam", "Nam", "/images/users/patient_male_2.jpg", true, "pa123456", "0907890123", "Patient", "Active" },
+                    { 8, new DateOnly(1980, 11, 5), "professional3@example.com", "Ngô Thanh Tùng", "Nam", "/images/users/doctor_male_2.jpg", true, "pro123456", "0908901234", "Professional", "Active" },
+                    { 9, new DateOnly(1983, 6, 10), "professional4@example.com", "Lý Thị Hoa", "Nữ", "/images/users/doctor_female_2.jpg", true, "pro123456", "0909012345", "Professional", "Active" },
+                    { 10, new DateOnly(1990, 9, 15), "patient5@example.com", "Dương Văn Khải", "Nam", "/images/users/patient_male_3.jpg", true, "pa123456", "0910123456", "Patient", "Active" },
+                    { 11, new DateOnly(1994, 2, 28), "patient6@example.com", "Trịnh Thu Phương", "Nữ", "/images/users/patient_female_3.jpg", true, "pa123456", "0911234567", "Patient", "Active" },
+                    { 12, new DateOnly(1978, 4, 20), "professional5@example.com", "Bùi Quốc Anh", "Nam", "/images/users/doctor_male_3.jpg", true, "pro123456", "0912345678", "Professional", "Active" },
+                    { 13, new DateOnly(1982, 5, 15), "lananh@example.com", "Nguyễn Thị Lan Anh", "Nữ", "/images/users/doctor_female_3.jpg", true, "pro123456", "0913456789", "Professional", "Active" },
+                    { 14, new DateOnly(1970, 8, 22), "tranminh@example.com", "Trần Văn Minh", "Nam", "/images/users/doctor_male_4.jpg", true, "pro123456", "0912345678", "Professional", "Active" },
+                    { 15, new DateOnly(1990, 3, 10), "thanhhuong@example.com", "Phan Thị Thanh Hương", "Nữ", "/images/users/doctor_female_4.jpg", true, "pro123456", "0923456789", "Professional", "Active" },
+                    { 16, new DateOnly(1988, 11, 5), "mylinh@example.com", "Ngô Thị Mỹ Linh", "Nữ", "/images/users/doctor_female_5.jpg", false, "pro123456", "0934567890", "Professional", "Active" },
+                    { 17, new DateOnly(1985, 4, 18), "quoctuan@example.com", "Đặng Quốc Tuấn", "Nam", "/images/users/doctor_male_5.jpg", false, "pro123456", "0945678901", "Professional", "Active" },
+                    { 18, new DateOnly(1981, 6, 25), "kimngan@example.com", "Lê Thị Kim Ngân", "Nữ", "/images/users/doctor_female_6.jpg", false, "pro123456", "0956789012", "Professional", "Active" },
+                    { 19, new DateOnly(1965, 10, 15), "ducthinh@example.com", "Hoàng Đức Thịnh", "Nam", "/images/users/doctor_male_6.jpg", false, "pro123456", "0967890123", "Professional", "Active" },
+                    { 20, new DateOnly(1989, 2, 8), "minhquan@example.com", "Vũ Minh Quân", "Nam", "/images/users/doctor_male_7.jpg", false, "pro123456", "0978901234", "Professional", "Active" },
+                    { 21, new DateOnly(1986, 7, 12), "minhhai@example.com", "Trịnh Minh Hải", "Nam", "/images/users/doctor_male_8.jpg", false, "pro123456", "0989012345", "Professional", "Active" },
+                    { 22, new DateOnly(1982, 9, 28), "thuytrang@example.com", "Phạm Thị Thùy Trang", "Nữ", "/images/users/doctor_female_7.jpg", false, "pro123456", "0990123456", "Professional", "Active" },
+                    { 23, new DateOnly(1979, 12, 5), "vanhung@example.com", "Bùi Văn Hưng", "Nam", "/images/users/doctor_male_9.jpg", false, "pro123456", "0901234567", "Professional", "Active" },
+                    { 24, new DateOnly(1984, 5, 15), "bichngoc@example.com", "Nguyễn Thị Bích Ngọc", "Nữ", "/images/users/doctor_female_8.jpg", false, "pro123456", "0912345678", "Professional", "Active" },
+                    { 25, new DateOnly(1978, 8, 20), "quangvinh@example.com", "Trương Quang Vinh", "Nam", "/images/users/doctor_male_10.jpg", true, "pro123456", "0923456789", "Professional", "Active" },
+                    { 26, new DateOnly(1987, 3, 12), "duongha@example.com", "Dương Thị Hà", "Nữ", "/images/users/doctor_female_9.jpg", true, "pro123456", "0934567890", "Professional", "Active" },
+                    { 27, new DateOnly(1991, 10, 8), "vanthang@example.com", "Mai Văn Thắng", "Nam", "/images/users/doctor_male_11.jpg", true, "pro123456", "0945678901", "Professional", "Inactive" }
                 });
 
             migrationBuilder.InsertData(
@@ -727,42 +892,42 @@ namespace DataAccessObjects.Migrations
 
             migrationBuilder.InsertData(
                 table: "Patients",
-                columns: new[] { "Id", "Note", "UserId" },
+                columns: new[] { "Id", "Birthday", "Fullname", "Gender", "Note", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "Tôi có tiền sử bệnh tim mạch, đã từng phẫu thuật van tim năm 2020", 2 },
-                    { 2, "Tôi bị tiểu đường type 2 và huyết áp cao, đang điều trị thuốc ổn định", 3 },
-                    { 3, "Tôi có tiền sử viêm gan B, đang theo dõi định kỳ", 6 },
-                    { 4, "Tôi bị hen suyễn từ nhỏ, có dị ứng với bụi và phấn hoa", 7 },
-                    { 5, "Bệnh nhân bị thoái hóa cột sống, đang điều trị vật lý trị liệu", 10 },
-                    { 6, "Tôi có tiền sử sỏi thận, đã phẫu thuật lấy sỏi năm 2022", 11 }
+                    { 1, null, null, null, "Tôi có tiền sử bệnh tim mạch, đã từng phẫu thuật van tim năm 2020", 2 },
+                    { 2, null, null, null, "Tôi bị tiểu đường type 2 và huyết áp cao, đang điều trị thuốc ổn định", 3 },
+                    { 3, null, null, null, "Tôi có tiền sử viêm gan B, đang theo dõi định kỳ", 6 },
+                    { 4, null, null, null, "Tôi bị hen suyễn từ nhỏ, có dị ứng với bụi và phấn hoa", 7 },
+                    { 5, null, null, null, "Bệnh nhân bị thoái hóa cột sống, đang điều trị vật lý trị liệu", 10 },
+                    { 6, null, null, null, "Tôi có tiền sử sỏi thận, đã phẫu thuật lấy sỏi năm 2022", 11 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Professionals",
-                columns: new[] { "Id", "Address", "Degree", "District", "Experience", "ExpertiseId", "ExpertiseId1", "Province", "RequestStatus", "UserId", "Ward", "WorkingHours" },
+                columns: new[] { "Id", "Address", "Degree", "DegreeFile", "District", "Experience", "ExpertiseId", "ExpertiseId1", "Province", "RequestStatus", "UserId", "Ward", "WorkingHours" },
                 values: new object[,]
                 {
-                    { 1, "Số 15, Phố Hàng Bông", "Chuyên khoa I Nội khoa", "Quận Hoàn Kiếm", "Có 12 năm kinh nghiệm trong lĩnh vực khám chữa bệnh nội khoa", 8, null, "Thành phố Hà Nội", "Approved", 4, "Phường Hàng Bạc", "8:00 - 17:00" },
-                    { 2, "Số 25, Đường Nguyễn Huệ", "Đại học Y học cổ truyền", "Quận 1", "Có 8 năm kinh nghiệm trong điều trị các bệnh lý bằng y học cổ truyền", 2, null, "Thành phố Hồ Chí Minh", "Approved", 5, "Phường Bến Nghé", "9:00 - 18:00" },
-                    { 3, "Số 42, Đường Trần Phú", "Đại học Răng Hàm Mặt", "Quận Hải Châu", "Có 15 năm kinh nghiệm trong lĩnh vực nha khoa và phẫu thuật hàm mặt", 3, null, "Thành phố Đà Nẵng", "Approved", 8, "Phường Thạch Thang", "8:30 - 17:30" },
-                    { 4, "Số 28, Đường Hòa Bình", "Chuyên khoa II Tim mạch", "Quận Ninh Kiều", "Có 9 năm kinh nghiệm trong lĩnh vực tim mạch và nội khoa", 9, null, "Thành phố Cần Thơ", "Approved", 9, "Phường Tân An", "7:00 - 16:00" },
-                    { 5, "Số 55, Đường Ngô Gia Tự", "Tiến sĩ Y khoa chuyên ngành Ngoại khoa", "Thành phố Bắc Ninh", "Có 18 năm kinh nghiệm trong lĩnh vực ngoại khoa và phẫu thuật tổng quát", 11, null, "Tỉnh Bắc Ninh", "Approved", 12, "Phường Đại Phúc", "7:30 - 16:30" },
-                    { 6, "Số 105, Đường Xuân Thủy", "Thạc sĩ Y khoa chuyên ngành Sản phụ khoa", "Quận Cầu Giấy", "Có 11 năm kinh nghiệm trong lĩnh vực sản khoa và phụ khoa", 10, null, "Thành phố Hà Nội", "Approved", 13, "Phường Dịch Vọng", "8:00 - 17:00" },
-                    { 7, "Số 215, Đường Hồng Bàng", "Phó Giáo sư - Tiến sĩ Y khoa", "Quận 5", "Có 25 năm kinh nghiệm trong lĩnh vực thần kinh và nghiên cứu khoa học", 12, null, "Thành phố Hồ Chí Minh", "Approved", 14, "Phường 5", "9:00 - 16:00" },
-                    { 8, "Số 38, Đường Trần Phú", "Đại học Y khoa", "Thành phố Nha Trang", "Có 5 năm kinh nghiệm trong lĩnh vực khám chữa bệnh tổng quát", 1, null, "Tỉnh Khánh Hòa", "Approved", 15, "Phường Lộc Thọ", "7:30 - 17:00" },
-                    { 9, "Số 77, Đường Lê Hồng Phong", "Cử nhân Điều dưỡng", "Thành phố Thủ Dầu Một", "Có 7 năm kinh nghiệm trong chăm sóc và điều dưỡng bệnh nhân", 6, null, "Tỉnh Bình Dương", "Approved", 16, "Phường Phú Cường", "7:00 - 19:00" },
-                    { 10, "Số 12, Đường Lạch Tray", "Dược sĩ đại học", "Quận Hồng Bàng", "Có 10 năm kinh nghiệm trong lĩnh vực dược phẩm và tư vấn thuốc", 5, null, "Thành phố Hải Phòng", "Approved", 17, "Phường Hoàng Văn Thụ", "8:00 - 18:00" },
-                    { 11, "Số 65, Đường Nguyễn Huệ", "Đại học Y học dự phòng", "Thành phố Huế", "Có 14 năm kinh nghiệm trong lĩnh vực y học dự phòng và kiểm soát dịch bệnh", 4, null, "Tỉnh Thừa Thiên Huế", "Approved", 18, "Phường Phú Nhuận", "7:30 - 16:30" },
-                    { 12, "Số 43, Đường Liễu Giai", "Giáo sư - Tiến sĩ Y khoa", "Quận Ba Đình", "Có 32 năm kinh nghiệm trong lĩnh vực nghiên cứu và điều trị ung thư", 13, null, "Thành phố Hà Nội", "Approved", 19, "Phường Kim Mã", "9:00 - 15:00" },
-                    { 13, "Số 153, Đường Nguyễn Thị Thập", "Bác sĩ nội trú chuyên ngành Nhi", "Quận 7", "Có 6 năm kinh nghiệm trong lĩnh vực nhi khoa và hồi sức cấp cứu nhi", 7, null, "Thành phố Hồ Chí Minh", "Approved", 20, "Phường Tân Phú", "8:00 - 20:00" },
-                    { 14, "Số 88, Đường Lê Lợi", "Đại học Răng Hàm Mặt", "Thành phố Vinh", "Có 9 năm kinh nghiệm trong lĩnh vực chỉnh nha và thẩm mỹ răng", 3, null, "Tỉnh Nghệ An", "Approved", 21, "Phường Hà Huy Tập", "8:30 - 17:30" },
-                    { 15, "Số 27, Đường Lê Hồng Phong", "Chuyên khoa I Da liễu", "Thành phố Vũng Tàu", "Có 13 năm kinh nghiệm trong lĩnh vực da liễu và thẩm mỹ da", 8, null, "Tỉnh Bà Rịa - Vũng Tàu", "Approved", 22, "Phường Thắng Tam", "8:00 - 17:00" },
-                    { 16, "Số 56, Đường Phan Đình Phùng", "Chuyên khoa II Ngoại Tiêu hóa", "Thành phố Đà Lạt", "Có 16 năm kinh nghiệm trong lĩnh vực ngoại tiêu hóa và phẫu thuật nội soi", 9, null, "Tỉnh Lâm Đồng", "Approved", 23, "Phường 1", "8:00 - 16:00" },
-                    { 17, "Số 19, Đường Hạ Long", "Đại học Y học cổ truyền", "Thành phố Hạ Long", "Có 11 năm kinh nghiệm trong lĩnh vực y học cổ truyền và châm cứu", 2, null, "Tỉnh Quảng Ninh", "Approved", 24, "Phường Bãi Cháy", "8:00 - 17:30" },
-                    { 18, "Số 33, Đường Hùng Vương", "Tiến sĩ Y khoa chuyên ngành Tai Mũi Họng", "Thành phố Việt Trì", "Có 17 năm kinh nghiệm trong lĩnh vực tai mũi họng và phẫu thuật đầu cổ", 11, null, "Tỉnh Phú Thọ", "Approved", 25, "Phường Nông Trang", "7:30 - 17:00" },
-                    { 19, "Số 48, Đường Nguyễn Tất Thành", "Thạc sĩ Y khoa chuyên ngành Mắt", "Thành phố Cà Mau", "Có 8 năm kinh nghiệm trong lĩnh vực nhãn khoa và phẫu thuật mắt", 10, null, "Tỉnh Cà Mau", "Approved", 26, "Phường 5", "7:30 - 16:30" },
-                    { 20, "Số 10, Đường Tô Hiệu", "Đại học Y khoa", "Thành phố Sơn La", "Có 4 năm kinh nghiệm trong lĩnh vực y học gia đình và chăm sóc sức khỏe cộng đồng", 1, null, "Tỉnh Sơn La", "Pending", 27, "Phường Quyết Thắng", "7:00 - 17:00" }
+                    { 1, "Số 15, Phố Hàng Bông", "Chuyên khoa I Nội khoa", null, "Quận Hoàn Kiếm", "Có 12 năm kinh nghiệm trong lĩnh vực khám chữa bệnh nội khoa", 8, null, "Thành phố Hà Nội", "Approved", 4, "Phường Hàng Bạc", "8:00 - 17:00" },
+                    { 2, "Số 25, Đường Nguyễn Huệ", "Đại học Y học cổ truyền", null, "Quận 1", "Có 8 năm kinh nghiệm trong điều trị các bệnh lý bằng y học cổ truyền", 2, null, "Thành phố Hồ Chí Minh", "Approved", 5, "Phường Bến Nghé", "9:00 - 18:00" },
+                    { 3, "Số 42, Đường Trần Phú", "Đại học Răng Hàm Mặt", null, "Quận Hải Châu", "Có 15 năm kinh nghiệm trong lĩnh vực nha khoa và phẫu thuật hàm mặt", 3, null, "Thành phố Đà Nẵng", "Approved", 8, "Phường Thạch Thang", "8:30 - 17:30" },
+                    { 4, "Số 28, Đường Hòa Bình", "Chuyên khoa II Tim mạch", null, "Quận Ninh Kiều", "Có 9 năm kinh nghiệm trong lĩnh vực tim mạch và nội khoa", 9, null, "Thành phố Cần Thơ", "Approved", 9, "Phường Tân An", "7:00 - 16:00" },
+                    { 5, "Số 55, Đường Ngô Gia Tự", "Tiến sĩ Y khoa chuyên ngành Ngoại khoa", null, "Thành phố Bắc Ninh", "Có 18 năm kinh nghiệm trong lĩnh vực ngoại khoa và phẫu thuật tổng quát", 11, null, "Tỉnh Bắc Ninh", "Approved", 12, "Phường Đại Phúc", "7:30 - 16:30" },
+                    { 6, "Số 105, Đường Xuân Thủy", "Thạc sĩ Y khoa chuyên ngành Sản phụ khoa", null, "Quận Cầu Giấy", "Có 11 năm kinh nghiệm trong lĩnh vực sản khoa và phụ khoa", 10, null, "Thành phố Hà Nội", "Approved", 13, "Phường Dịch Vọng", "8:00 - 17:00" },
+                    { 7, "Số 215, Đường Hồng Bàng", "Phó Giáo sư - Tiến sĩ Y khoa", null, "Quận 5", "Có 25 năm kinh nghiệm trong lĩnh vực thần kinh và nghiên cứu khoa học", 12, null, "Thành phố Hồ Chí Minh", "Approved", 14, "Phường 5", "9:00 - 16:00" },
+                    { 8, "Số 38, Đường Trần Phú", "Đại học Y khoa", null, "Thành phố Nha Trang", "Có 5 năm kinh nghiệm trong lĩnh vực khám chữa bệnh tổng quát", 1, null, "Tỉnh Khánh Hòa", "Approved", 15, "Phường Lộc Thọ", "7:30 - 17:00" },
+                    { 9, "Số 77, Đường Lê Hồng Phong", "Cử nhân Điều dưỡng", null, "Thành phố Thủ Dầu Một", "Có 7 năm kinh nghiệm trong chăm sóc và điều dưỡng bệnh nhân", 6, null, "Tỉnh Bình Dương", "Approved", 16, "Phường Phú Cường", "7:00 - 19:00" },
+                    { 10, "Số 12, Đường Lạch Tray", "Dược sĩ đại học", null, "Quận Hồng Bàng", "Có 10 năm kinh nghiệm trong lĩnh vực dược phẩm và tư vấn thuốc", 5, null, "Thành phố Hải Phòng", "Approved", 17, "Phường Hoàng Văn Thụ", "8:00 - 18:00" },
+                    { 11, "Số 65, Đường Nguyễn Huệ", "Đại học Y học dự phòng", null, "Thành phố Huế", "Có 14 năm kinh nghiệm trong lĩnh vực y học dự phòng và kiểm soát dịch bệnh", 4, null, "Tỉnh Thừa Thiên Huế", "Approved", 18, "Phường Phú Nhuận", "7:30 - 16:30" },
+                    { 12, "Số 43, Đường Liễu Giai", "Giáo sư - Tiến sĩ Y khoa", null, "Quận Ba Đình", "Có 32 năm kinh nghiệm trong lĩnh vực nghiên cứu và điều trị ung thư", 13, null, "Thành phố Hà Nội", "Approved", 19, "Phường Kim Mã", "9:00 - 15:00" },
+                    { 13, "Số 153, Đường Nguyễn Thị Thập", "Bác sĩ nội trú chuyên ngành Nhi", null, "Quận 7", "Có 6 năm kinh nghiệm trong lĩnh vực nhi khoa và hồi sức cấp cứu nhi", 7, null, "Thành phố Hồ Chí Minh", "Approved", 20, "Phường Tân Phú", "8:00 - 20:00" },
+                    { 14, "Số 88, Đường Lê Lợi", "Đại học Răng Hàm Mặt", null, "Thành phố Vinh", "Có 9 năm kinh nghiệm trong lĩnh vực chỉnh nha và thẩm mỹ răng", 3, null, "Tỉnh Nghệ An", "Approved", 21, "Phường Hà Huy Tập", "8:30 - 17:30" },
+                    { 15, "Số 27, Đường Lê Hồng Phong", "Chuyên khoa I Da liễu", null, "Thành phố Vũng Tàu", "Có 13 năm kinh nghiệm trong lĩnh vực da liễu và thẩm mỹ da", 8, null, "Tỉnh Bà Rịa - Vũng Tàu", "Approved", 22, "Phường Thắng Tam", "8:00 - 17:00" },
+                    { 16, "Số 56, Đường Phan Đình Phùng", "Chuyên khoa II Ngoại Tiêu hóa", null, "Thành phố Đà Lạt", "Có 16 năm kinh nghiệm trong lĩnh vực ngoại tiêu hóa và phẫu thuật nội soi", 9, null, "Tỉnh Lâm Đồng", "Approved", 23, "Phường 1", "8:00 - 16:00" },
+                    { 17, "Số 19, Đường Hạ Long", "Đại học Y học cổ truyền", null, "Thành phố Hạ Long", "Có 11 năm kinh nghiệm trong lĩnh vực y học cổ truyền và châm cứu", 2, null, "Tỉnh Quảng Ninh", "Approved", 24, "Phường Bãi Cháy", "8:00 - 17:30" },
+                    { 18, "Số 33, Đường Hùng Vương", "Tiến sĩ Y khoa chuyên ngành Tai Mũi Họng", null, "Thành phố Việt Trì", "Có 17 năm kinh nghiệm trong lĩnh vực tai mũi họng và phẫu thuật đầu cổ", 11, null, "Tỉnh Phú Thọ", "Approved", 25, "Phường Nông Trang", "7:30 - 17:00" },
+                    { 19, "Số 48, Đường Nguyễn Tất Thành", "Thạc sĩ Y khoa chuyên ngành Mắt", null, "Thành phố Cà Mau", "Có 8 năm kinh nghiệm trong lĩnh vực nhãn khoa và phẫu thuật mắt", 10, null, "Tỉnh Cà Mau", "Approved", 26, "Phường 5", "7:30 - 16:30" },
+                    { 20, "Số 10, Đường Tô Hiệu", "Đại học Y khoa", null, "Thành phố Sơn La", "Có 4 năm kinh nghiệm trong lĩnh vực y học gia đình và chăm sóc sức khỏe cộng đồng", 1, null, "Tỉnh Sơn La", "Pending", 27, "Phường Quyết Thắng", "7:00 - 17:00" }
                 });
 
             migrationBuilder.InsertData(
@@ -925,23 +1090,20 @@ namespace DataAccessObjects.Migrations
                 columns: new[] { "Id", "ProfessionalId", "SpecialtyId" },
                 values: new object[,]
                 {
-                    { 9, 6, 6 },
-                    { 10, 7, 4 },
-                    { 11, 8, 1 },
-                    { 12, 9, 11 },
-                    { 13, 10, 14 },
-                    { 14, 11, 13 },
-                    { 15, 12, 8 },
-                    { 16, 13, 7 },
-                    { 17, 14, 15 },
-                    { 18, 15, 5 },
-                    { 19, 16, 2 },
-                    { 20, 17, 12 },
-                    { 21, 18, 10 },
-                    { 22, 19, 9 },
-                    { 23, 20, 1 },
-                    { 24, 12, 3 },
-                    { 25, 16, 1 }
+                    { 1, 1, 1 },
+                    { 2, 1, 3 },
+                    { 3, 2, 12 },
+                    { 4, 4, 3 },
+                    { 5, 6, 6 },
+                    { 6, 7, 4 },
+                    { 7, 8, 1 },
+                    { 8, 13, 7 },
+                    { 9, 15, 5 },
+                    { 10, 17, 12 },
+                    { 11, 18, 10 },
+                    { 12, 19, 9 },
+                    { 13, 20, 1 },
+                    { 14, 4, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -997,23 +1159,75 @@ namespace DataAccessObjects.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Appointments",
-                columns: new[] { "Id", "Date", "Description", "PatientId", "PaymentId", "ProviderId", "ProviderType", "ServiceId", "ServiceType", "Status" },
+                table: "ScheduleExceptions",
+                columns: new[] { "Id", "Date", "IsClosed", "NewEndTime", "NewStartTime", "Note", "ProfessionalId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 3, 15, 9, 0, 0, 0, DateTimeKind.Unspecified), null, 1, 1, 1, "Professional", 1, "Private", "Completed" },
-                    { 2, new DateTime(2025, 3, 18, 14, 0, 0, 0, DateTimeKind.Unspecified), null, 2, 2, 3, "Professional", 11, "Private", "Completed" },
-                    { 3, new DateTime(2025, 4, 5, 10, 0, 0, 0, DateTimeKind.Unspecified), null, 3, 3, 4, "Professional", 14, "Private", "Confirmed" },
-                    { 4, new DateTime(2025, 4, 10, 15, 0, 0, 0, DateTimeKind.Unspecified), null, 4, 4, 2, "Professional", 7, "Private", "Pending" },
-                    { 5, new DateTime(2025, 4, 12, 9, 30, 0, 0, DateTimeKind.Unspecified), null, 5, null, 17, "Professional", 9, "Private", "AwaitingPayment" },
-                    { 6, new DateTime(2025, 4, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), null, 6, 5, 15, "Professional", 36, "Private", "Cancelled" },
-                    { 7, new DateTime(2025, 3, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), null, 1, null, 1, "Facility", 1, "Public", "Expired" },
-                    { 8, new DateTime(2025, 4, 15, 10, 30, 0, 0, DateTimeKind.Unspecified), null, 2, 6, 7, "Facility", 19, "Public", "AwaitingPayment" },
-                    { 9, new DateTime(2025, 4, 20, 9, 0, 0, 0, DateTimeKind.Unspecified), null, 3, null, 17, "Facility", 9, "Public", "Rejected" },
-                    { 10, new DateTime(2025, 4, 18, 14, 0, 0, 0, DateTimeKind.Unspecified), null, 4, null, 3, "Facility", 39, "Public", "Rescheduled" },
-                    { 11, new DateTime(2025, 4, 22, 9, 0, 0, 0, DateTimeKind.Unspecified), null, 5, 8, 6, "Facility", 36, "Public", "AwaitingPayment" },
-                    { 12, new DateTime(2025, 4, 25, 15, 30, 0, 0, DateTimeKind.Unspecified), null, 6, 7, 5, "Facility", 29, "Public", "AwaitingPayment" },
-                    { 13, new DateTime(2025, 4, 28, 8, 30, 0, 0, DateTimeKind.Unspecified), null, 1, 9, 12, "Facility", 41, "Public", "AwaitingPayment" }
+                    { 1, new DateOnly(2025, 8, 26), true, new TimeOnly(0, 0, 0), new TimeOnly(0, 0, 0), "Nghỉ đột xuất", 1 },
+                    { 2, new DateOnly(2025, 8, 29), false, new TimeOnly(12, 0, 0), new TimeOnly(9, 0, 0), "Chỉ làm buổi sáng", 1 },
+                    { 3, new DateOnly(2025, 8, 27), false, new TimeOnly(15, 0, 0), new TimeOnly(10, 0, 0), "Họp nội bộ", 2 },
+                    { 4, new DateOnly(2025, 8, 24), true, new TimeOnly(0, 0, 0), new TimeOnly(0, 0, 0), "Đóng phòng khám", 3 },
+                    { 5, new DateOnly(2025, 8, 28), false, new TimeOnly(11, 30, 0), new TimeOnly(8, 30, 0), "Khám buổi sáng", 3 },
+                    { 6, new DateOnly(2025, 8, 21), false, new TimeOnly(12, 0, 0), new TimeOnly(8, 0, 0), "Đi hội thảo chiều", 4 },
+                    { 7, new DateOnly(2025, 8, 23), true, new TimeOnly(0, 0, 0), new TimeOnly(0, 0, 0), "Nghỉ riêng", 5 },
+                    { 8, new DateOnly(2025, 8, 29), false, new TimeOnly(11, 0, 0), new TimeOnly(8, 0, 0), "Chỉ sáng", 5 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Schedules",
+                columns: new[] { "Id", "EndDate", "ProfessionalId", "StartDate" },
+                values: new object[,]
+                {
+                    { 1, new DateOnly(2025, 8, 29), 1, new DateOnly(2025, 8, 21) },
+                    { 2, new DateOnly(2025, 8, 29), 2, new DateOnly(2025, 8, 21) },
+                    { 3, new DateOnly(2025, 8, 29), 3, new DateOnly(2025, 8, 21) },
+                    { 4, new DateOnly(2025, 8, 29), 4, new DateOnly(2025, 8, 21) },
+                    { 5, new DateOnly(2025, 8, 29), 5, new DateOnly(2025, 8, 21) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Appointments",
+                columns: new[] { "Id", "CheckedInAt", "Date", "Description", "EndAt", "ExpectedStart", "PatientId", "PaymentId", "ProfessionalId", "ProviderId", "ProviderType", "ServiceId", "ServiceType", "Source", "StartAt", "Status", "TicketNo" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 3, 15, 8, 50, 0, 0, DateTimeKind.Unspecified), null, null, new DateTime(2025, 3, 15, 9, 30, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 3, 15, 9, 0, 0, 0, DateTimeKind.Unspecified), 1, 1, null, 1, "Professional", 1, "Private", "Booked", new DateTime(2025, 3, 15, 9, 5, 0, 0, DateTimeKind.Unspecified), "Completed", 1 },
+                    { 2, new DateTime(2025, 3, 18, 13, 50, 0, 0, DateTimeKind.Unspecified), null, null, new DateTime(2025, 3, 18, 14, 45, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 3, 18, 14, 0, 0, 0, DateTimeKind.Unspecified), 2, 2, null, 3, "Professional", 11, "Private", "Booked", new DateTime(2025, 3, 18, 14, 5, 0, 0, DateTimeKind.Unspecified), "Completed", 2 },
+                    { 3, null, null, null, null, new DateTime(2025, 4, 5, 10, 0, 0, 0, DateTimeKind.Unspecified), 3, 3, null, 4, "Professional", 14, "Private", "Booked", null, "Scheduled", 3 },
+                    { 4, new DateTime(2025, 4, 10, 14, 50, 0, 0, DateTimeKind.Unspecified), null, null, null, new DateTime(2025, 4, 10, 15, 0, 0, 0, DateTimeKind.Unspecified), 4, 4, null, 2, "Professional", 7, "Private", "Booked", null, "CheckedIn", 4 },
+                    { 5, new DateTime(2025, 4, 12, 9, 20, 0, 0, DateTimeKind.Unspecified), null, null, null, new DateTime(2025, 4, 12, 9, 30, 0, 0, DateTimeKind.Unspecified), 5, null, null, 17, "Professional", 9, "Private", "Booked", new DateTime(2025, 4, 12, 9, 35, 0, 0, DateTimeKind.Unspecified), "InExam", 5 },
+                    { 6, null, null, null, null, new DateTime(2025, 4, 2, 13, 0, 0, 0, DateTimeKind.Unspecified), 6, 5, null, 15, "Professional", 36, "Private", "Booked", null, "CancelledByPatient", null },
+                    { 7, null, null, null, null, new DateTime(2025, 3, 25, 8, 0, 0, 0, DateTimeKind.Unspecified), 1, null, null, 1, "Facility", 1, "Public", "Booked", null, "CancelledByDoctor", null },
+                    { 8, null, null, null, null, new DateTime(2025, 4, 15, 10, 30, 0, 0, DateTimeKind.Unspecified), 2, 6, null, 7, "Facility", 19, "Public", "Booked", null, "NoShow", 6 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "WorkingDates",
+                columns: new[] { "Id", "EndTime", "ScheduleId", "SlotBuffer", "SlotDuration", "StartTime", "Weekday" },
+                values: new object[,]
+                {
+                    { 1, new TimeOnly(11, 30, 0), 1, new TimeSpan(0, 0, 10, 0, 0), new TimeSpan(0, 0, 20, 0, 0), new TimeOnly(8, 0, 0), 2 },
+                    { 2, new TimeOnly(17, 0, 0), 1, new TimeSpan(0, 0, 10, 0, 0), new TimeSpan(0, 0, 20, 0, 0), new TimeOnly(13, 30, 0), 2 },
+                    { 3, new TimeOnly(12, 0, 0), 1, new TimeSpan(0, 0, 10, 0, 0), new TimeSpan(0, 0, 20, 0, 0), new TimeOnly(8, 0, 0), 4 },
+                    { 4, new TimeOnly(17, 0, 0), 1, new TimeSpan(0, 0, 10, 0, 0), new TimeSpan(0, 0, 20, 0, 0), new TimeOnly(13, 30, 0), 6 },
+                    { 5, new TimeOnly(17, 0, 0), 2, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(9, 0, 0), 2 },
+                    { 6, new TimeOnly(17, 0, 0), 2, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(9, 0, 0), 3 },
+                    { 7, new TimeOnly(17, 0, 0), 2, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(9, 0, 0), 4 },
+                    { 8, new TimeOnly(17, 0, 0), 2, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(9, 0, 0), 5 },
+                    { 9, new TimeOnly(17, 0, 0), 2, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(9, 0, 0), 6 },
+                    { 10, new TimeOnly(17, 0, 0), 3, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 25, 0, 0), new TimeOnly(13, 0, 0), 2 },
+                    { 11, new TimeOnly(12, 0, 0), 3, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 25, 0, 0), new TimeOnly(8, 0, 0), 4 },
+                    { 12, new TimeOnly(17, 0, 0), 3, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 25, 0, 0), new TimeOnly(13, 0, 0), 5 },
+                    { 13, new TimeOnly(12, 0, 0), 3, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 25, 0, 0), new TimeOnly(8, 0, 0), 7 },
+                    { 14, new TimeOnly(16, 0, 0), 4, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 15, 0, 0), new TimeOnly(7, 0, 0), 2 },
+                    { 15, new TimeOnly(16, 0, 0), 4, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 15, 0, 0), new TimeOnly(7, 0, 0), 3 },
+                    { 16, new TimeOnly(16, 0, 0), 4, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 15, 0, 0), new TimeOnly(7, 0, 0), 4 },
+                    { 17, new TimeOnly(16, 0, 0), 4, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 15, 0, 0), new TimeOnly(7, 0, 0), 5 },
+                    { 18, new TimeOnly(16, 0, 0), 4, new TimeSpan(0, 0, 5, 0, 0), new TimeSpan(0, 0, 15, 0, 0), new TimeOnly(7, 0, 0), 6 },
+                    { 19, new TimeOnly(12, 0, 0), 5, new TimeSpan(0, 0, 15, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(8, 0, 0), 2 },
+                    { 20, new TimeOnly(11, 0, 0), 5, new TimeSpan(0, 0, 15, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(8, 0, 0), 3 },
+                    { 21, new TimeOnly(18, 0, 0), 5, new TimeSpan(0, 0, 15, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(14, 0, 0), 3 },
+                    { 22, new TimeOnly(12, 0, 0), 5, new TimeSpan(0, 0, 15, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(8, 0, 0), 5 },
+                    { 23, new TimeOnly(11, 0, 0), 5, new TimeSpan(0, 0, 15, 0, 0), new TimeSpan(0, 0, 30, 0, 0), new TimeOnly(8, 0, 0), 7 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -1025,6 +1239,11 @@ namespace DataAccessObjects.Migrations
                 name: "IX_Appointments_PaymentId",
                 table: "Appointments",
                 column: "PaymentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_ProfessionalId",
+                table: "Appointments",
+                column: "ProfessionalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_ProviderId",
@@ -1057,6 +1276,22 @@ namespace DataAccessObjects.Migrations
                 column: "MedicalRecordId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_Email",
+                table: "EmailVerificationTokens",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_Token",
+                table: "EmailVerificationTokens",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationTokens_UserId",
+                table: "EmailVerificationTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Facilities_TypeId",
                 table: "Facilities",
                 column: "TypeId");
@@ -1079,14 +1314,37 @@ namespace DataAccessObjects.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_UserId",
                 table: "Patients",
-                column: "UserId",
-                unique: true,
-                filter: "[UserId] IS NOT NULL");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PrivateServices_ProfessionalId",
                 table: "PrivateServices",
                 column: "ProfessionalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfessionalDocuments_DocumentType",
+                table: "ProfessionalDocuments",
+                column: "DocumentType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfessionalDocuments_ExpiryDate",
+                table: "ProfessionalDocuments",
+                column: "ExpiryDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfessionalDocuments_ProfessionalId",
+                table: "ProfessionalDocuments",
+                column: "ProfessionalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfessionalDocuments_ReviewedByUserId",
+                table: "ProfessionalDocuments",
+                column: "ReviewedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfessionalDocuments_VerificationStatus",
+                table: "ProfessionalDocuments",
+                column: "VerificationStatus");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Professionals_ExpertiseId",
@@ -1129,6 +1387,27 @@ namespace DataAccessObjects.Migrations
                 name: "IX_Reviews_ProviderId",
                 table: "Reviews",
                 column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduleExceptions_ProfessionalId",
+                table: "ScheduleExceptions",
+                column: "ProfessionalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Schedules_ProfessionalId",
+                table: "Schedules",
+                column: "ProfessionalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkingDates_ScheduleId_Weekday",
+                table: "WorkingDates",
+                columns: new[] { "ScheduleId", "Weekday" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkingDates_ScheduleId_Weekday_StartTime_EndTime",
+                table: "WorkingDates",
+                columns: new[] { "ScheduleId", "Weekday", "StartTime", "EndTime" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -1141,13 +1420,25 @@ namespace DataAccessObjects.Migrations
                 name: "Attachments");
 
             migrationBuilder.DropTable(
+                name: "EmailVerificationTokens");
+
+            migrationBuilder.DropTable(
                 name: "FacilityDepartments");
+
+            migrationBuilder.DropTable(
+                name: "ProfessionalDocuments");
 
             migrationBuilder.DropTable(
                 name: "ProfessionalSpecialties");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "ScheduleExceptions");
+
+            migrationBuilder.DropTable(
+                name: "WorkingDates");
 
             migrationBuilder.DropTable(
                 name: "Articles");
@@ -1160,6 +1451,9 @@ namespace DataAccessObjects.Migrations
 
             migrationBuilder.DropTable(
                 name: "Specialties");
+
+            migrationBuilder.DropTable(
+                name: "Schedules");
 
             migrationBuilder.DropTable(
                 name: "Categories");

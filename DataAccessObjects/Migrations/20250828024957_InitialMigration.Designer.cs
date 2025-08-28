@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(FindingHealthcareSystemContext))]
-    [Migration("20250402052352_seedData")]
-    partial class seedData
+    [Migration("20250828024957_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,9 @@ namespace DataAccessObjects.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CheckedInAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -44,6 +47,12 @@ namespace DataAccessObjects.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("EndAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpectedStart")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -53,6 +62,9 @@ namespace DataAccessObjects.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProfessionalId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ProviderId")
@@ -69,9 +81,19 @@ namespace DataAccessObjects.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TicketNo")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -84,6 +106,8 @@ namespace DataAccessObjects.Migrations
 
                     b.HasIndex("PaymentId");
 
+                    b.HasIndex("ProfessionalId");
+
                     b.HasIndex("ProviderId");
 
                     b.HasIndex("ServiceId");
@@ -94,8 +118,10 @@ namespace DataAccessObjects.Migrations
                         new
                         {
                             Id = 1,
+                            CheckedInAt = new DateTime(2025, 3, 15, 8, 50, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 3, 15, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndAt = new DateTime(2025, 3, 15, 9, 30, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 3, 15, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 1,
                             PaymentId = 1,
@@ -103,14 +129,19 @@ namespace DataAccessObjects.Migrations
                             ProviderType = "Professional",
                             ServiceId = 1,
                             ServiceType = "Private",
+                            Source = "Booked",
+                            StartAt = new DateTime(2025, 3, 15, 9, 5, 0, 0, DateTimeKind.Unspecified),
                             Status = "Completed",
+                            TicketNo = 1,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
+                            CheckedInAt = new DateTime(2025, 3, 18, 13, 50, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 3, 18, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndAt = new DateTime(2025, 3, 18, 14, 45, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 3, 18, 14, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 2,
                             PaymentId = 2,
@@ -118,14 +149,17 @@ namespace DataAccessObjects.Migrations
                             ProviderType = "Professional",
                             ServiceId = 11,
                             ServiceType = "Private",
+                            Source = "Booked",
+                            StartAt = new DateTime(2025, 3, 18, 14, 5, 0, 0, DateTimeKind.Unspecified),
                             Status = "Completed",
+                            TicketNo = 2,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 5, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 4, 5, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 3,
                             PaymentId = 3,
@@ -133,14 +167,17 @@ namespace DataAccessObjects.Migrations
                             ProviderType = "Professional",
                             ServiceId = 14,
                             ServiceType = "Private",
-                            Status = "Confirmed",
+                            Source = "Booked",
+                            Status = "Scheduled",
+                            TicketNo = 3,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
+                            CheckedInAt = new DateTime(2025, 4, 10, 14, 50, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 10, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 4, 10, 15, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 4,
                             PaymentId = 4,
@@ -148,28 +185,34 @@ namespace DataAccessObjects.Migrations
                             ProviderType = "Professional",
                             ServiceId = 7,
                             ServiceType = "Private",
-                            Status = "Pending",
+                            Source = "Booked",
+                            Status = "CheckedIn",
+                            TicketNo = 4,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
+                            CheckedInAt = new DateTime(2025, 4, 12, 9, 20, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 12, 9, 30, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 4, 12, 9, 30, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 5,
                             ProviderId = 17,
                             ProviderType = "Professional",
                             ServiceId = 9,
                             ServiceType = "Private",
-                            Status = "AwaitingPayment",
+                            Source = "Booked",
+                            StartAt = new DateTime(2025, 4, 12, 9, 35, 0, 0, DateTimeKind.Unspecified),
+                            Status = "InExam",
+                            TicketNo = 5,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 2, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 4, 2, 13, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 6,
                             PaymentId = 5,
@@ -177,28 +220,30 @@ namespace DataAccessObjects.Migrations
                             ProviderType = "Professional",
                             ServiceId = 36,
                             ServiceType = "Private",
-                            Status = "Cancelled",
+                            Source = "Booked",
+                            Status = "CancelledByPatient",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 3, 25, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 3, 25, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 1,
                             ProviderId = 1,
                             ProviderType = "Facility",
                             ServiceId = 1,
                             ServiceType = "Public",
-                            Status = "Expired",
+                            Source = "Booked",
+                            Status = "CancelledByDoctor",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 15, 10, 30, 0, 0, DateTimeKind.Unspecified),
+                            ExpectedStart = new DateTime(2025, 4, 15, 10, 30, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PatientId = 2,
                             PaymentId = 6,
@@ -206,80 +251,9 @@ namespace DataAccessObjects.Migrations
                             ProviderType = "Facility",
                             ServiceId = 19,
                             ServiceType = "Public",
-                            Status = "AwaitingPayment",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 20, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            PatientId = 3,
-                            ProviderId = 17,
-                            ProviderType = "Facility",
-                            ServiceId = 9,
-                            ServiceType = "Public",
-                            Status = "Rejected",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 18, 14, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            PatientId = 4,
-                            ProviderId = 3,
-                            ProviderType = "Facility",
-                            ServiceId = 39,
-                            ServiceType = "Public",
-                            Status = "Rescheduled",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 22, 9, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            PatientId = 5,
-                            PaymentId = 8,
-                            ProviderId = 6,
-                            ProviderType = "Facility",
-                            ServiceId = 36,
-                            ServiceType = "Public",
-                            Status = "AwaitingPayment",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 25, 15, 30, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            PatientId = 6,
-                            PaymentId = 7,
-                            ProviderId = 5,
-                            ProviderType = "Facility",
-                            ServiceId = 29,
-                            ServiceType = "Public",
-                            Status = "AwaitingPayment",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Date = new DateTime(2025, 4, 28, 8, 30, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            PatientId = 1,
-                            PaymentId = 9,
-                            ProviderId = 12,
-                            ProviderType = "Facility",
-                            ServiceId = 41,
-                            ServiceType = "Public",
-                            Status = "AwaitingPayment",
+                            Source = "Booked",
+                            Status = "NoShow",
+                            TicketNo = 6,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -892,6 +866,62 @@ namespace DataAccessObjects.Migrations
                             Name = "Khoa Dinh dưỡng",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.EmailVerificationToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsUsed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EmailVerificationTokens", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObjects.Entities.Expertise", b =>
@@ -2320,10 +2350,19 @@ namespace DataAccessObjects.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateOnly?>("Birthday")
+                        .HasColumnType("date");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Fullname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2343,9 +2382,7 @@ namespace DataAccessObjects.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Patients");
 
@@ -3097,6 +3134,9 @@ namespace DataAccessObjects.Migrations
                     b.Property<string>("Degree")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DegreeFile")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
 
@@ -3490,6 +3530,105 @@ namespace DataAccessObjects.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BusinessObjects.Entities.ProfessionalDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("DocumentName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("DocumentNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DocumentUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateOnly?>("ExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateOnly?>("IssueDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("IssuingAuthority")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OriginalFileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ProfessionalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReviewedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("VerificationStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentType");
+
+                    b.HasIndex("ExpiryDate");
+
+                    b.HasIndex("ProfessionalId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("VerificationStatus");
+
+                    b.ToTable("ProfessionalDocuments");
+                });
+
             modelBuilder.Entity("BusinessObjects.Entities.ProfessionalSpecialty", b =>
                 {
                     b.Property<int>("Id")
@@ -3530,7 +3669,52 @@ namespace DataAccessObjects.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 9,
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            ProfessionalId = 1,
+                            SpecialtyId = 1,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            ProfessionalId = 1,
+                            SpecialtyId = 3,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            ProfessionalId = 2,
+                            SpecialtyId = 12,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            ProfessionalId = 4,
+                            SpecialtyId = 3,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            ProfessionalId = 4,
+                            SpecialtyId = 1,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 6,
@@ -3539,7 +3723,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 7,
@@ -3548,7 +3732,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 8,
@@ -3557,43 +3741,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 12,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 9,
-                            SpecialtyId = 11,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 10,
-                            SpecialtyId = 14,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 11,
-                            SpecialtyId = 13,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 12,
-                            SpecialtyId = 8,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 16,
+                            Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 13,
@@ -3602,16 +3750,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 17,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 14,
-                            SpecialtyId = 15,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 18,
+                            Id = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 15,
@@ -3620,16 +3759,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 19,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 16,
-                            SpecialtyId = 2,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 20,
+                            Id = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 17,
@@ -3638,7 +3768,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 21,
+                            Id = 11,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 18,
@@ -3647,7 +3777,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 19,
@@ -3656,28 +3786,10 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 23,
+                            Id = 13,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             ProfessionalId = 20,
-                            SpecialtyId = 1,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 12,
-                            SpecialtyId = 3,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            ProfessionalId = 16,
                             SpecialtyId = 1,
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -4273,6 +4385,259 @@ namespace DataAccessObjects.Migrations
                     b.ToTable("Reviews");
                 });
 
+            modelBuilder.Entity("BusinessObjects.Entities.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("ProfessionalId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfessionalId");
+
+                    b.ToTable("Schedules", t =>
+                        {
+                            t.HasCheckConstraint("CK_Schedule_DateRange", "[StartDate] <= [EndDate]");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateOnly(2025, 8, 29),
+                            IsDeleted = false,
+                            ProfessionalId = 1,
+                            StartDate = new DateOnly(2025, 8, 21),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateOnly(2025, 8, 29),
+                            IsDeleted = false,
+                            ProfessionalId = 2,
+                            StartDate = new DateOnly(2025, 8, 21),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateOnly(2025, 8, 29),
+                            IsDeleted = false,
+                            ProfessionalId = 3,
+                            StartDate = new DateOnly(2025, 8, 21),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateOnly(2025, 8, 29),
+                            IsDeleted = false,
+                            ProfessionalId = 4,
+                            StartDate = new DateOnly(2025, 8, 21),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndDate = new DateOnly(2025, 8, 29),
+                            IsDeleted = false,
+                            ProfessionalId = 5,
+                            StartDate = new DateOnly(2025, 8, 21),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.ScheduleException", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<TimeOnly>("NewEndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("NewStartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("ProfessionalId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfessionalId");
+
+                    b.ToTable("ScheduleExceptions", t =>
+                        {
+                            t.HasCheckConstraint("CK_ScheduleException_TimeOrClosed", "[IsClosed] = 1 OR [NewStartTime] < [NewEndTime]");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 26),
+                            IsClosed = true,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(0, 0, 0),
+                            NewStartTime = new TimeOnly(0, 0, 0),
+                            Note = "Nghỉ đột xuất",
+                            ProfessionalId = 1,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 29),
+                            IsClosed = false,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(12, 0, 0),
+                            NewStartTime = new TimeOnly(9, 0, 0),
+                            Note = "Chỉ làm buổi sáng",
+                            ProfessionalId = 1,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 27),
+                            IsClosed = false,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(15, 0, 0),
+                            NewStartTime = new TimeOnly(10, 0, 0),
+                            Note = "Họp nội bộ",
+                            ProfessionalId = 2,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 24),
+                            IsClosed = true,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(0, 0, 0),
+                            NewStartTime = new TimeOnly(0, 0, 0),
+                            Note = "Đóng phòng khám",
+                            ProfessionalId = 3,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 28),
+                            IsClosed = false,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(11, 30, 0),
+                            NewStartTime = new TimeOnly(8, 30, 0),
+                            Note = "Khám buổi sáng",
+                            ProfessionalId = 3,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 21),
+                            IsClosed = false,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(12, 0, 0),
+                            NewStartTime = new TimeOnly(8, 0, 0),
+                            Note = "Đi hội thảo chiều",
+                            ProfessionalId = 4,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 23),
+                            IsClosed = true,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(0, 0, 0),
+                            NewStartTime = new TimeOnly(0, 0, 0),
+                            Note = "Nghỉ riêng",
+                            ProfessionalId = 5,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateOnly(2025, 8, 29),
+                            IsClosed = false,
+                            IsDeleted = false,
+                            NewEndTime = new TimeOnly(11, 0, 0),
+                            NewStartTime = new TimeOnly(8, 0, 0),
+                            Note = "Chỉ sáng",
+                            ProfessionalId = 5,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
             modelBuilder.Entity("BusinessObjects.Entities.Specialty", b =>
                 {
                     b.Property<int>("Id")
@@ -4320,15 +4685,6 @@ namespace DataAccessObjects.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Chuyên ngành liên quan đến phẫu thuật và điều trị các bệnh lý cần can thiệp phẫu thuật.",
-                            IsDeleted = false,
-                            Name = "Chuyên khoa Ngoại",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành chuyên sâu về bệnh lý tim mạch, bao gồm các bệnh liên quan đến tim và mạch máu.",
                             IsDeleted = false,
                             Name = "Chuyên khoa Tim mạch",
@@ -4336,7 +4692,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 3,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành chẩn đoán và điều trị các bệnh liên quan đến hệ thần kinh như đột quỵ, động kinh.",
                             IsDeleted = false,
@@ -4345,7 +4701,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 4,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành chăm sóc và điều trị các bệnh lý về da như mụn, eczema, bệnh vảy nến.",
                             IsDeleted = false,
@@ -4354,7 +4710,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 5,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành điều trị các bệnh lý liên quan đến hệ sinh sản và chăm sóc sức khỏe phụ nữ.",
                             IsDeleted = false,
@@ -4363,7 +4719,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 6,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành chăm sóc sức khỏe và điều trị bệnh lý cho trẻ em.",
                             IsDeleted = false,
@@ -4372,16 +4728,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 8,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Chuyên ngành điều trị và quản lý các bệnh lý ung thư.",
-                            IsDeleted = false,
-                            Name = "Chuyên khoa Ung bướu",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 9,
+                            Id = 7,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành điều trị và chăm sóc các bệnh lý về mắt, bao gồm đục thủy tinh thể, tật khúc xạ.",
                             IsDeleted = false,
@@ -4390,7 +4737,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 8,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành liên quan đến các bệnh lý tai, mũi, họng và các cấu trúc liên quan.",
                             IsDeleted = false,
@@ -4399,7 +4746,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 9,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành tập trung vào phục hồi sức khỏe cho bệnh nhân sau phẫu thuật, tai nạn, hoặc các bệnh lý nghiêm trọng.",
                             IsDeleted = false,
@@ -4408,7 +4755,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 10,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành sử dụng các phương pháp y học cổ truyền như châm cứu, bấm huyệt để điều trị bệnh.",
                             IsDeleted = false,
@@ -4417,7 +4764,7 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 11,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành nghiên cứu và điều trị các bệnh lý về hô hấp như viêm phổi, hen suyễn.",
                             IsDeleted = false,
@@ -4426,20 +4773,11 @@ namespace DataAccessObjects.Migrations
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 12,
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Chuyên ngành điều trị các bệnh lý liên quan đến nội tiết tố như tiểu đường, rối loạn tuyến giáp.",
                             IsDeleted = false,
                             Name = "Chuyên khoa Nội tiết",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Chuyên ngành chăm sóc sức khỏe răng miệng, bao gồm điều trị sâu răng, chỉnh hình răng miệng.",
-                            IsDeleted = false,
-                            Name = "Chuyên khoa Nha khoa",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -4477,6 +4815,9 @@ namespace DataAccessObjects.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
@@ -4511,6 +4852,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/admin_avatar.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "ad123456",
                             PhoneNumber = "0901234567",
                             Role = "Admin",
@@ -4527,6 +4869,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/patient_female_1.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0902345678",
                             Role = "Patient",
@@ -4543,6 +4886,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/patient_male_1.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0903456789",
                             Role = "Patient",
@@ -4559,6 +4903,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_1.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0904567890",
                             Role = "Professional",
@@ -4575,6 +4920,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_1.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0905678901",
                             Role = "Professional",
@@ -4591,6 +4937,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/patient_female_2.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0906789012",
                             Role = "Patient",
@@ -4607,6 +4954,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/patient_male_2.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0907890123",
                             Role = "Patient",
@@ -4623,6 +4971,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_2.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0908901234",
                             Role = "Professional",
@@ -4639,6 +4988,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_2.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0909012345",
                             Role = "Professional",
@@ -4655,6 +5005,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/patient_male_3.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0910123456",
                             Role = "Patient",
@@ -4671,6 +5022,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/patient_female_3.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pa123456",
                             PhoneNumber = "0911234567",
                             Role = "Patient",
@@ -4687,6 +5039,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_3.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0912345678",
                             Role = "Professional",
@@ -4703,6 +5056,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_3.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0913456789",
                             Role = "Professional",
@@ -4719,6 +5073,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_4.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0912345678",
                             Role = "Professional",
@@ -4735,6 +5090,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_4.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0923456789",
                             Role = "Professional",
@@ -4751,6 +5107,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_5.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0934567890",
                             Role = "Professional",
@@ -4767,6 +5124,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_5.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0945678901",
                             Role = "Professional",
@@ -4783,6 +5141,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_6.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0956789012",
                             Role = "Professional",
@@ -4799,6 +5158,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_6.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0967890123",
                             Role = "Professional",
@@ -4815,6 +5175,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_7.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0978901234",
                             Role = "Professional",
@@ -4831,6 +5192,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_8.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0989012345",
                             Role = "Professional",
@@ -4847,6 +5209,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_7.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0990123456",
                             Role = "Professional",
@@ -4863,6 +5226,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_9.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0901234567",
                             Role = "Professional",
@@ -4879,6 +5243,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_8.jpg",
                             IsDeleted = false,
+                            IsVerified = false,
                             Password = "pro123456",
                             PhoneNumber = "0912345678",
                             Role = "Professional",
@@ -4895,6 +5260,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_10.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0923456789",
                             Role = "Professional",
@@ -4911,6 +5277,7 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nữ",
                             ImgUrl = "/images/users/doctor_female_9.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0934567890",
                             Role = "Professional",
@@ -4927,11 +5294,369 @@ namespace DataAccessObjects.Migrations
                             Gender = "Nam",
                             ImgUrl = "/images/users/doctor_male_11.jpg",
                             IsDeleted = false,
+                            IsVerified = true,
                             Password = "pro123456",
                             PhoneNumber = "0945678901",
                             Role = "Professional",
                             Status = "Inactive",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.WorkingDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("SlotBuffer")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("SlotDuration")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("Weekday")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleId", "Weekday");
+
+                    b.HasIndex("ScheduleId", "Weekday", "StartTime", "EndTime")
+                        .IsUnique();
+
+                    b.ToTable("WorkingDates", t =>
+                        {
+                            t.HasCheckConstraint("CK_WorkingDate_TimeRange", "[StartTime] < [EndTime]");
+
+                            t.HasCheckConstraint("CK_WorkingDate_Weekday", "[Weekday] BETWEEN 1 AND 7");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(11, 30, 0),
+                            IsDeleted = false,
+                            ScheduleId = 1,
+                            SlotBuffer = new TimeSpan(0, 0, 10, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 20, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 1,
+                            SlotBuffer = new TimeSpan(0, 0, 10, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 20, 0, 0),
+                            StartTime = new TimeOnly(13, 30, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(12, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 1,
+                            SlotBuffer = new TimeSpan(0, 0, 10, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 20, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 4
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 1,
+                            SlotBuffer = new TimeSpan(0, 0, 10, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 20, 0, 0),
+                            StartTime = new TimeOnly(13, 30, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 6
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 2,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(9, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 2,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(9, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 2,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(9, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 4
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 2,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(9, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 5
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 2,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(9, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 6
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 3,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 25, 0, 0),
+                            StartTime = new TimeOnly(13, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(12, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 3,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 25, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(17, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 3,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 25, 0, 0),
+                            StartTime = new TimeOnly(13, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 5
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(12, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 3,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 25, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 7
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(16, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 4,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 15, 0, 0),
+                            StartTime = new TimeOnly(7, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 2
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(16, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 4,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 15, 0, 0),
+                            StartTime = new TimeOnly(7, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 3
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(16, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 4,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 15, 0, 0),
+                            StartTime = new TimeOnly(7, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 4
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(16, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 4,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 15, 0, 0),
+                            StartTime = new TimeOnly(7, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 5
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(16, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 4,
+                            SlotBuffer = new TimeSpan(0, 0, 5, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 15, 0, 0),
+                            StartTime = new TimeOnly(7, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 6
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(12, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 5,
+                            SlotBuffer = new TimeSpan(0, 0, 15, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 2
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(11, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 5,
+                            SlotBuffer = new TimeSpan(0, 0, 15, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 3
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(18, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 5,
+                            SlotBuffer = new TimeSpan(0, 0, 15, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(14, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 3
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(12, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 5,
+                            SlotBuffer = new TimeSpan(0, 0, 15, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 5
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndTime = new TimeOnly(11, 0, 0),
+                            IsDeleted = false,
+                            ScheduleId = 5,
+                            SlotBuffer = new TimeSpan(0, 0, 15, 0, 0),
+                            SlotDuration = new TimeSpan(0, 0, 30, 0, 0),
+                            StartTime = new TimeOnly(8, 0, 0),
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Weekday = 7
                         });
                 });
 
@@ -4947,13 +5672,17 @@ namespace DataAccessObjects.Migrations
                         .HasForeignKey("PaymentId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("BusinessObjects.Entities.Professional", "Professional")
+                        .WithMany()
+                        .HasForeignKey("ProfessionalId");
+
                     b.HasOne("BusinessObjects.Entities.Facility", "Facility")
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("FK_Appointment_Facility");
 
-                    b.HasOne("BusinessObjects.Entities.Professional", "Professional")
+                    b.HasOne("BusinessObjects.Entities.Professional", null)
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -5022,6 +5751,17 @@ namespace DataAccessObjects.Migrations
                     b.Navigation("MedicalRecord");
                 });
 
+            modelBuilder.Entity("BusinessObjects.Entities.EmailVerificationToken", b =>
+                {
+                    b.HasOne("BusinessObjects.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BusinessObjects.Entities.Facility", b =>
                 {
                     b.HasOne("BusinessObjects.Entities.FacilityType", "Type")
@@ -5062,9 +5802,9 @@ namespace DataAccessObjects.Migrations
             modelBuilder.Entity("BusinessObjects.Entities.Patient", b =>
                 {
                     b.HasOne("BusinessObjects.Entities.User", "User")
-                        .WithOne("Patient")
-                        .HasForeignKey("BusinessObjects.Entities.Patient", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("Patients")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
                 });
@@ -5098,6 +5838,24 @@ namespace DataAccessObjects.Migrations
                     b.Navigation("Expertise");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.ProfessionalDocument", b =>
+                {
+                    b.HasOne("BusinessObjects.Entities.Professional", "Professional")
+                        .WithMany("Documents")
+                        .HasForeignKey("ProfessionalId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BusinessObjects.Entities.User", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Professional");
+
+                    b.Navigation("ReviewedByUser");
                 });
 
             modelBuilder.Entity("BusinessObjects.Entities.ProfessionalSpecialty", b =>
@@ -5141,6 +5899,40 @@ namespace DataAccessObjects.Migrations
                         .HasConstraintName("FK_Review_Facility");
 
                     b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.Schedule", b =>
+                {
+                    b.HasOne("BusinessObjects.Entities.Professional", "Professional")
+                        .WithMany("Schedules")
+                        .HasForeignKey("ProfessionalId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Schedule_Professional");
+
+                    b.Navigation("Professional");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.ScheduleException", b =>
+                {
+                    b.HasOne("BusinessObjects.Entities.Professional", null)
+                        .WithMany("ScheduleExceptions")
+                        .HasForeignKey("ProfessionalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ScheduleException_Professional");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.WorkingDate", b =>
+                {
+                    b.HasOne("BusinessObjects.Entities.Schedule", "Schedule")
+                        .WithMany("WorkingDates")
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_WorkingDate_Schedule");
+
+                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("BusinessObjects.Entities.Appointment", b =>
@@ -5199,9 +5991,20 @@ namespace DataAccessObjects.Migrations
 
             modelBuilder.Entity("BusinessObjects.Entities.Professional", b =>
                 {
+                    b.Navigation("Documents");
+
                     b.Navigation("PrivateServices");
 
                     b.Navigation("ProfessionalSpecialties");
+
+                    b.Navigation("ScheduleExceptions");
+
+                    b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Entities.Schedule", b =>
+                {
+                    b.Navigation("WorkingDates");
                 });
 
             modelBuilder.Entity("BusinessObjects.Entities.Specialty", b =>
@@ -5213,7 +6016,7 @@ namespace DataAccessObjects.Migrations
                 {
                     b.Navigation("Articles");
 
-                    b.Navigation("Patient");
+                    b.Navigation("Patients");
 
                     b.Navigation("Professional");
                 });
