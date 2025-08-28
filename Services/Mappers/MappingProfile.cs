@@ -143,32 +143,6 @@ namespace Services.Mappers
                 .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
-            CreateMap<Appointment, AppointmentDTO>()
-    .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
-    .ForMember(d => d.Date, opt => opt.MapFrom(s => s.Date))
-    .ForMember(d => d.ExpectedStart, opt => opt.MapFrom(s => s.ExpectedStart))
-    .ForMember(d => d.CheckedInAt, opt => opt.MapFrom(s => s.CheckedInAt))
-    .ForMember(d => d.StartAt, opt => opt.MapFrom(s => s.StartAt))
-    .ForMember(d => d.EndAt, opt => opt.MapFrom(s => s.EndAt))
-    .ForMember(d => d.TicketNo, opt => opt.MapFrom(s => s.TicketNo))
-    .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Description))
-    .ForMember(d => d.Patient, opt => opt.MapFrom(s => s.Patient))
-    .ForMember(d => d.Payment, opt => opt.MapFrom(s => s.Payment))
-    .ForMember(d => d.PrivateService, opt => opt.MapFrom(s => s.PrivateService))
-    .ForMember(d => d.PublicService, opt => opt.MapFrom(s => s.PublicService));
-
-            CreateMap<CreateAppointmentDto, Appointment>()
-                .ForMember(d => d.Id, opt => opt.Ignore())
-                .ForMember(d => d.Patient, opt => opt.Ignore())
-                .ForMember(d => d.Payment, opt => opt.Ignore())
-                .ForMember(d => d.Professional, opt => opt.Ignore())
-                .ForMember(d => d.Facility, opt => opt.Ignore())
-                .ForMember(d => d.PrivateService, opt => opt.Ignore())
-                .ForMember(d => d.PublicService, opt => opt.Ignore())
-                .ForMember(d => d.ExpectedStart, opt => opt.MapFrom(s => s.ExpectedStart != default ? s.ExpectedStart : (s.Date ?? default)))
-                .ForMember(d => d.Date, opt => opt.MapFrom(s => s.Date));
-
-
             CreateMap<Appointment, RescheduleAppointmentDTO>().ReverseMap();
 
         }

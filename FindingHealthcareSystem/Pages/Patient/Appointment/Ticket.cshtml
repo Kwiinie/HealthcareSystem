@@ -1,0 +1,226 @@
+﻿@page "/patient/appointment/ticket"
+@{
+    Layout = "_Layout"; 
+    var providerName = Request.Form["ProviderName"].ToString();
+    var serviceName = Request.Form["ServiceName"].ToString();
+    var selectedDate = Request.Form["SelectedDate"].ToString();
+    var selectedSlot = Request.Form["SelectedTimeSlot"].ToString();
+    var providerType = Request.Form["ProviderType"].ToString();
+    var providerId = Request.Form["ProviderId"].ToString();
+
+    string key = $"{providerId}|{providerType}|{selectedDate}|{selectedSlot}";
+    int hash = Math.Abs(key.GetHashCode());
+    int queueNumber = (hash % 120) + 1; // 1..120
+
+    string todayStr = DateTime.Now.ToString("HH:mm dd/MM/yyyy");
+}
+
+<style>
+    .ticket-wrap {
+        max-width: 560px;
+        margin: 32px auto;
+        padding: 24px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.08);
+        border: 1px solid rgba(0,0,0,.06);
+    }
+
+    .ticket-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .ticket-provider {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .ticket-type {
+        font-size: .9rem;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .ticket-number {
+        margin: 16px 0;
+        text-align: center;
+    }
+
+        .ticket-number small {
+            display: block;
+            color: #64748b;
+            letter-spacing: .08em;
+        }
+
+        .ticket-number h1 {
+            font-size: 72px;
+            margin: 8px 0 0;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: .02em;
+        }
+
+    .ticket-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .detail-card {
+        background: #f8fafc;
+        border: 1px dashed #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+    }
+
+        .detail-card .label {
+            color: #64748b;
+            font-size: .85rem;
+        }
+
+        .detail-card .value {
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+    .ticket-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+        .ticket-actions .btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            cursor: pointer;
+        }
+
+    .btn-primary {
+        background: #0ea5e9;
+        color: #fff;
+        border-color: #0ea5e9;
+    }
+
+    .qr {
+        margin-top: 18px;
+        display: flex;
+        justify-content: center;
+    }
+
+        .qr canvas, .qr img {
+            width: 140px;
+            height: 140px;
+        }
+
+    .notice {
+        text-align: center;
+        color: #0f766e;
+        background: #ecfeff;
+        border: 1px solid #99f6e4;
+        padding: 10px 12px;
+        border-radius: 10px;
+        margin-top: 16px;
+        font-size: .95rem;
+    }
+</style>
+
+<div class="ticket-wrap">
+    <div class="ticket-head">
+        <div class="ticket-provider">
+            @(!string.IsNullOrWhiteSpace(providerName) ? providerName : "Cơ sở/Y bác sĩ")
+        </div>
+        <div class="ticket-type">
+            @(providerType == "Professional" ? "Khám theo bác sĩ" : "Khám theo cơ sở")
+        </div>
+    </div>
+
+    <div class="ticket-number">
+        <small>SỐ THỨ TỰ CỦA BẠN</small>
+        <h1>@queueNumber</h1>
+    </div>
+
+    <div class="ticket-details">
+        <div class="detail-card">
+            <div class="label">Dịch vụ</div>
+            <div class="value">@(!string.IsNullOrWhiteSpace(serviceName) ? serviceName : "Dịch vụ khám")</div>
+        </div>
+        <div class="detail-card">
+            <div class="label">Ngày</div>
+            <div class="value">
+                @(!string.IsNullOrWhiteSpace(selectedDate)
+                                ? DateTime.Parse(selectedDate).ToString("dd/MM/yyyy")
+                                : DateTime.Today.ToString("dd/MM/yyyy"))
+            </div>
+        </div>
+        <div class="detail-card">
+            <div class="label">Khung giờ</div>
+            <div class="value">@(!string.IsNullOrWhiteSpace(selectedSlot) ? selectedSlot : "—")</div>
+        </div>
+        <div class="detail-card">
+            <div class="label">Tạo lúc</div>
+            <div class="value">@todayStr</div>
+        </div>
+    </div>
+
+    <div class="notice">
+        Vui lòng <b>đến quầy và check-in bằng số thứ tự @queueNumber</b> trước giờ hẹn để được phục vụ.
+    </div>
+
+    <div class="ticket-actions">
+        <button class="btn" onclick="window.history.back()">Quay lại</button>
+        <button class="btn" onclick="copyTicket()">Sao chép STT</button>
+        <button class="btn btn-primary" onclick="window.print()">In phiếu</button>
+    </div>
+
+    <div class="qr">
+        <div id="qrBox"></div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-MN5Ta2wCk8V0pCGX0b2Rr9Qyqg5mGqGx2vE0j8XQx0Qm0H6ZfK0v8M+3Q2F7w6vC4W2GvCC4mY6bYjG3VvK1JQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+
+           (function () {
+        const data = {
+            q: "@queueNumber",
+            p: "@providerId",
+            t: "@providerType",
+            d: "@selectedDate",
+            s: "@selectedSlot",
+            svc: "@serviceName"
+        };
+
+        const target = document.getElementById("qrBox");
+        if (target) {
+            target.innerHTML = "";
+
+            new QRCode(target, {
+                text: JSON.stringify(data),
+                width: 140,
+                height: 140,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    })();
+
+    function copyTicket() {
+        const content = `STT: @queueNumber
+    Cơ sở/Bác sĩ: @providerName
+    Dịch vụ: @serviceName
+    Ngày: @(!string.IsNullOrWhiteSpace(selectedDate) ? DateTime.Parse(selectedDate).ToString("dd/MM/yyyy") : DateTime.Today.ToString("dd/MM/yyyy"))
+    Khung giờ: @selectedSlot`;
+        navigator.clipboard.writeText(content).then(()=>{
+            alert("Đã sao chép STT vào clipboard!");
+        });
+    }
+</script>

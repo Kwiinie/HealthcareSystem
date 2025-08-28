@@ -52,11 +52,17 @@
         </div>
     </div>
 
-    <form method="post" id="appointmentForm">
+    @* CHỖ NÀY ĐỔI: post sang trang Ticket *@
+    <form method="post" asp-page="/Patient/Appointment/Ticket" id="appointmentForm">
         <input type="hidden" id="SelectedDateInputPost" name="SelectedDate" value="@Model.SelectedDate?.ToString("yyyy-MM-dd")" />
         <input type="hidden" name="ProviderId" value="@providerId" />
         <input type="hidden" name="ProviderType" value="@providerType" />
         <input type="hidden" id="SelectedTimeSlot" name="SelectedTimeSlot" value="" />
+
+        @* THÊM: các hidden giúp in đẹp trên Ticket *@
+        <input type="hidden" name="ProviderName" value="@(providerType == "Facility" ? Model.facility?.Name : Model.professional?.FullName)" />
+        <input type="hidden" id="SelectedServiceId" name="SelectedServiceId" value="@Model.SelectedServiceId" />
+        <input type="hidden" id="SelectedServiceName" name="ServiceName" value="" />
 
         <div class="row">
             <div class="col-7 mb-4">
@@ -196,9 +202,10 @@
 
                     <div class="appointment-footer">
                         <div class="d-grid">
+                            @* ĐỔI NÚT: lấy số thứ tự (post sang Ticket) *@
                             <button type="submit" class="btn btn-primary" id="submitButton"
                                     @(string.IsNullOrEmpty(Model.SelectedTimeSlot) ? "disabled" : "")>
-                                Xác nhận đặt lịch
+                                Lấy số thứ tự
                             </button>
                         </div>
                         <div class="mt-2 text-muted" style="font-size: 0.9rem;">
@@ -229,6 +236,9 @@
         if (selected) {
             const priceVnd = (selected.Price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
             document.getElementById('selectedServiceDisplay').innerText = `${selected.Name} – ${priceVnd}`;
+            // Cập nhật hidden để gửi sang Ticket
+            document.getElementById('SelectedServiceId').value = selected.Id;
+            document.getElementById('SelectedServiceName').value = selected.Name;
         }
         validateForm();
     }
@@ -245,5 +255,17 @@
         renderCalendar();
 
         validateForm();
+
+        // Nếu đã có SelectedServiceId từ server, cập nhật tên để Ticket nhận được luôn
+        const svcs = @Html.Raw(JsonConvert.SerializeObject(Model.services));
+        const curId = Number(document.getElementById('SelectedServiceId').value || 0);
+        if (curId) {
+            const cur = svcs.find(s => s.Id === curId);
+            if (cur) {
+                document.getElementById('SelectedServiceName').value = cur.Name;
+                const priceVnd = (cur.Price ?? 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                document.getElementById('selectedServiceDisplay').innerText = `${cur.Name} – ${priceVnd}`;
+            }
+        }
     });
 </script>
